@@ -217,7 +217,8 @@ int main(int argc, char* args[])
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 	GLuint offsetLocation = glGetUniformLocation(programID, "vertexOffset");
-
+	GLuint colorOffset = glGetUniformLocation(programID, "vertexColorOffset");
+	float rOff = 1.0f; float gOff = 1.0f; float  bOff = 1.0f; float xOff = 0.0f; float yOff = 0.0f;
 	while (running)
 	{
 		//Poll for the events which have happened in this frame
@@ -241,22 +242,39 @@ int main(int argc, char* args[])
 					running = false;
 					break;
 				case SDLK_0:
-					g_vertex_buffer_color[0] += 0.1; 
-					if (g_vertex_buffer_color[0] > 1)
+					if (rOff > 1.0f)
 					{
-						g_vertex_buffer_color[0] = 0;
+						rOff = 0.0f;
 					}
+					if (gOff <= 0.0f)
+					{
+						gOff = 1.0f;
+					}
+					if (bOff > 1.0f)
+					{
+						bOff = 0.0f;
+					}
+					rOff = float((sin(rand() % 90)));
+					gOff = float((sin(rand() % 90)));
+					bOff = float((sin(rand()%90)));
 
-					// The following commands will talk about our 'vertexbuffer' buffer
-					glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-					// Give our vertices to OpenGL.
-					glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_color), g_vertex_buffer_color, GL_DYNAMIC_DRAW);
+
+					glUniform3f(colorOffset, rOff, gOff, bOff);
 					break;
 
 				case SDLK_1:
-
-					glUniform2f(offsetLocation, 0.1, 0.1);
-					break;
+					if(yOff>1.0)
+					{
+						yOff = -1.0f;
+					}
+					if (xOff>1.0)
+					{
+						xOff = -1.0f;
+					}
+						xOff += 0.1;
+						yOff += 0.1;
+						glUniform2f(offsetLocation, xOff, yOff);
+						break;
 				}
 			}
 		}
