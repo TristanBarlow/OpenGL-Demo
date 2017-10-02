@@ -247,9 +247,6 @@ int main(int argc, char* args[])
 						g_vertex_buffer_color[0] = 0;
 					}
 
-					//(1, &colorbuffer);
-					// Generate 1 buffer, put the resulting identifier in vertexbuffer
-					//glGenBuffers(1, &colorbuffer);
 					// The following commands will talk about our 'vertexbuffer' buffer
 					glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 					// Give our vertices to OpenGL.

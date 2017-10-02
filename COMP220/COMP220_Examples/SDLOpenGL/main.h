@@ -21,3 +21,4 @@ bool Init();
 
 //Deallocates memory and calls SDL closing functions
 void Close();
+
