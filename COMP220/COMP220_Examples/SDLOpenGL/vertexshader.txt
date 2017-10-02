@@ -1,8 +1,18 @@
 #version 330 core
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in vec3 vertexColor;
 
-layout(location=0) in vec3 vertexPosition_modelspace;
+out vec3 vertexColorOut;
+
+uniform vec2 vertexOffset = vec2(0.0);
 
 void main()
 {
-	gl_Position=vec4(vertexPosition_modelspace,1.0);
+vertexColorOut = vertexColor;
+vec3 offsetVertexPos = vertexPos;
+offsetVertexPos.xy += vertexOffset;
+gl_Position = vec4 (offsetVertexPos, 1.0);
+
+//gl_Position.xyz = vertexPos;
+//gl_Position.w = 1.0;
 }

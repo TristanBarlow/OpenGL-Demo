@@ -179,11 +179,11 @@ int main(int argc, char* args[])
 	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
 
 
-	const static GLfloat g_vertex_buffer_data[] =
+	 GLfloat g_vertex_buffer_pos[] =
 	{
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.0f, 0.5f, 0.0f,
 	};
 
 	// This will identify our vertex buffer
@@ -193,14 +193,31 @@ int main(int argc, char* args[])
 	// The following commands will talk about our 'vertexbuffer' buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_pos), g_vertex_buffer_pos, GL_STATIC_DRAW);
 
-
+	 GLfloat g_vertex_buffer_color[] =
+	{
+		0.5f, 0.0f, 0.0f,
+		0.0f, 0.5f, 0.0f,
+		0.0f, 0.0f, 0.5f,
+	};
+	 
+ 
+	// This will identify our vertex buffer
+	GLuint colorbuffer;
+	// Generate 1 buffer, put the resulting identifier in vertexbuffer
+	glGenBuffers(1, &colorbuffer);
+	// The following commands will talk about our 'vertexbuffer' buffer
+	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	// Give our vertices to OpenGL.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_color), g_vertex_buffer_color, GL_STATIC_DRAW);
 
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
+	GLuint offsetLocation = glGetUniformLocation(programID, "vertexOffset");
+
 	while (running)
 	{
 		//Poll for the events which have happened in this frame
@@ -224,6 +241,24 @@ int main(int argc, char* args[])
 					running = false;
 					break;
 				case SDLK_0:
+					g_vertex_buffer_color[0] += 0.1; 
+					if (g_vertex_buffer_color[0] > 1)
+					{
+						g_vertex_buffer_color[0] = 0;
+					}
+
+					//(1, &colorbuffer);
+					// Generate 1 buffer, put the resulting identifier in vertexbuffer
+					//glGenBuffers(1, &colorbuffer);
+					// The following commands will talk about our 'vertexbuffer' buffer
+					glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+					// Give our vertices to OpenGL.
+					glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_color), g_vertex_buffer_color, GL_DYNAMIC_DRAW);
+					break;
+
+				case SDLK_1:
+
+					glUniform2f(offsetLocation, 0.1, 0.1);
 					break;
 				}
 			}
@@ -245,15 +280,29 @@ int main(int argc, char* args[])
 			0,                  // stride
 			(void*)0            // array buffer offset
 		);
+
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+		glVertexAttribPointer(
+			1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
 		glUseProgram(programID);
+		//glUniform4f(location, float(sin(rand()%90)), float(sin(rand()%90)), float(sin(rand()%90)), float(sin(rand()%90)));
+
 		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
 		glDisableVertexAttribArray(0);
-
 		SDL_GL_SwapWindow(window);
 	}
-
+	glDeleteProgram(programID);
 	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &colorbuffer);
 	glDeleteVertexArrays(1, &VertexArray);
 	Close();
 	return 0;

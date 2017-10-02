@@ -3,11 +3,14 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 #include <SDL.h>
 #include <GL\glew.h>
 #include <SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+using namespace std;
 
 SDL_Window* window;
 

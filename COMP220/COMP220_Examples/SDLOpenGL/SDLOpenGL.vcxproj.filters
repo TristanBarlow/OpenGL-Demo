@@ -24,4 +24,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="vertexshader.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="fragmentshader.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
