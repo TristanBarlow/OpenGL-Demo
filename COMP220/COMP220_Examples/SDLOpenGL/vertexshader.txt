@@ -12,5 +12,4 @@ vertexColorOut = vertexColor;
 vec3 offsetVertexPos = vertexPos;
 offsetVertexPos.xy += vertexOffset;
 gl_Position = vec4 (offsetVertexPos, 1.0);
-
 }
