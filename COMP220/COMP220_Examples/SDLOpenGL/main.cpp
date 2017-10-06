@@ -161,14 +161,15 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 
 void blah();
 
-GLuint bloo() {
+GLuint square() {
 
 	GLfloat g_vertex_buffer_pos[] =
 	{
-		-0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Top-left
-		0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // Top-right
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // Bottom-right
-		-0.5f, -0.5f, 1.0f, 1.0f, 1.0f  // Bottom-left
+		-0.7f,  0.7f, 1.0f, 0.0f, 0.0f, // Top-left
+		0.7f,  0.7f, 0.0f, 1.0f, 0.0f, // Top-right
+		0.7f, -0.7f, 0.0f, 0.0f, 1.0f, // Bottom-right
+		-0.7f, -0.7f, 1.0f, 1.0f, 1.0f,
+		-1.0f, -1.0f, 1.0f, 1.0f, 1.0f// Bottom-left
 	};
 
 	// This will identify our vertex buffer
@@ -179,16 +180,17 @@ GLuint bloo() {
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Give our vertices to OpenGL.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_pos), g_vertex_buffer_pos, GL_STATIC_DRAW);
+	
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glVertexAttribPointer(
 		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		2,                  // size
+		3,                  // size
 		GL_FLOAT,           // type
 		GL_FALSE,           // normalized?
 		5*sizeof(GLfloat),                  // stride
 		(void*)0            // array buffer offset
 	);
+
 	return vertexbuffer;
 }
 
@@ -206,61 +208,37 @@ int main(int argc, char* args[])
 	glGenVertexArrays(1 , &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	GLuint elements[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-	GLuint ebo;
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(elements), elements, GL_STATIC_DRAW);
-
-
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
 
-	GLuint vertexbuffer = bloo();
-
-	 GLfloat g_vertex_buffer_color[] =
+	vertex vertexData[3] =
 	{
-		 0.0f,  0.5f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
-		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
-		 -0.5f, -0.5f, 0.0f, 0.0f, 1.0f  // Vertex 3: Blue
+		{vec3(0.0,0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
+		{vec3(-0.5,0.0,0.0), vec4(0.0f,1.0,0.0,1.0) },
+		{vec3(0.5,0.0,0.0), vec4(0.0f,0.0,1.0,1.0)}
 	};
-	 
- 
-	// This will identify our vertex buffer
-	GLuint colorbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &colorbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_color), g_vertex_buffer_color, GL_STATIC_DRAW);
 
+	// This will identify our vertex buffer
+	GLuint vertexbuffer;
+	// Generate 1 buffer, put the resulting identifier in vertexbuffer
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData , GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
+	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
+
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
-	GLuint offsetLocation = glGetUniformLocation(programID, "vertexOffset");
-	GLuint colorOffset = glGetUniformLocation(programID, "vertexColorOffset");
-	float rOff = 1.0f; float gOff = 1.0f; float  bOff = 1.0f; float xOff = 0.0f; float yOff = 0.0f;
-
 	// 1rst attribute buffer : vertices
 
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	glVertexAttribPointer(
-		1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-	);
 
 
 	while (running)
@@ -286,63 +264,30 @@ int main(int argc, char* args[])
 					running = false;
 					break;
 				case SDLK_0:
-					if (rOff > 1.0f)
-					{
-						rOff = 0.0f;
-					}
-					if (gOff <= 0.0f)
-					{
-						gOff = 1.0f;
-					}
-					if (bOff > 1.0f)
-					{
-						bOff = 0.0f;
-					}
-					rOff = float((sin(rand() % 90)));
-					gOff = float((sin(rand() % 90)));
-					bOff = float((sin(rand()%90)));
-
-
-					glUniform3f(colorOffset, rOff, gOff, bOff);
 					break;
 
 				case SDLK_1:
-					if(yOff>1.0)
-					{
-						yOff = -1.0f;
-					}
-					if (xOff>1.0)
-					{
-						xOff = -1.0f;
-					}
-						xOff += 0.1;
-						yOff += 0.1;
-						glUniform2f(offsetLocation, xOff, yOff);
 						break;
 				}
 			}
 		}
 
 		//uppdate and draw game
-		glClearColor(0, 0.0, 0.0, 1.0);
+		glClearColor(1.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
 
 		glUseProgram(programID);
-		//glUniform4f(location, float(sin(rand()%90)), float(sin(rand()%90)), float(sin(rand()%90)), float(sin(rand()%90)));
 
-		// Draw the triangle !
-		//glDrawArrays(GL_TRIANGLES, 0, 6); // Starting from vertex 0; 3 vertices total -> 1 triangle
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 		SDL_GL_SwapWindow(window);
+
 	}
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDeleteProgram(programID);
 	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteBuffers(1, &colorbuffer);
 	glDeleteVertexArrays(1, &VertexArray);
-	glDeleteBuffers(1, &ebo);
 	Close();
 	return 0;
 }

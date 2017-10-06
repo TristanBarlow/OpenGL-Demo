@@ -1,10 +1,7 @@
 #version 330 core
 out vec4 color;
-in vec3 vertexColorOut;
-uniform vec3 vertexColorOffset;
+in vec4 vertexColorOut;
 void main()
 {
-  vec3 offsetVertexColorOut = vertexColorOut;
-  offsetVertexColorOut += vertexColorOffset;
-  color = vec4 (offsetVertexColorOut, 1);
+  color = vertexColorOut;
 }
