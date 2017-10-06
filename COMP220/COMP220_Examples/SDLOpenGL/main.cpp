@@ -216,6 +216,7 @@ int main(int argc, char* args[])
 	bool running = true;
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
+
 	GLuint offsetLocation = glGetUniformLocation(programID, "vertexOffset");
 	GLuint colorOffset = glGetUniformLocation(programID, "vertexColorOffset");
 	float rOff = 1.0f; float gOff = 1.0f; float  bOff = 1.0f; float xOff = 0.0f; float yOff = 0.0f;
