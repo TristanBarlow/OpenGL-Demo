@@ -28,7 +28,6 @@ bool Init()
 		return false;
 	}
 
-
 	//request OpenGL core 3.2
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -202,7 +201,7 @@ Transform calculateTransform(Camera* camera)
 	//create rotation matrix
 	foo += 0.001f;
 	bar += 0.001f;
-	vec3 trianglRotation = vec3(foo, bar, 0.0f);
+	vec3 trianglRotation = vec3(0.0f, foo, 0.0f);
 	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
 	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
 	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
@@ -287,12 +286,12 @@ int main(int argc, char* args[])
 		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
 		{ vec3(1.0f, 1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
 		{ vec3( -1.0f, 1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3( -1.0f, 1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,1.0,0.0,1.0) },
+		{ vec3( -1.0f, 1.0f,-1.0f),vec4(1.0f,1.0,0.0,1.0) },
+		{ vec3( -1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.1,1.0) },
+		{ vec3(1.0f, 1.0f, 1.0f),vec4(1.0f,1.0,1.0,1.0) },
 		{ vec3( -1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3( -1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,0.0,0.0,1.0) }
+		{ vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) }
 	};
 
 	// This will identify our vertex buffer
@@ -319,6 +318,12 @@ int main(int argc, char* args[])
 		//https://wiki.libsdl.org/SDL_PollEvent
 		while (SDL_PollEvent(&ev))
 		{
+			if (ev.motion.x != 0 || ev.motion.y !=0)
+			{
+				//float xOffset = ev.motion.x - SCREEN_WIDTH / 2;
+				//camera.rotateX(float(xOffset));
+				cout << ev.motion.x << ":" << ev.motion.y << endl;
+			}
 			//Switch case for every message we are intereted in
 			switch (ev.type)
 			{
@@ -336,22 +341,29 @@ int main(int argc, char* args[])
 					running = false;
 					break;
 				case SDLK_w:
-					camera.move(-0.1f);
+					camera.move(0.5f);
 					break;
 				case SDLK_s:
-					camera.move(0.1f);
+					camera.move(-0.5f);
+					break;
 				case SDLK_d:
-					camera.strafe(0.1f);
+					camera.strafe(0.5f);
+					break;
 				case SDLK_a:
-					camera.strafe(-0.1f);
-				case SDLK_1:
+					camera.strafe(-0.5f);
+					break;
+				case SDLK_q:
+					camera.lift(-0.5);
+					break;
+				case SDLK_e:
+					camera.lift(0.5);
 						break;
 				}
 			}
 		}
 
 		//uppdate and draw game
-		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClearColor(1.0, 1.0, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(programID);
