@@ -234,12 +234,22 @@ int main(int argc, char* args[])
 		Close();
 	}
 
+	bool running = true;
+
+
 	GLuint VertexArray;
-	glGenVertexArrays(1 , &VertexArray);
+	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
+	//initialse vertices vector that will take the vertices of the obj file
 	vector <vertex> vertarray;
-	loadOBJ("Fidget_Spinner.obj", vertarray);
+	loadOBJ("Fidget_Spinner.txt", vertarray);
+	if (vertarray.size() == 0) 
+	{
+		cout << "failed to Load file, CYA!" << endl;
+		running = false;
+
+	}
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
 	
@@ -308,7 +318,6 @@ int main(int argc, char* args[])
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
-	bool running = true;
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
