@@ -5,6 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
+#include <stdio.h>
 #include <SDL.h>
 #include <GL\glew.h>
 #include <SDL_opengl.h>
@@ -40,7 +41,7 @@ struct Transform
 class Camera
 {
 public:
-	vec3 worldPos = vec3(2.0f, 0.0f, -20.0f);//pos of the camera
+	vec3 worldPos = vec3(2.0f, 0.0f, -200.0f);//pos of the camera
 	vec3 centre = vec3(0.0f, 0.0f, 0.0f); //point the camera looks at
 	vec3 up = vec3(0.0f, 1.0f, 0.0f);//the up direction of the camera(where is directly above of the camera)
 	vec3 forward = normalize(centre - worldPos);
@@ -91,3 +92,42 @@ bool Init();
 void Close();
 
 Transform calculateTransform(Camera*);
+
+bool loadOBJ(const char * path, vector <vertex> & out_vertices) 
+{
+	vector<unsigned int> vertexIndices;
+	vector<vec3> temp_vertices;
+	FILE * file = fopen(path, "r");
+	if (file == NULL) {
+		printf("Impossible to open the file !\n");
+		return false;
+	}
+	while (1) 
+	{
+		char lineHeader[128];
+		// read the first word of the line
+		int res = fscanf(file, "%s", lineHeader);
+		if (res == EOF)
+		{
+			break; // EOF = End Of File. Quit the loop.
+		}
+		if (strcmp(lineHeader, "v") == 0)
+		{
+			vec3 vertex;
+			
+			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+			temp_vertices.push_back(vertex);
+			
+		}
+
+	}// else : parse lineHeader
+	for (unsigned int i = 0; i < temp_vertices.size(); i++)
+	{
+		vec3 vert = temp_vertices[i];
+		vec4 vertexCol = vec4(sin(rand()%90), sin(rand() % 90), sin(rand() % 90),1);
+		vertex foo = { vert, vertexCol };
+		out_vertices.push_back(foo);
+		//cout << vertex.x << " : " << vertex.y << " : " << vertex.z << endl;
+	}
+}
+

@@ -201,14 +201,14 @@ Transform calculateTransform(Camera* camera)
 	//create rotation matrix
 	foo += 0.001f;
 	bar += 0.001f;
-	vec3 trianglRotation = vec3(0.0f, foo, 0.0f);
+	vec3 trianglRotation = vec3(bar, foo, 0.0f);
 	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
 	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
 	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
 	mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
 
 	//create scaling matrix
-	vec3 scaleVec = vec3(2.0f, 2.0f, 2.0f);
+	vec3 scaleVec = vec3(1.0f, 1.0f, 1.0f);
 	mat4 ScalingMatrix = scale(scaleVec);
 
 
@@ -218,7 +218,7 @@ Transform calculateTransform(Camera* camera)
 
 	float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
 
-	mat4 projectionMatrix = perspective(radians(90.0f),aspectRatio, 0.1f, 100.0f);
+	mat4 projectionMatrix = perspective(radians(90.0f),aspectRatio, 0.1f, 500.0f);
 
 	Transform finalTransform = {modelMatrix, cameraMatrix, projectionMatrix };
 	return finalTransform;
@@ -238,6 +238,8 @@ int main(int argc, char* args[])
 	glGenVertexArrays(1 , &VertexArray);
 	glBindVertexArray(VertexArray);
 
+	vector <vertex> vertarray;
+	loadOBJ("Fidget_Spinner.obj", vertarray);
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
 	
@@ -298,7 +300,7 @@ int main(int argc, char* args[])
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertarray.size()* sizeof(vertarray), &vertarray[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
@@ -318,12 +320,6 @@ int main(int argc, char* args[])
 		//https://wiki.libsdl.org/SDL_PollEvent
 		while (SDL_PollEvent(&ev))
 		{
-			if (ev.motion.x != 0 || ev.motion.y !=0)
-			{
-				//float xOffset = ev.motion.x - SCREEN_WIDTH / 2;
-				//camera.rotateX(float(xOffset));
-				cout << ev.motion.x << ":" << ev.motion.y << endl;
-			}
 			//Switch case for every message we are intereted in
 			switch (ev.type)
 			{
@@ -347,10 +343,10 @@ int main(int argc, char* args[])
 					camera.move(-0.5f);
 					break;
 				case SDLK_d:
-					camera.strafe(0.5f);
+					camera.strafe(-0.5f);
 					break;
 				case SDLK_a:
-					camera.strafe(-0.5f);
+					camera.strafe(0.5f);
 					break;
 				case SDLK_q:
 					camera.lift(-0.5);
@@ -378,8 +374,7 @@ int main(int argc, char* args[])
 		glEnable(GL_DEPTH_TEST);
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
+		glDrawArrays(GL_TRIANGLES, 0, vertarray.size());
 		SDL_GL_SwapWindow(window);
 		
 	}
