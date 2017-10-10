@@ -159,40 +159,6 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	return ProgramID;
 }
 
-void blah();
-
-GLuint square() {
-
-	GLfloat g_vertex_buffer_pos[] =
-	{
-		-0.7f,  0.7f, 1.0f, 0.0f, 0.0f, // Top-left
-		0.7f,  0.7f, 0.0f, 1.0f, 0.0f, // Top-right
-		0.7f, -0.7f, 0.0f, 0.0f, 1.0f, // Bottom-right
-		-0.7f, -0.7f, 1.0f, 1.0f, 1.0f,
-		-1.0f, -1.0f, 1.0f, 1.0f, 1.0f// Bottom-left
-	};
-
-	// This will identify our vertex buffer
-	GLuint vertexbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &vertexbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_pos), g_vertex_buffer_pos, GL_STATIC_DRAW);
-	
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		5*sizeof(GLfloat),                  // stride
-		(void*)0            // array buffer offset
-	);
-
-	return vertexbuffer;
-}
 
 int main(int argc, char* args[])
 {
@@ -211,11 +177,14 @@ int main(int argc, char* args[])
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
 
-	vertex vertexData[3] =
+	vertex vertexData[6] =
 	{
-		{vec3(0.0,0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
-		{vec3(-0.5,0.0,0.0), vec4(0.0f,1.0,0.0,1.0) },
-		{vec3(0.5,0.0,0.0), vec4(0.0f,0.0,1.0,1.0)}
+		{vec3(-0.5,0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
+		{vec3(0.5,0.5,0.0), vec4(0.0f,1.0,0.0,1.0)},
+		{vec3(0.5,-0.5,0.0), vec4(0.0f,0.0,1.0,1.0)},
+		{vec3(0.5,-0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
+		{ vec3(-0.5,-0.5,0.0), vec4(0.0f,1.0,0.0,1.0) },
+		{ vec3(-0.5,0.5,0.0), vec4(0.0f,0.0,1.0,1.0) }
 	};
 
 	// This will identify our vertex buffer
@@ -273,12 +242,12 @@ int main(int argc, char* args[])
 		}
 
 		//uppdate and draw game
-		glClearColor(1.0, 0.0, 0.0, 1.0);
+		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(programID);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		SDL_GL_SwapWindow(window);
 
