@@ -16,7 +16,7 @@ bool Init()
 
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
-	window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
@@ -27,7 +27,6 @@ bool Init()
 		SDL_Quit();
 		return false;
 	}
-
 
 	//request OpenGL core 3.2
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -159,6 +158,71 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	return ProgramID;
 }
 
+GLuint square() {
+
+	GLfloat g_vertex_buffer_pos[] =
+	{
+		-0.7f,  0.7f, 1.0f, 0.0f, 0.0f, // Top-left
+		0.7f,  0.7f, 0.0f, 1.0f, 0.0f, // Top-right
+		0.7f, -0.7f, 0.0f, 0.0f, 1.0f, // Bottom-right
+		-0.7f, -0.7f, 1.0f, 1.0f, 1.0f,
+		-1.0f, -1.0f, 1.0f, 1.0f, 1.0f// Bottom-left
+	};
+
+	// This will identify our vertex buffer
+	GLuint vertexbuffer;
+	// Generate 1 buffer, put the resulting identifier in vertexbuffer
+	glGenBuffers(1, &vertexbuffer);
+	// The following commands will talk about our 'vertexbuffer' buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	// Give our vertices to OpenGL.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_pos), g_vertex_buffer_pos, GL_STATIC_DRAW);
+	
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(
+		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		5*sizeof(GLfloat),                  // stride
+		(void*)0            // array buffer offset
+	);
+
+	return vertexbuffer;
+}
+float foo = 0.0; float bar = 0.0f;
+
+Transform calculateTransform(Camera* camera) 
+{
+
+	vec3 trianglePosition = vec3(0.0f, 0.5f, 0.0f);
+	mat4 translationMatrix = translate(trianglePosition);
+
+	//create rotation matrix
+	foo += 0.001f;
+	bar += 0.001f;
+	vec3 trianglRotation = vec3(0.0f, foo, 0.0f);
+	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
+	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
+	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
+	mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
+
+	//create scaling matrix
+	vec3 scaleVec = vec3(2.0f, 2.0f, 2.0f);
+	mat4 ScalingMatrix = scale(scaleVec);
+
+
+	mat4 modelMatrix = translationMatrix*rotationMatix*ScalingMatrix;
+
+	mat4 cameraMatrix = lookAt(camera->worldPos, camera->centre, camera->up);
+
+	float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
+
+	mat4 projectionMatrix = perspective(radians(90.0f),aspectRatio, 0.1f, 100.0f);
+
+	Transform finalTransform = {modelMatrix, cameraMatrix, projectionMatrix };
+	return finalTransform;
+}
 
 int main(int argc, char* args[])
 {
@@ -176,39 +240,77 @@ int main(int argc, char* args[])
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
+	
+	GLint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
+	GLint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
+	GLint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 
-	vertex vertexData[6] =
+
+	vertex vertexData[3] =
 	{
-		{vec3(-0.5,0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
-		{vec3(0.5,0.5,0.0), vec4(0.0f,1.0,0.0,1.0)},
-		{vec3(0.5,-0.5,0.0), vec4(0.0f,0.0,1.0,1.0)},
-		{vec3(0.5,-0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
-		{ vec3(-0.5,-0.5,0.0), vec4(0.0f,1.0,0.0,1.0) },
-		{ vec3(-0.5,0.5,0.0), vec4(0.0f,0.0,1.0,1.0) }
+		{vec3(0.0,0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
+		{vec3(-0.5,0.0,0.0), vec4(0.0f,1.0,0.0,1.0)},
+		{vec3(0.5,0.0,0.0), vec4(0.0f,0.0,1.0,1.0)}
+
+	};
+
+	vertex square[]=
+	{
+		{vec3(-1.0f,-1.0f,-1.0f), vec4(1.0f,0.0,0.0,1.0)}, // triangle 1 : begin
+		{vec3(-1.0f,-1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{vec3(-1.0f, 1.0f, 1.0f), vec4(0.0f,1.0,0.0,1.0) }, // triangle 1 : end
+		{vec3(1.0f, 1.0f,-1.0f),vec4(0.0f,1.0,0.0,1.0) }, // triangle 2 : begin
+		{vec3(-1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{vec3(-1.0f, 1.0f,-1.0f), vec4(1.0f,1.0,0.0,1.0) },  // triangle 2 : end
+		{vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,0.0,1.0,1.0) },
+		{vec3(-1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{vec3(1.0f,-1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
+		{vec3(1.0f, 1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f,-1.0f,-1.0f),vec4(0.0f,1.0,0.0,1.0) },
+		{ vec3(-1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(-1.0f,-1.0f,-1.0f),vec4(1.0f,1.0,0.0,1.0) },
+		{ vec3(-1.0f, 1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(-1.0f, 1.0f,-1.0f),vec4(0.0f,1.0,0.0,1.0) },
+		{ vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) },
+		{ vec3(-1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,1.0,1.0) },
+		{ vec3(-1.0f,-1.0f,-1.0f),vec4(1.0f,0.0,1.0,1.0) },
+		{ vec3(-1.0f, 1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) },
+		{ vec3(-1.0f,-1.0f, 1.0f),vec4(0.0f,1.0,1.0,1.0) },
+		{ vec3(1.0f,-1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f,-1.0f,-1.0f),vec4(1.0f,1.0,0.0,1.0) },
+		{ vec3(1.0f, 1.0f,-1.0f),vec4(0.0f,0.0,0.1,1.0) },
+		{ vec3(1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,1.0,0.0,1.0) },
+		{ vec3(1.0f,-1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f, 1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
+		{ vec3( -1.0f, 1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,1.0,0.0,1.0) },
+		{ vec3( -1.0f, 1.0f,-1.0f),vec4(1.0f,1.0,0.0,1.0) },
+		{ vec3( -1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.1,1.0) },
+		{ vec3(1.0f, 1.0f, 1.0f),vec4(1.0f,1.0,1.0,1.0) },
+		{ vec3( -1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.0,1.0) },
+		{ vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) }
 	};
 
 	// This will identify our vertex buffer
 	GLuint vertexbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData , GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
-	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
-
 	// 1rst attribute buffer : vertices
-
-
 
 	while (running)
 	{
@@ -216,6 +318,12 @@ int main(int argc, char* args[])
 		//https://wiki.libsdl.org/SDL_PollEvent
 		while (SDL_PollEvent(&ev))
 		{
+			if (ev.motion.x != 0 || ev.motion.y !=0)
+			{
+				//float xOffset = ev.motion.x - SCREEN_WIDTH / 2;
+				//camera.rotateX(float(xOffset));
+				cout << ev.motion.x << ":" << ev.motion.y << endl;
+			}
 			//Switch case for every message we are intereted in
 			switch (ev.type)
 			{
@@ -232,25 +340,48 @@ int main(int argc, char* args[])
 				case SDLK_ESCAPE:
 					running = false;
 					break;
-				case SDLK_0:
+				case SDLK_w:
+					camera.move(0.5f);
 					break;
-
-				case SDLK_1:
+				case SDLK_s:
+					camera.move(-0.5f);
+					break;
+				case SDLK_d:
+					camera.strafe(0.5f);
+					break;
+				case SDLK_a:
+					camera.strafe(-0.5f);
+					break;
+				case SDLK_q:
+					camera.lift(-0.5);
+					break;
+				case SDLK_e:
+					camera.lift(0.5);
 						break;
 				}
 			}
 		}
 
 		//uppdate and draw game
-		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClearColor(1.0, 1.0, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(programID);
+		Transform MVPMatrix = calculateTransform(&camera);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+
+
+		// Enable depth test
+		glEnable(GL_DEPTH_TEST);
+		// Accept fragment if it closer to the camera than the former one
+		glDepthFunc(GL_LESS);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		SDL_GL_SwapWindow(window);
-
+		
 	}
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
