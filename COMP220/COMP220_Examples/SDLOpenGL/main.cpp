@@ -201,7 +201,7 @@ Transform calculateTransform(Camera* camera)
 	//create rotation matrix
 	foo += 0.001f;
 	bar += 0.001f;
-	vec3 trianglRotation = vec3(bar, foo, 0.0f);
+	vec3 trianglRotation = vec3(foo, 0.0f, 0.0f);
 	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
 	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
 	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
@@ -243,7 +243,8 @@ int main(int argc, char* args[])
 
 	//initialse vertices vector that will take the vertices of the obj file
 	vector <vertex> vertarray;
-	loadOBJ("Fidget_Spinner.txt", vertarray);
+	vector<int> elemtarry;
+	loadOBJ("only_quad_sphere.txt", vertarray,elemtarry);
 	if (vertarray.size() == 0) 
 	{
 		cout << "failed to Load file, CYA!" << endl;
@@ -306,17 +307,39 @@ int main(int argc, char* args[])
 		{ vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) }
 	};
 
+	vector <vertex> test=
+	{
+
+		{vec3 (- 45.1767, 7.8740, 68.1530), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 45.1458, 7.8740, 62.2478), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 56.5327, 7.8740, 59.1967), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 59.4587, 7.8740, 64.3262), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 65.1407, 7.8740, 50.6349), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 70.2553, 7.8740, 53.5878), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 68.2514, 7.8740, 38.8993), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 74.1567, 7.8740, 38.8685), vec4(1.0f,0.0,0.0,1.0) },
+		{vec3 (- 65.2003, 7.8740, 27.5124), vec4(1.0f,0.0,0.0,1.0) }
+	};
+
 	// This will identify our vertex buffer
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertarray.size()* sizeof(vertarray), &vertarray[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertarray.size()* sizeof(vertex), &vertarray[0], GL_STATIC_DRAW);
 
+	
+	GLuint ebo;
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemtarry.size()*sizeof(int),&elemtarry[0], GL_STATIC_DRAW);
+	
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
+
+
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 
 	//SDL Event structure, this will be checked in the while loop
@@ -379,11 +402,13 @@ int main(int argc, char* args[])
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 
 
+
 		// Enable depth test
 		glEnable(GL_DEPTH_TEST);
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
-		glDrawArrays(GL_TRIANGLES, 0, vertarray.size());
+		//glDrawArrays(GL_TRIANGLE_STRIP, 0, vertarray.size());
+		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
 		SDL_GL_SwapWindow(window);
 		
 	}
@@ -391,6 +416,7 @@ int main(int argc, char* args[])
 	glDisableVertexAttribArray(1);
 	glDeleteProgram(programID);
 	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &ebo);
 	glDeleteVertexArrays(1, &VertexArray);
 	Close();
 	return 0;

@@ -41,7 +41,7 @@ struct Transform
 class Camera
 {
 public:
-	vec3 worldPos = vec3(2.0f, 0.0f, -200.0f);//pos of the camera
+	vec3 worldPos = vec3(2.0f, 0.0f, -20.0f);//pos of the camera
 	vec3 centre = vec3(0.0f, 0.0f, 0.0f); //point the camera looks at
 	vec3 up = vec3(0.0f, 1.0f, 0.0f);//the up direction of the camera(where is directly above of the camera)
 	vec3 forward = normalize(centre - worldPos);
@@ -93,10 +93,10 @@ void Close();
 
 Transform calculateTransform(Camera*);
 
-bool loadOBJ(const char * path, vector <vertex> & out_vertices) 
+bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & elemtArray) 
 {
-	vector<unsigned int> vertexIndices;
 	vector<vec3> temp_vertices;
+	std::vector< unsigned int > vertexIndices;
 	FILE * file = fopen(path, "r");
 	if (file == NULL) {
 		printf("Impossible to open the file !\n");
@@ -104,7 +104,7 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices)
 	}
 	while (1) 
 	{
-		char lineHeader[128];
+		char lineHeader[1028];
 		// read the first word of the line
 		int res = fscanf(file, "%s", lineHeader);
 		if (res == EOF)
@@ -115,11 +115,25 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices)
 		{
 			vec3 vertex;
 			
-			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+			fscanf(file, "%f %f %f", &vertex.x, &vertex.y, &vertex.z);
 			temp_vertices.push_back(vertex);
 			
 		}
-
+		if (strcmp(lineHeader, "f") == 0)
+		{
+			int vertexIndex[4], uvIndex[4], normalIndex[4];
+			int matches = fscanf(file, "%d %d %d &df", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &uvIndex[1]);
+			cout << matches << endl;
+			elemtArray.push_back(vertexIndex[0]);
+			elemtArray.push_back(uvIndex[0]);
+			elemtArray.push_back(normalIndex[0]);
+			elemtArray.push_back(uvIndex[1]);
+		}
+		if (strcmp(lineHeader, "z") == 0)
+		{
+			cout << "z found cya" << endl;
+			break;
+		}
 	}// else : parse lineHeader
 	for (unsigned int i = 0; i < temp_vertices.size(); i++)
 	{
