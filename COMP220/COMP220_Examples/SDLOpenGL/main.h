@@ -47,6 +47,11 @@ public:
 	vec3 forward = normalize(centre - worldPos);
 	vec3 right = cross(up, forward);
 	vec3 centreMag = (centre - worldPos);
+
+	float length = centreMag.length();
+	float rotatedX = 0;
+	float rotatedY = 0;
+	float rotatedZ = 0;
 	void strafe(float x)
 	{
 		vec3 strafeDirection = right*x;
@@ -62,7 +67,7 @@ public:
 		worldPos.x += moveDirection.x;
 		worldPos.z += moveDirection.z;
 		centre.z += moveDirection.z;
-		centre.z += moveDirection.x;
+		centre.x += moveDirection.x;
 	}
 	void lift(float y)
 	{
@@ -72,14 +77,13 @@ public:
 	}
 	void rotateX(float x)
 	{
-		vec3 vVector = (centre - worldPos)*x;	// Get the view vector
-		centre.x = vVector.x;
-		centre.y = vVector.y;
-		//cout << centre.y << ":" << centre.x << endl;
+		centre.z = (float)(centre.z + sin(x)*forward.x + cos(x)*forward.z);
+		centre.x = (float)(centre.x + cos(x)*forward.x - sin(x)*forward.z);
 	}
 	void rotateY(float y)
 	{
-		vec3 rotateDirection = forward * y;
+		glRotatef(-y, centre.x, centre.y, centre.z);
+
 	}
 };
 
@@ -93,6 +97,8 @@ void Close();
 
 Transform calculateTransform(Camera*);
 
+
+//loads obj file and parses headers adding vertecies to the referenced vector, ditto with the element array.
 bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & elemtArray) 
 {
 	vector<vec3> temp_vertices;
@@ -122,23 +128,38 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & el
 		if (strcmp(lineHeader, "f") == 0)
 		{
 			int vertexIndex[4], uvIndex[4], normalIndex[4];
-			int matches = fscanf(file, "%d %d %d &df", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &uvIndex[1]);
-			cout << matches << endl;
-			elemtArray.push_back(vertexIndex[0]);
-			elemtArray.push_back(uvIndex[0]);
-			elemtArray.push_back(normalIndex[0]);
-			elemtArray.push_back(uvIndex[1]);
+
+			fscanf(file, "%d", &vertexIndex[0]);
+			fscanf(file, "%d", &vertexIndex[1]);
+			fscanf(file, "%d", &vertexIndex[2]);
+			//fscanf(file, "%d", &vertexIndex[3]);
+
+			//int matches = fscanf(file, "%d %d %d &d", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2], &vertexIndex[3]);
+			elemtArray.push_back(vertexIndex[0]-1);
+			elemtArray.push_back(vertexIndex[1]-1);
+			elemtArray.push_back(vertexIndex[2]-1);
+
+			/*
+			elemtArray.push_back(vertexIndex[2]-1);
+			elemtArray.push_back(vertexIndex[0]-1);
+			elemtArray.push_back(vertexIndex[3]-1);
+			 */
+
+			
 		}
 		if (strcmp(lineHeader, "z") == 0)
 		{
 			cout << "z found cya" << endl;
 			break;
 		}
-	}// else : parse lineHeader
+	}
+
+	//Added vertex data to vertex array with random colour
 	for (unsigned int i = 0; i < temp_vertices.size(); i++)
 	{
 		vec3 vert = temp_vertices[i];
-		vec4 vertexCol = vec4(sin(rand()%90), sin(rand() % 90), sin(rand() % 90),1);
+		//vec4 vertexCol = vec4(sin(rand()%90), sin(rand() % 90), sin(rand() % 90),1);
+		vec4 vertexCol = vec4(0.5f, 0.5f, 0.5f, 1.0);
 		vertex foo = { vert, vertexCol };
 		out_vertices.push_back(foo);
 		//cout << vertex.x << " : " << vertex.y << " : " << vertex.z << endl;

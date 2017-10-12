@@ -158,57 +158,21 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	return ProgramID;
 }
 
-GLuint square() {
-
-	GLfloat g_vertex_buffer_pos[] =
-	{
-		-0.7f,  0.7f, 1.0f, 0.0f, 0.0f, // Top-left
-		0.7f,  0.7f, 0.0f, 1.0f, 0.0f, // Top-right
-		0.7f, -0.7f, 0.0f, 0.0f, 1.0f, // Bottom-right
-		-0.7f, -0.7f, 1.0f, 1.0f, 1.0f,
-		-1.0f, -1.0f, 1.0f, 1.0f, 1.0f// Bottom-left
-	};
-
-	// This will identify our vertex buffer
-	GLuint vertexbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &vertexbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_pos), g_vertex_buffer_pos, GL_STATIC_DRAW);
-	
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		5*sizeof(GLfloat),                  // stride
-		(void*)0            // array buffer offset
-	);
-
-	return vertexbuffer;
-}
-float foo = 0.0; float bar = 0.0f;
-
 Transform calculateTransform(Camera* camera) 
 {
 
 	vec3 trianglePosition = vec3(0.0f, 0.5f, 0.0f);
 	mat4 translationMatrix = translate(trianglePosition);
-
+	float oop = (sin(rand())) / 10;
 	//create rotation matrix
-	foo += 0.001f;
-	bar += 0.001f;
-	vec3 trianglRotation = vec3(foo, 0.0f, 0.0f);
+	vec3 trianglRotation = vec3(0.0, 0.0f, 0.0f);
 	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
 	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
 	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
 	mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
 
 	//create scaling matrix
-	vec3 scaleVec = vec3(1.0f, 1.0f, 1.0f);
+	vec3 scaleVec = vec3(10.0f, 10.0f, 10.0f);
 	mat4 ScalingMatrix = scale(scaleVec);
 
 
@@ -244,7 +208,7 @@ int main(int argc, char* args[])
 	//initialse vertices vector that will take the vertices of the obj file
 	vector <vertex> vertarray;
 	vector<int> elemtarry;
-	loadOBJ("only_quad_sphere.txt", vertarray,elemtarry);
+	loadOBJ("lifebot.obj", vertarray,elemtarry);
 	if (vertarray.size() == 0) 
 	{
 		cout << "failed to Load file, CYA!" << endl;
@@ -344,6 +308,9 @@ int main(int argc, char* args[])
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
+	float mouseSens = 200.0;
+	float TurnDegreesFromOriginX = 90.0f;
+	float TurnDegreesFromOriginY = 0.0f;
 	// 1rst attribute buffer : vertices
 
 	while (running)
@@ -352,6 +319,7 @@ int main(int argc, char* args[])
 		//https://wiki.libsdl.org/SDL_PollEvent
 		while (SDL_PollEvent(&ev))
 		{
+
 			//Switch case for every message we are intereted in
 			switch (ev.type)
 			{
@@ -359,6 +327,17 @@ int main(int argc, char* args[])
 			case SDL_QUIT:
 				running = false;
 				break;
+			case SDL_MOUSEMOTION:
+				TurnDegreesFromOriginX += ev.motion.xrel / mouseSens;
+				TurnDegreesFromOriginY += -ev.motion.yrel / mouseSens;
+				// Clamp Y
+				if (TurnDegreesFromOriginY > 90.0f)	TurnDegreesFromOriginY = 90.0f;
+				else if (TurnDegreesFromOriginY < -90.0f)	TurnDegreesFromOriginY = -90.0f;
+
+				// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
+				camera.centre = camera.worldPos + camera.forward * vec3(cos(TurnDegreesFromOriginX), tan(TurnDegreesFromOriginY), sin(TurnDegreesFromOriginX));
+				break;
+
 				//KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
 				//Check the actual key code of the key that has been pressed
@@ -386,6 +365,8 @@ int main(int argc, char* args[])
 				case SDLK_e:
 					camera.lift(0.5);
 						break;
+				case SDLK_0:
+					camera.centre = vec3(0.0, 0.0, 0.0);
 				}
 			}
 		}
