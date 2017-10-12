@@ -31,6 +31,28 @@ struct vertex
 	vec4 vertexCol;
 };
 
+struct face 
+{
+	int facenum;
+	bool four;
+	int faces[4];
+	face(int facen, int  f1, int f2, int f3) : facenum(facen) 
+	{
+		faces[0] = f1;
+		faces[1] = f2;
+		faces[2] = f3;
+		four = false;
+	}
+	face(int facen, int  f1, int f2, int f3, int f4) : facenum(facen)
+	{
+		faces[0] = f1;
+		faces[1] = f2;
+		faces[2] = f3;
+		faces[3] = f4;
+		four = true;
+	}
+};
+
 struct Transform
 {
 	mat4 modelMatrix;
@@ -93,55 +115,53 @@ void Close();
 
 Transform calculateTransform(Camera*);
 
-bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & elemtArray) 
+
+int loadObject(const char* filename, vector<face> &faces, vector<vec3> &vertex, vector<vec3> &normals, vector<string*> coord)
 {
-	vector<vec3> temp_vertices;
-	std::vector< unsigned int > vertexIndices;
-	FILE * file = fopen(path, "r");
-	if (file == NULL) {
-		printf("Impossible to open the file !\n");
-		return false;
-	}
-	while (1) 
+	std::ifstream in(filename);     //open the .obj file
+	if (!in.is_open())       //if not opened, exit with -1
 	{
-		char lineHeader[1028];
-		// read the first word of the line
-		int res = fscanf(file, "%s", lineHeader);
-		if (res == EOF)
-		{
-			break; // EOF = End Of File. Quit the loop.
-		}
-		if (strcmp(lineHeader, "v") == 0)
-		{
-			vec3 vertex;
-			
-			fscanf(file, "%f %f %f", &vertex.x, &vertex.y, &vertex.z);
-			temp_vertices.push_back(vertex);
-			
-		}
-		if (strcmp(lineHeader, "f") == 0)
-		{
-			int vertexIndex[4], uvIndex[4], normalIndex[4];
-			int matches = fscanf(file, "%d %d %d &df", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &uvIndex[1]);
-			cout << matches << endl;
-			elemtArray.push_back(vertexIndex[0]);
-			elemtArray.push_back(uvIndex[0]);
-			elemtArray.push_back(normalIndex[0]);
-			elemtArray.push_back(uvIndex[1]);
-		}
-		if (strcmp(lineHeader, "z") == 0)
-		{
-			cout << "z found cya" << endl;
-			break;
-		}
-	}// else : parse lineHeader
-	for (unsigned int i = 0; i < temp_vertices.size(); i++)
-	{
-		vec3 vert = temp_vertices[i];
-		vec4 vertexCol = vec4(sin(rand()%90), sin(rand() % 90), sin(rand() % 90),1);
-		vertex foo = { vert, vertexCol };
-		out_vertices.push_back(foo);
-		//cout << vertex.x << " : " << vertex.y << " : " << vertex.z << endl;
+		std::cout << "Nor oepened" << std::endl;
+		return -1;
 	}
+	char buf[256];
+	//read in every line to coord
+	while (!in.eof())
+	{
+		in.getline(buf, 256);
+		coord.push_back(new std::string(buf));
+	}
+	//go through all of the elements of coord, and decide what kind of element is that
+	for (int i = 0; i<coord.size(); i++)
+	{
+		if (coord[i]->c_str()[0] == '#')   //if it is a comment (the first character is #)
+			continue;       //we don't care about that
+		else if (coord[i]->c_str()[0] == 'v' && coord[i]->c_str()[1] == ' ') //if vector
+		{
+			float tmpx, tmpy, tmpz;
+			sscanf(coord[i]->c_str(), "v %f %f %f", &tmpx, &tmpy, &tmpz);       //read in the 3 float coordinate to tmpx,tmpy,tmpz
+			vertex.push_back(vec3(tmpx, tmpy, tmpz));       //and then add it to the end of our vertex list
+		}
+		else if (coord[i]->c_str()[0] == 'v' && coord[i]->c_str()[1] == 'n')        //if normal vector
+		{
+			float tmpx, tmpy, tmpz;   //do the same thing
+			sscanf(coord[i]->c_str(), "vn %f %f %f", &tmpx, &tmpy, &tmpz);
+			normals.push_back(vec3(tmpx, tmpy, tmpz));
+		}
+		else if (coord[i]->c_str()[0] == 'f')     //if face
+		{
+			int a, b, c, d, e;
+			if (count(coord[i]->begin(), coord[i]->end(), ' ') == 3)     //if it is a triangle (it has 3 space in it)
+			{
+				sscanf(coord[i]->c_str(), "f %d//%d %d//%d %d//%d", &a, &b, &c, &b, &d, &b);
+				faces.push_back(face(b, a, c, d));     //read in, and add to the end of the face list
+			}
+			else {
+				sscanf(coord[i]->c_str(), "f %d//%d %d//%d %d//%d %d//%d", &a, &b, &c, &b, &d, &b, &e, &b);
+				faces.push_back(face(b, a, c, d, e));   //do the same, except we call another constructor, and we use different pattern
+			}
+		}
+	}
+	return 1;
 }
 

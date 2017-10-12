@@ -1,3 +1,11 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 12.05.2017 00:48:22
+
+mtllib Fidget_Spinner.mtl
+
+#
+# object Circle001
+#
 
 v  -45.1767 7.8740 68.1530
 v  -45.1458 7.8740 62.2478

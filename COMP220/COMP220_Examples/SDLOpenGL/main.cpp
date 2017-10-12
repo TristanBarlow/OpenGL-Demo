@@ -242,13 +242,37 @@ int main(int argc, char* args[])
 	glBindVertexArray(VertexArray);
 
 	//initialse vertices vector that will take the vertices of the obj file
-	vector <vertex> vertarray;
-	vector<int> elemtarry;
-	loadOBJ("only_quad_sphere.txt", vertarray,elemtarry);
-	if (vertarray.size() == 0) 
+	vector <vec3> vertecies;
+	vector <vec3> normals;
+	vector <face> faces;
+	vector <vertex> blah;
+	vector<string*> coord;
+	vector <int> ham;
+	loadObject("Fidget_Spinner.txt", faces, vertecies, normals, coord) == -1;
+
+
+	for (unsigned int i = 0; i < vertecies.size(); i++)
 	{
-		cout << "failed to Load file, CYA!" << endl;
-		running = false;
+		vec3 vert = vertecies[i];
+		vec4 vertexCol = vec4(sin(rand() % 90), sin(rand() % 90), sin(rand() % 90), 1);
+		vertex foo = { vert, vertexCol };
+		blah.push_back(foo);
+	}
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		if (faces[i].four == true)
+		{
+			ham.push_back(faces[i].faces[0]);
+			ham.push_back(faces[i].faces[1]);
+			ham.push_back(faces[i].faces[2]);
+			ham.push_back(faces[i].faces[3]);
+		}
+		else
+		{
+			ham.push_back(faces[i].faces[0]);
+			ham.push_back(faces[i].faces[1]);
+			ham.push_back(faces[i].faces[2]);
+		}
 
 	}
 	// Create and compile our GLSL program from the shaders
@@ -325,13 +349,13 @@ int main(int argc, char* args[])
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertarray.size()* sizeof(vertex), &vertarray[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, blah.size()* sizeof(vertex), &blah[0], GL_STATIC_DRAW);
 
 	
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemtarry.size()*sizeof(int),&elemtarry[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ham.size()*sizeof(int),&ham[0], GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
@@ -408,7 +432,7 @@ int main(int argc, char* args[])
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
 		//glDrawArrays(GL_TRIANGLE_STRIP, 0, vertarray.size());
-		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, ham.size(), GL_UNSIGNED_INT, (void*)84);
 		SDL_GL_SwapWindow(window);
 		
 	}
@@ -418,6 +442,8 @@ int main(int argc, char* args[])
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &ebo);
 	glDeleteVertexArrays(1, &VertexArray);
+	for (int i = 0; i<coord.size(); i++)
+		delete coord[i];
 	Close();
 	return 0;
 }
