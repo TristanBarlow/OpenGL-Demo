@@ -182,7 +182,7 @@ Transform calculateTransform(Camera* camera)
 
 	float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
 
-	mat4 projectionMatrix = perspective(radians(90.0f),aspectRatio, 0.1f, 500.0f);
+	mat4 projectionMatrix = perspective(radians(90.0f),aspectRatio, 0.1f, 200.0f);
 
 	Transform finalTransform = {modelMatrix, cameraMatrix, projectionMatrix };
 	return finalTransform;
@@ -208,11 +208,29 @@ int main(int argc, char* args[])
 	//initialse vertices vector that will take the vertices of the obj file
 	vector <vertex> vertarray;
 	vector<int> elemtarry;
-	loadOBJ("lifebot.obj", vertarray,elemtarry);
+	loadOBJ("only_quad_sphere.txt", vertarray,elemtarry);
 	if (vertarray.size() == 0) 
 	{
 		cout << "failed to Load file, CYA!" << endl;
 		running = false;
+
+	}
+	vector <vertex> lineVerts;
+	for (int i = -500 ; i < 500; i++)
+	{
+		vec3 lineVert1 = vec3(i *0.05, -1, 50);
+		vec3 lineVert2 = vec3(i*0.05, -1, -50);
+		vec3 lineVert3 = vec3(50, -1, i *0.05);
+		vec3 lineVert4 = vec3(-50, -1, i*0.05);
+		vec4 col = vec4(0.5, 0.5, 0.5, 1.0);
+		vertex lineVertex = { lineVert1, col };
+		vertex lineVertex2 = { lineVert2, col };
+		vertex lineVertex3 = { lineVert3, col };
+		vertex lineVertex4 = { lineVert4, col };
+		lineVerts.push_back(lineVertex);
+		lineVerts.push_back(lineVertex2);
+		lineVerts.push_back(lineVertex3);
+		lineVerts.push_back(lineVertex4);
 
 	}
 	// Create and compile our GLSL program from the shaders
@@ -222,93 +240,23 @@ int main(int argc, char* args[])
 	GLint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 
-
-	vertex vertexData[3] =
-	{
-		{vec3(0.0,0.5,0.0), vec4(1.0f,0.0,0.0,1.0)},
-		{vec3(-0.5,0.0,0.0), vec4(0.0f,1.0,0.0,1.0)},
-		{vec3(0.5,0.0,0.0), vec4(0.0f,0.0,1.0,1.0)}
-
-	};
-
-	vertex square[]=
-	{
-		{vec3(-1.0f,-1.0f,-1.0f), vec4(1.0f,0.0,0.0,1.0)}, // triangle 1 : begin
-		{vec3(-1.0f,-1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{vec3(-1.0f, 1.0f, 1.0f), vec4(0.0f,1.0,0.0,1.0) }, // triangle 1 : end
-		{vec3(1.0f, 1.0f,-1.0f),vec4(0.0f,1.0,0.0,1.0) }, // triangle 2 : begin
-		{vec3(-1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{vec3(-1.0f, 1.0f,-1.0f), vec4(1.0f,1.0,0.0,1.0) },  // triangle 2 : end
-		{vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,0.0,1.0,1.0) },
-		{vec3(-1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{vec3(1.0f,-1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{vec3(1.0f, 1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f,-1.0f,-1.0f),vec4(0.0f,1.0,0.0,1.0) },
-		{ vec3(-1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(-1.0f,-1.0f,-1.0f),vec4(1.0f,1.0,0.0,1.0) },
-		{ vec3(-1.0f, 1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(-1.0f, 1.0f,-1.0f),vec4(0.0f,1.0,0.0,1.0) },
-		{ vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) },
-		{ vec3(-1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,1.0,1.0) },
-		{ vec3(-1.0f,-1.0f,-1.0f),vec4(1.0f,0.0,1.0,1.0) },
-		{ vec3(-1.0f, 1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) },
-		{ vec3(-1.0f,-1.0f, 1.0f),vec4(0.0f,1.0,1.0,1.0) },
-		{ vec3(1.0f,-1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f,-1.0f,-1.0f),vec4(1.0f,1.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f,-1.0f),vec4(0.0f,0.0,0.1,1.0) },
-		{ vec3(1.0f,-1.0f,-1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,1.0,0.0,1.0) },
-		{ vec3(1.0f,-1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3( -1.0f, 1.0f,-1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f, 1.0f, 1.0f),vec4(0.0f,1.0,0.0,1.0) },
-		{ vec3( -1.0f, 1.0f,-1.0f),vec4(1.0f,1.0,0.0,1.0) },
-		{ vec3( -1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.1,1.0) },
-		{ vec3(1.0f, 1.0f, 1.0f),vec4(1.0f,1.0,1.0,1.0) },
-		{ vec3( -1.0f, 1.0f, 1.0f),vec4(1.0f,0.0,0.0,1.0) },
-		{ vec3(1.0f,-1.0f, 1.0f),vec4(1.0f,1.0,0.0,1.0) }
-	};
-
-	vector <vertex> test=
-	{
-
-		{vec3 (- 45.1767, 7.8740, 68.1530), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 45.1458, 7.8740, 62.2478), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 56.5327, 7.8740, 59.1967), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 59.4587, 7.8740, 64.3262), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 65.1407, 7.8740, 50.6349), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 70.2553, 7.8740, 53.5878), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 68.2514, 7.8740, 38.8993), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 74.1567, 7.8740, 38.8685), vec4(1.0f,0.0,0.0,1.0) },
-		{vec3 (- 65.2003, 7.8740, 27.5124), vec4(1.0f,0.0,0.0,1.0) }
-	};
-
 	// This will identify our vertex buffer
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertarray.size()* sizeof(vertex), &vertarray[0], GL_STATIC_DRAW);
+
 
 	
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemtarry.size()*sizeof(int),&elemtarry[0], GL_STATIC_DRAW);
 	
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
-
+	GLuint lineBuff;
+	glGenBuffers(1, &lineBuff);
 
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
-	float mouseSens = 200.0;
+	float mouseSens = 500.0;
 	float TurnDegreesFromOriginX = 90.0f;
 	float TurnDegreesFromOriginY = 0.0f;
 	// 1rst attribute buffer : vertices
@@ -371,8 +319,10 @@ int main(int argc, char* args[])
 			}
 		}
 
+
+
 		//uppdate and draw game
-		glClearColor(1.0, 1.0, 1.0, 1.0);
+		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(programID);
@@ -382,7 +332,17 @@ int main(int argc, char* args[])
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertarray.size() * sizeof(vertex), &vertarray[0], GL_STATIC_DRAW);
 
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemtarry.size() * sizeof(int), &elemtarry[0], GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
 
 		// Enable depth test
 		glEnable(GL_DEPTH_TEST);
@@ -390,6 +350,18 @@ int main(int argc, char* args[])
 		glDepthFunc(GL_LESS);
 		//glDrawArrays(GL_TRIANGLE_STRIP, 0, vertarray.size());
 		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
+
+
+
+		glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
+		glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(vertex), &lineVerts[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
+
+		glDrawArrays(GL_LINES, 0 , lineVerts.size());
 		SDL_GL_SwapWindow(window);
 		
 	}

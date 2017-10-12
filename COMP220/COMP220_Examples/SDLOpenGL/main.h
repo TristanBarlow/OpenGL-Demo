@@ -54,6 +54,7 @@ public:
 	float rotatedZ = 0;
 	void strafe(float x)
 	{
+		vec3 forward = normalize(centre - worldPos);
 		vec3 strafeDirection = right*x;
 		worldPos.x += strafeDirection.x;
 		worldPos.z += strafeDirection.z;
@@ -63,6 +64,7 @@ public:
 
 	void move(float z)
 	{
+		vec3 forward = normalize(centre - worldPos);
 		vec3 moveDirection = forward*z;
 		worldPos.x += moveDirection.x;
 		worldPos.z += moveDirection.z;
@@ -132,18 +134,18 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & el
 			fscanf(file, "%d", &vertexIndex[0]);
 			fscanf(file, "%d", &vertexIndex[1]);
 			fscanf(file, "%d", &vertexIndex[2]);
-			//fscanf(file, "%d", &vertexIndex[3]);
+			fscanf(file, "%d", &vertexIndex[3]);
 
 			//int matches = fscanf(file, "%d %d %d &d", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2], &vertexIndex[3]);
 			elemtArray.push_back(vertexIndex[0]-1);
 			elemtArray.push_back(vertexIndex[1]-1);
 			elemtArray.push_back(vertexIndex[2]-1);
 
-			/*
+			
 			elemtArray.push_back(vertexIndex[2]-1);
 			elemtArray.push_back(vertexIndex[0]-1);
 			elemtArray.push_back(vertexIndex[3]-1);
-			 */
+			 
 
 			
 		}
@@ -158,8 +160,8 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & el
 	for (unsigned int i = 0; i < temp_vertices.size(); i++)
 	{
 		vec3 vert = temp_vertices[i];
-		//vec4 vertexCol = vec4(sin(rand()%90), sin(rand() % 90), sin(rand() % 90),1);
-		vec4 vertexCol = vec4(0.5f, 0.5f, 0.5f, 1.0);
+		vec4 vertexCol = vec4(sin(rand()%90), sin(rand() % 90), sin(rand() % 90),1);
+		//vec4 vertexCol = vec4(0.5f, 0.5f, 0.5f, 1.0);
 		vertex foo = { vert, vertexCol };
 		out_vertices.push_back(foo);
 		//cout << vertex.x << " : " << vertex.y << " : " << vertex.z << endl;
