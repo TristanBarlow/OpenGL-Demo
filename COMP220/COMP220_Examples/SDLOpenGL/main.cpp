@@ -158,21 +158,21 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	return ProgramID;
 }
 
-Transform calculateTransform(Camera* camera) 
+Transform calculateTransform(Camera* camera , vec3 spawnLocation = vec3 (0.0f, 0.0f, 0.0f), vec3 spawnRotation = vec3(0.0f,0.0f,0.0f), vec3 spawnScale = vec3(1.0f,1.0f,1.0f)) 
 {
 
-	vec3 trianglePosition = vec3(0.0f, 0.5f, 0.0f);
+	vec3 trianglePosition = spawnLocation;
 	mat4 translationMatrix = translate(trianglePosition);
 	float oop = (sin(rand())) / 10;
 	//create rotation matrix
-	vec3 trianglRotation = vec3(0.0, 0.0f, 0.0f);
+	vec3 trianglRotation = spawnRotation;
 	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
 	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
 	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
 	mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
 
 	//create scaling matrix
-	vec3 scaleVec = vec3(10.0f, 10.0f, 10.0f);
+	vec3 scaleVec =spawnScale;
 	mat4 ScalingMatrix = scale(scaleVec);
 
 
@@ -198,6 +198,7 @@ int main(int argc, char* args[])
 		Close();
 	}
 
+	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is close
 	bool running = true;
 
 
@@ -209,58 +210,41 @@ int main(int argc, char* args[])
 	vector <vertex> vertarray;
 	vector<int> elemtarry;
 	loadOBJ("only_quad_sphere.txt", vertarray,elemtarry);
-	if (vertarray.size() == 0) 
-	{
-		cout << "failed to Load file, CYA!" << endl;
-		running = false;
 
-	}
+	//create grid
 	vector <vertex> lineVerts;
-	for (int i = -500 ; i < 500; i++)
-	{
-		vec3 lineVert1 = vec3(i *0.05, -1, 50);
-		vec3 lineVert2 = vec3(i*0.05, -1, -50);
-		vec3 lineVert3 = vec3(50, -1, i *0.05);
-		vec3 lineVert4 = vec3(-50, -1, i*0.05);
-		vec4 col = vec4(0.5, 0.5, 0.5, 1.0);
-		vertex lineVertex = { lineVert1, col };
-		vertex lineVertex2 = { lineVert2, col };
-		vertex lineVertex3 = { lineVert3, col };
-		vertex lineVertex4 = { lineVert4, col };
-		lineVerts.push_back(lineVertex);
-		lineVerts.push_back(lineVertex2);
-		lineVerts.push_back(lineVertex3);
-		lineVerts.push_back(lineVertex4);
+	createGridVec(lineVerts);
 
-	}
+
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
-	
-	GLint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
-	GLint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
-	GLint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
+
+	//create MVP location Struct
+	MVP MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
+				   glGetUniformLocation(programID, "viewMatrix"),
+				   glGetUniformLocation(programID, "projectionMatrix")};
 
 	// This will identify our vertex buffer
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 
-
-	
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
 	
 	GLuint lineBuff;
 	glGenBuffers(1, &lineBuff);
 
-	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
+	Transform MVPMatrix;
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
+
+	//set up variables to handle mouse movement
 	float mouseSens = 500.0;
 	float TurnDegreesFromOriginX = 90.0f;
 	float TurnDegreesFromOriginY = 0.0f;
-	// 1rst attribute buffer : vertices
 
+	//main loop
 	while (running)
 	{
 		//Poll for the events which have happened in this frame
@@ -324,13 +308,17 @@ int main(int argc, char* args[])
 		//uppdate and draw game
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Enable depth test
+		glEnable(GL_DEPTH_TEST);
+		// Accept fragment if it closer to the camera than the former one
+		glDepthFunc(GL_LESS);
 
 		glUseProgram(programID);
-		Transform MVPMatrix = calculateTransform(&camera);
+		 MVPMatrix = calculateTransform(&camera, vec3(0.0f,0.0f,0.0f), vec3(0.0f,0.0f,0.0f), vec3(10.0f,10.0f,10.0f));
 
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
-		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 		glBufferData(GL_ARRAY_BUFFER, vertarray.size() * sizeof(vertex), &vertarray[0], GL_STATIC_DRAW);
@@ -344,24 +332,19 @@ int main(int argc, char* args[])
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
 
-		// Enable depth test
-		glEnable(GL_DEPTH_TEST);
-		// Accept fragment if it closer to the camera than the former one
-		glDepthFunc(GL_LESS);
 		//glDrawArrays(GL_TRIANGLE_STRIP, 0, vertarray.size());
 		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
 
+		MVPMatrix = calculateTransform(&camera, vec3(30.0f,30.0f,30.0f));
+
+		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
+
+		drawGrid(MVPLoc, lineBuff, lineVerts);
 
 
-		glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
-		glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(vertex), &lineVerts[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
-
-		glDrawArrays(GL_LINES, 0 , lineVerts.size());
 		SDL_GL_SwapWindow(window);
 		
 	}
@@ -370,6 +353,7 @@ int main(int argc, char* args[])
 	glDeleteProgram(programID);
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &ebo);
+	glDeleteBuffers(1, &lineBuff);
 	glDeleteVertexArrays(1, &VertexArray);
 	Close();
 	return 0;

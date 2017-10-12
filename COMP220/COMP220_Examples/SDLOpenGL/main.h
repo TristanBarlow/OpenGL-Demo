@@ -37,7 +37,12 @@ struct Transform
 	mat4 viewMatrix;
 	mat4 projectionMatrix;
 };
-
+struct MVP
+{
+	GLint modelMatrixLocation;
+	GLint viewMatrixLocation;
+	GLint projectionMatrixLocation;
+};
 class Camera
 {
 public:
@@ -89,6 +94,18 @@ public:
 	}
 };
 
+class sphere
+{
+private:
+	vec3 worldPos = vec3(0.0f, 0.0f, 0.0f);
+public:
+	void draw()
+	{
+
+	};
+
+};
+
 Camera camera;
 
 // initialises modules
@@ -97,7 +114,7 @@ bool Init();
 //Deallocates memory and calls SDL closing functions
 void Close();
 
-Transform calculateTransform(Camera*);
+Transform calculateTransform(Camera*, vec3,vec3,vec3);
 
 
 //loads obj file and parses headers adding vertecies to the referenced vector, ditto with the element array.
@@ -167,4 +184,38 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & el
 		//cout << vertex.x << " : " << vertex.y << " : " << vertex.z << endl;
 	}
 }
+void createGridVec(vector<vertex>&lineVector)
+{
+	for (int i = -500; i < 500; i++)
+	{
+		vec3 lineVert1 = vec3(i *0.02, -1, 50);
+		vec3 lineVert2 = vec3(i*0.02, -1, -50);
+		vec3 lineVert3 = vec3(50, -1, i *0.02);
+		vec3 lineVert4 = vec3(-50, -1, i*0.02);
+		vec4 col = vec4(0.5, 0.5, 0.5, 1.0);
+		vertex lineVertex = { lineVert1, col };
+		vertex lineVertex2 = { lineVert2, col };
+		vertex lineVertex3 = { lineVert3, col };
+		vertex lineVertex4 = { lineVert4, col };
+		lineVector.push_back(lineVertex);
+		lineVector.push_back(lineVertex2);
+		lineVector.push_back(lineVertex3);
+		lineVector.push_back(lineVertex4);
+	}
+}
+void drawGrid(MVP &MVPLocation,GLuint &lineBuff , vector <vertex> &lineVerts )
+{
+	Transform MVPMatrix = calculateTransform(&camera, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f));
+	glUniformMatrix4fv(MVPLocation.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+	glUniformMatrix4fv(MVPLocation.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+	glUniformMatrix4fv(MVPLocation.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+	glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
+	glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(vertex), &lineVerts[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
 
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
+
+	glDrawArrays(GL_LINES, 0, lineVerts.size());
+}
