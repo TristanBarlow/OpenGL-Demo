@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <SDL.h>
+#include <SDL_image.h>
 #include <GL\glew.h>
 #include <SDL_opengl.h>
 #include <glm/glm.hpp>
@@ -14,6 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <"Texture.h">
 
 using namespace std;
 using namespace glm;
@@ -29,6 +31,7 @@ struct vertex
 {
 	vec3 vertexPos;
 	vec4 vertexCol;
+	vec2 textureCoords;
 };
 
 struct Transform
@@ -93,20 +96,99 @@ public:
 
 	}
 };
+struct Mesh 
+{
+	vector<vertex> vertArray;
+	vector<int> elementBuff;
+};
+Camera camera;
+Transform calculateTransform(Camera* camera, vec3 spawnLocation = vec3(0.0f, 0.0f, 0.0f), vec3 spawnRotation = vec3(0.0f, 0.0f, 0.0f), vec3 spawnScale = vec3(1.0f, 1.0f, 1.0f))
+{
 
-class sphere
+	vec3 trianglePosition = spawnLocation;
+	mat4 translationMatrix = translate(trianglePosition);
+	float oop = (sin(rand())) / 10;
+	//create rotation matrix
+	vec3 trianglRotation = spawnRotation;
+	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
+	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
+	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
+	mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
+
+	//create scaling matrix
+	vec3 scaleVec = spawnScale;
+	mat4 ScalingMatrix = scale(scaleVec);
+
+
+	mat4 modelMatrix = translationMatrix*rotationMatix*ScalingMatrix;
+
+	mat4 cameraMatrix = lookAt(camera->worldPos, camera->centre, camera->up);
+
+	float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
+
+	mat4 projectionMatrix = perspective(radians(90.0f), aspectRatio, 0.1f, 200.0f);
+
+	Transform finalTransform = { modelMatrix, cameraMatrix, projectionMatrix };
+	return finalTransform;
+}
+class Sphere
 {
 private:
-	vec3 worldPos = vec3(0.0f, 0.0f, 0.0f);
+	
+	
+	
+	Transform MVPMatrix;
+	MVP MVPLoc;
+	Mesh objMesh;
+	vector<vertex> vertarray;
+	vector<int> elemtarray;
+	
 public:
-	void draw()
+	vec3 worldScale;
+	vec3 worldRot;
+	vec3 worldPos;
+	void begin(vec3, vec3, vec3, Mesh&);
+	void draw(GLuint vertexbuffer, GLuint ebo, GLuint programID)
 	{
+		
+		MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
+			glGetUniformLocation(programID, "viewMatrix"),
+			glGetUniformLocation(programID, "projectionMatrix") };
 
+		MVPMatrix = calculateTransform(&camera, worldPos, worldRot, worldScale);
+
+		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertarray.size() * sizeof(vertex), &vertarray[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemtarray.size() * sizeof(int), &elemtarray[0], GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
+
+		//glDrawArrays(GL_TRIANGLE_STRIP, 0, vertarray.size());
+		glDrawElements(GL_TRIANGLES, elemtarray.size(), GL_UNSIGNED_INT, 0);
 	};
 
 };
+void Sphere::begin(vec3 inWorldPos, vec3 inWorldRot, vec3 inWorldScale, Mesh &mesh)
+{
+	worldPos = inWorldPos;
+	worldRot = inWorldRot;
+	worldScale= inWorldScale;
+	objMesh = mesh;
+	vertarray = mesh.vertArray;
+	elemtarray = mesh.elementBuff;
+	MVPMatrix = calculateTransform(&camera, worldPos, worldRot, worldScale);
+};
 
-Camera camera;
 
 // initialises modules
 bool Init();
@@ -147,24 +229,21 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & el
 		if (strcmp(lineHeader, "f") == 0)
 		{
 			int vertexIndex[4], uvIndex[4], normalIndex[4];
-
+			
 			fscanf(file, "%d", &vertexIndex[0]);
 			fscanf(file, "%d", &vertexIndex[1]);
 			fscanf(file, "%d", &vertexIndex[2]);
 			fscanf(file, "%d", &vertexIndex[3]);
+			
 
-			//int matches = fscanf(file, "%d %d %d &d", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2], &vertexIndex[3]);
+			elemtArray.push_back(vertexIndex[2]-1);
 			elemtArray.push_back(vertexIndex[0]-1);
 			elemtArray.push_back(vertexIndex[1]-1);
-			elemtArray.push_back(vertexIndex[2]-1);
 
 			
-			elemtArray.push_back(vertexIndex[2]-1);
-			elemtArray.push_back(vertexIndex[0]-1);
 			elemtArray.push_back(vertexIndex[3]-1);
-			 
-
-			
+			elemtArray.push_back(vertexIndex[0]-1);
+			elemtArray.push_back(vertexIndex[2]-1);
 		}
 		if (strcmp(lineHeader, "z") == 0)
 		{
@@ -172,18 +251,24 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & el
 			break;
 		}
 	}
-
+	int temp = 0;
 	//Added vertex data to vertex array with random colour
 	for (unsigned int i = 0; i < temp_vertices.size(); i++)
 	{
+		temp++;
 		vec3 vert = temp_vertices[i];
 		vec4 vertexCol = vec4(sin(rand()%90), sin(rand() % 90), sin(rand() % 90),1);
 		//vec4 vertexCol = vec4(0.5f, 0.5f, 0.5f, 1.0);
+		if (temp == 3) {
+			vertexCol = vec4(1.0f, 1.0f, 1.0f, 1.0);
+			temp = 0;
+		}
 		vertex foo = { vert, vertexCol };
 		out_vertices.push_back(foo);
 		//cout << vertex.x << " : " << vertex.y << " : " << vertex.z << endl;
 	}
 }
+
 void createGridVec(vector<vertex>&lineVector)
 {
 	for (int i = -500; i < 500; i++)
@@ -203,9 +288,10 @@ void createGridVec(vector<vertex>&lineVector)
 		lineVector.push_back(lineVertex4);
 	}
 }
+
 void drawGrid(MVP &MVPLocation,GLuint &lineBuff , vector <vertex> &lineVerts )
 {
-	Transform MVPMatrix = calculateTransform(&camera, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f));
+	Transform MVPMatrix = calculateTransform(&camera, vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), vec3(10.0f,10.0f, 10.0f));
 	glUniformMatrix4fv(MVPLocation.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLocation.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLocation.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
@@ -219,3 +305,32 @@ void drawGrid(MVP &MVPLocation,GLuint &lineBuff , vector <vertex> &lineVerts )
 
 	glDrawArrays(GL_LINES, 0, lineVerts.size());
 }
+
+//void drawSphere(MVP &MVPLocations, GLuint& vertarray , Gluint & elementarray)
+bool objLoader2(const char * filename)
+{
+	FILE * file = fopen(filename, "r");
+	if (file == NULL) 
+	{
+		printf("Impossible to open the file !\n");
+		return true;
+	}
+	vector <vec3> vertVec;
+	char lineHeader[255];
+	bool searching = true;
+	int res = fscanf(file, "%s", lineHeader);
+	while (searching)
+	{	
+		if (res == EOF)
+		{
+			break; // EOF = End Of File. Quit the loop.
+		}
+		if (strcmp(lineHeader, "v") == 0)
+		{
+			for (int i = 0; i != NULL; i++)
+			{
+				cout << lineHeader[i] << endl;
+			}
+		}
+	}
+};

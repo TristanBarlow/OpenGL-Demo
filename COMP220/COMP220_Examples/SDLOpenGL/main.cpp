@@ -49,6 +49,7 @@ bool Init()
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, (char*)glewGetErrorString(err), "GLEW INIT failed", NULL);
 		return false;
 	}
+	SDL_SetRelativeMouseMode(SDL_bool(SDL_ENABLE));
 	return true;
 }
 
@@ -158,35 +159,6 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	return ProgramID;
 }
 
-Transform calculateTransform(Camera* camera , vec3 spawnLocation = vec3 (0.0f, 0.0f, 0.0f), vec3 spawnRotation = vec3(0.0f,0.0f,0.0f), vec3 spawnScale = vec3(1.0f,1.0f,1.0f)) 
-{
-
-	vec3 trianglePosition = spawnLocation;
-	mat4 translationMatrix = translate(trianglePosition);
-	float oop = (sin(rand())) / 10;
-	//create rotation matrix
-	vec3 trianglRotation = spawnRotation;
-	mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
-	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
-	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
-	mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
-
-	//create scaling matrix
-	vec3 scaleVec =spawnScale;
-	mat4 ScalingMatrix = scale(scaleVec);
-
-
-	mat4 modelMatrix = translationMatrix*rotationMatix*ScalingMatrix;
-
-	mat4 cameraMatrix = lookAt(camera->worldPos, camera->centre, camera->up);
-
-	float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
-
-	mat4 projectionMatrix = perspective(radians(90.0f),aspectRatio, 0.1f, 200.0f);
-
-	Transform finalTransform = {modelMatrix, cameraMatrix, projectionMatrix };
-	return finalTransform;
-}
 
 int main(int argc, char* args[])
 {
@@ -207,9 +179,14 @@ int main(int argc, char* args[])
 	glBindVertexArray(VertexArray);
 
 	//initialse vertices vector that will take the vertices of the obj file
-	vector <vertex> vertarray;
-	vector<int> elemtarry;
-	loadOBJ("only_quad_sphere.txt", vertarray,elemtarry);
+	vector<int> blah;
+	vector<vertex> foo;
+	Mesh sphereMesh;
+	loadOBJ("only_quad_sphere.txt", sphereMesh.vertArray, sphereMesh.elementBuff);
+	Sphere sphere1;
+	sphere1.begin(vec3(20.0f, 0.0f, 20.0f), vec3(20.0f, 20.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f), sphereMesh);
+	Sphere sphere2;
+	sphere2.begin(vec3(50.0f, 0.0f, 50.0f), vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f), sphereMesh);
 
 	//create grid
 	vector <vertex> lineVerts;
@@ -234,6 +211,9 @@ int main(int argc, char* args[])
 	GLuint lineBuff;
 	glGenBuffers(1, &lineBuff);
 
+	//glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+
 	Transform MVPMatrix;
 
 	//SDL Event structure, this will be checked in the while loop
@@ -243,7 +223,7 @@ int main(int argc, char* args[])
 	float mouseSens = 500.0;
 	float TurnDegreesFromOriginX = 90.0f;
 	float TurnDegreesFromOriginY = 0.0f;
-
+	float itterator = 0;
 	//main loop
 	while (running)
 	{
@@ -263,11 +243,11 @@ int main(int argc, char* args[])
 				TurnDegreesFromOriginX += ev.motion.xrel / mouseSens;
 				TurnDegreesFromOriginY += -ev.motion.yrel / mouseSens;
 				// Clamp Y
-				if (TurnDegreesFromOriginY > 90.0f)	TurnDegreesFromOriginY = 90.0f;
-				else if (TurnDegreesFromOriginY < -90.0f)	TurnDegreesFromOriginY = -90.0f;
+				if (TurnDegreesFromOriginY > 85.0f)	TurnDegreesFromOriginY = 85.0f;
+				else if (TurnDegreesFromOriginY < -85.0f)	TurnDegreesFromOriginY = -85.0f;
 
 				// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
-				camera.centre = camera.worldPos + camera.forward * vec3(cos(TurnDegreesFromOriginX), tan(TurnDegreesFromOriginY), sin(TurnDegreesFromOriginX));
+				camera.centre = camera.worldPos + camera.length * vec3(cos(TurnDegreesFromOriginX), tan(TurnDegreesFromOriginY), sin(TurnDegreesFromOriginX));
 				break;
 
 				//KEYDOWN Message, called when a key has been pressed down
@@ -309,10 +289,10 @@ int main(int argc, char* args[])
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Enable depth test
-		glEnable(GL_DEPTH_TEST);
+
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
-
+		/*
 		glUseProgram(programID);
 		 MVPMatrix = calculateTransform(&camera, vec3(0.0f,0.0f,0.0f), vec3(0.0f,0.0f,0.0f), vec3(10.0f,10.0f,10.0f));
 
@@ -331,19 +311,23 @@ int main(int argc, char* args[])
 
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
-
+		
 		//glDrawArrays(GL_TRIANGLE_STRIP, 0, vertarray.size());
 		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
-
+		*/
+		/*
 		MVPMatrix = calculateTransform(&camera, vec3(30.0f,30.0f,30.0f));
 
 		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+
 		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
-
+		*/
+		glUseProgram(programID);
+		sphere1.draw(vertexbuffer, ebo, programID);
+		sphere2.draw(vertexbuffer, ebo, programID);
 		drawGrid(MVPLoc, lineBuff, lineVerts);
-
 
 		SDL_GL_SwapWindow(window);
 		
@@ -358,3 +342,4 @@ int main(int argc, char* args[])
 	Close();
 	return 0;
 }
+
