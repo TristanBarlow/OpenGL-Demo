@@ -64,100 +64,7 @@ void Close()
 	SDL_Quit();
 }
 
-GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
-	// Create the shaders
-	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-	// Read the Vertex Shader code from the file
-	std::string VertexShaderCode;
-	std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-	if (VertexShaderStream.is_open()) {
-		std::string Line = "";
-		while (getline(VertexShaderStream, Line))
-			VertexShaderCode += "\n" + Line;
-		VertexShaderStream.close();
-	}
-	else {
-		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
-		getchar();
-		return 0;
-	}
-
-	// Read the Fragment Shader code from the file
-	std::string FragmentShaderCode;
-	std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-	if (FragmentShaderStream.is_open()) {
-		std::string Line = "";
-		while (getline(FragmentShaderStream, Line))
-			FragmentShaderCode += "\n" + Line;
-		FragmentShaderStream.close();
-	}
-
-	GLint Result = GL_FALSE;
-	int InfoLogLength;
-
-
-	// Compile Vertex Shader
-	printf("Compiling shader : %s\n", vertex_file_path);
-	char const * VertexSourcePointer = VertexShaderCode.c_str();
-	glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
-	glCompileShader(VertexShaderID);
-
-	// Check Vertex Shader
-	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if (InfoLogLength > 0) {
-		std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
-		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-		printf("%s\n", &VertexShaderErrorMessage[0]);
-	}
-
-
-
-	// Compile Fragment Shader
-	printf("Compiling shader : %s\n", fragment_file_path);
-	char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-	glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, NULL);
-	glCompileShader(FragmentShaderID);
-
-	// Check Fragment Shader
-	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if (InfoLogLength > 0) {
-		std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
-		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-		printf("%s\n", &FragmentShaderErrorMessage[0]);
-	}
-
-
-
-	// Link the program
-	printf("Linking program\n");
-	GLuint ProgramID = glCreateProgram();
-	glAttachShader(ProgramID, VertexShaderID);
-	glAttachShader(ProgramID, FragmentShaderID);
-	glLinkProgram(ProgramID);
-
-	// Check the program
-	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if (InfoLogLength > 0) {
-		std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
-		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-		printf("%s\n", &ProgramErrorMessage[0]);
-	}
-
-
-	glDetachShader(ProgramID, VertexShaderID);
-	glDetachShader(ProgramID, FragmentShaderID);
-
-	glDeleteShader(VertexShaderID);
-	glDeleteShader(FragmentShaderID);
-
-	return ProgramID;
-}
 
 
 int main(int argc, char* args[])
@@ -187,12 +94,12 @@ int main(int argc, char* args[])
 	sphere1.begin(vec3(20.0f, 0.0f, 20.0f), vec3(20.0f, 20.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), sphereMesh);
 	Sphere sphere2;
 	sphere2.begin(vec3(50.0f, 0.0f, 50.0f), vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f), sphereMesh);
-	
-	GLuint textureID = loadTexture("Crate.jpg");
 
-	//create grid
-	vector <LineVertex> lineVerts;
-	createGridVec(lineVerts);
+	Grid grid;
+	grid.createGridVec(100,100);
+
+
+	GLuint textureID = loadTexture("Crate.jpg");
 
 
 	// Create and compile our GLSL program from the shaders
@@ -210,11 +117,6 @@ int main(int argc, char* args[])
 
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
-
-	GLuint lineBuff;
-	glGenBuffers(1, &lineBuff);
-
-
 
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -252,8 +154,8 @@ int main(int argc, char* args[])
 				TurnDegreesFromOriginX += ev.motion.xrel / mouseSens;
 				TurnDegreesFromOriginY += -ev.motion.yrel / mouseSens;
 				// Clamp Y
-				if (TurnDegreesFromOriginY > 85.0f)	TurnDegreesFromOriginY = -85.0f;
-				else if (TurnDegreesFromOriginY < -85.0f)	TurnDegreesFromOriginY = 85.0f;
+				if (TurnDegreesFromOriginY > 85.0f)	TurnDegreesFromOriginY = 85.0f;
+				else if (TurnDegreesFromOriginY < -85.0f)	TurnDegreesFromOriginY = -85.0f;
 
 				// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
 				camera.centre = camera.worldPos + camera.length * vec3(cos(TurnDegreesFromOriginX), tan(TurnDegreesFromOriginY), sin(TurnDegreesFromOriginX));
@@ -287,7 +189,7 @@ int main(int argc, char* args[])
 					camera.lift(0.5);
 						break;
 				case SDLK_0:
-					camera.centre = vec3(0.0, 0.0, 0.0);
+					break;
 				}
 			}
 		}
@@ -308,7 +210,7 @@ int main(int argc, char* args[])
 		glDepthFunc(GL_LESS);
 		glUseProgram(programID);
 		
-		MVPMatrix = calculateTransform(camera, vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
+		MVPMatrix = calculateTransform(camera,aspectRatio, vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
 
 		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
@@ -317,7 +219,7 @@ int main(int argc, char* args[])
 		sphere1.draw(vertexbuffer, ebo, programID);
 		sphere2.draw(vertexbuffer, ebo, programID);
 		glUseProgram(programID2);
-		drawGrid(MVPLoc2, lineBuff, lineVerts);
+		grid.draw(MVPLoc2,camera, aspectRatio);
 
 		SDL_GL_SwapWindow(window);
 		
@@ -327,7 +229,6 @@ int main(int argc, char* args[])
 	glDeleteProgram(programID);
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &ebo);
-	glDeleteBuffers(1, &lineBuff);
 	glDeleteTextures(1, &textureID);
 	glDeleteVertexArrays(1, &VertexArray);
 	Close();

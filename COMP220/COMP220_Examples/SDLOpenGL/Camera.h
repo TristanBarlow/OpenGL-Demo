@@ -21,4 +21,5 @@ public:
 	void lift(float);
 	void rotateX(float );
 	void rotateY(float);
+	void rotateCamera();
 };
