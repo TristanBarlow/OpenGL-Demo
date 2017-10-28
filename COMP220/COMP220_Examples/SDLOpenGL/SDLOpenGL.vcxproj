@@ -91,7 +91,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Tristan\Desktop\UNI2017-2018\bsc-live-coding\Libraries\SDL2_image-2.0.1\include;..\..\..\Libraries\glm-0.9.9-a1;..\..\..\Libraries\glew-2.1.0\include;..\..\..\Libraries\SDL2-2.0.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Libraries\SDL2_image-2.0.1\include;..\..\..\Libraries\glm;..\..\..\Libraries\glew-2.1.0\include;..\..\..\Libraries\SDL2-2.0.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -102,7 +102,8 @@
     <PostBuildEvent>
       <Command>copy ..\..\..\Libraries\SDL2-2.0.6\lib\x64\SDL2.dll $(OutDir)\SDL2.dll
 copy ..\..\..\Libraries\glew-2.1.0\bin\Release\x64\glew32.dll $(OutDir)\glew32.dll
-copy ..\..\..\Libraries\SDL2_image-2.0.1\lib\x64\*.dll $(OutDir)\*.dll</Command>
+copy ..\..\..\Libraries\SDL2_image-2.0.1\lib\x64\*.dll $(OutDir)\*.dll
+copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,14 +133,23 @@ copy ..\..\..\Libraries\SDL2_image-2.0.1\lib\x64\*.dll $(OutDir)\*.dll</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="fragmentshader.txt" />
-    <Text Include="vertexshader.txt" />
+    <Text Include="fragmentShader.txt" />
+    <Text Include="TexFrag.txt" />
+    <Text Include="TexVert.txt" />
+    <Text Include="vertexShader.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
