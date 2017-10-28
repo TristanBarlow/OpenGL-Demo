@@ -18,17 +18,44 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="vertexshader.txt">
+    <Text Include="TexFrag.txt">
       <Filter>Source Files</Filter>
     </Text>
-    <Text Include="fragmentshader.txt">
+    <Text Include="TexVert.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="fragmentShader.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="vertexShader.txt">
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>

@@ -173,28 +173,31 @@ int main(int argc, char* args[])
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is close
 	bool running = true;
 
-
 	GLuint VertexArray;
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
 	//initialse vertices vector that will take the vertices of the obj file
+	
 	vector<int> blah;
 	vector<vertex> foo;
 	Mesh sphereMesh;
 	loadOBJ("only_quad_sphere.txt", sphereMesh.vertArray, sphereMesh.elementBuff);
 	Sphere sphere1;
-	sphere1.begin(vec3(20.0f, 0.0f, 20.0f), vec3(20.0f, 20.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f), sphereMesh);
+	sphere1.begin(vec3(20.0f, 0.0f, 20.0f), vec3(20.0f, 20.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), sphereMesh);
 	Sphere sphere2;
 	sphere2.begin(vec3(50.0f, 0.0f, 50.0f), vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f), sphereMesh);
+	
+	GLuint textureID = loadTexture("Crate.jpg");
 
 	//create grid
-	vector <vertex> lineVerts;
+	vector <LineVertex> lineVerts;
 	createGridVec(lineVerts);
 
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("vertexshader.txt", "fragmentshader.txt");
+	GLuint programID = LoadShaders("TexVert.txt", "TexFrag.txt");
+	GLuint programID2 = LoadShaders("vertexShader.txt", "fragmentShader.txt");
 
 	//create MVP location Struct
 	MVP MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
@@ -207,14 +210,20 @@ int main(int argc, char* args[])
 
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
-	
+
 	GLuint lineBuff;
 	glGenBuffers(1, &lineBuff);
+
+
 
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
 	Transform MVPMatrix;
+	MVP MVPLoc2 = { glGetUniformLocation(programID2, "modelMatrix"),
+		glGetUniformLocation(programID2, "viewMatrix"),
+		glGetUniformLocation(programID2, "projectionMatrix") };
+	GLint textureLocation = glGetUniformLocation(programID, "baseTexture");
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
@@ -243,8 +252,8 @@ int main(int argc, char* args[])
 				TurnDegreesFromOriginX += ev.motion.xrel / mouseSens;
 				TurnDegreesFromOriginY += -ev.motion.yrel / mouseSens;
 				// Clamp Y
-				if (TurnDegreesFromOriginY > 85.0f)	TurnDegreesFromOriginY = 85.0f;
-				else if (TurnDegreesFromOriginY < -85.0f)	TurnDegreesFromOriginY = -85.0f;
+				if (TurnDegreesFromOriginY > 85.0f)	TurnDegreesFromOriginY = -85.0f;
+				else if (TurnDegreesFromOriginY < -85.0f)	TurnDegreesFromOriginY = 85.0f;
 
 				// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
 				camera.centre = camera.worldPos + camera.length * vec3(cos(TurnDegreesFromOriginX), tan(TurnDegreesFromOriginY), sin(TurnDegreesFromOriginX));
@@ -288,46 +297,27 @@ int main(int argc, char* args[])
 		//uppdate and draw game
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// Enable depth test
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
-		/*
 		glUseProgram(programID);
-		 MVPMatrix = calculateTransform(&camera, vec3(0.0f,0.0f,0.0f), vec3(0.0f,0.0f,0.0f), vec3(10.0f,10.0f,10.0f));
-
-		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
-		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
-		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glBufferData(GL_ARRAY_BUFFER, vertarray.size() * sizeof(vertex), &vertarray[0], GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemtarry.size() * sizeof(int), &elemtarry[0], GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), ((void*)offsetof(vertex, vertexCol)));
 		
-		//glDrawArrays(GL_TRIANGLE_STRIP, 0, vertarray.size());
-		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
-		*/
-		/*
-		MVPMatrix = calculateTransform(&camera, vec3(30.0f,30.0f,30.0f));
+		MVPMatrix = calculateTransform(camera, vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
 
 		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
-
-		glDrawElements(GL_TRIANGLES, elemtarry.size(), GL_UNSIGNED_INT, 0);
-		*/
-		glUseProgram(programID);
+		glUniform1i(textureLocation, 0);
 		sphere1.draw(vertexbuffer, ebo, programID);
 		sphere2.draw(vertexbuffer, ebo, programID);
-		drawGrid(MVPLoc, lineBuff, lineVerts);
+		glUseProgram(programID2);
+		drawGrid(MVPLoc2, lineBuff, lineVerts);
 
 		SDL_GL_SwapWindow(window);
 		
@@ -338,6 +328,7 @@ int main(int argc, char* args[])
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &ebo);
 	glDeleteBuffers(1, &lineBuff);
+	glDeleteTextures(1, &textureID);
 	glDeleteVertexArrays(1, &VertexArray);
 	Close();
 	return 0;

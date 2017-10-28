@@ -9,4 +9,4 @@
 
 using namespace std;
 
-GLuint loadTexture(const string& filename)
+GLuint loadTexture(const string& filename);
