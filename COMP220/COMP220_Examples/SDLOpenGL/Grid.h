@@ -9,6 +9,7 @@
 #include"Transform.h"
 #include "Camera.h"
 #include <iostream>
+#include "ShaderLoader.h"
 using namespace std;
 using glm::vec3;
 using glm::vec4;
@@ -16,12 +17,15 @@ using glm::vec4;
 class Grid
 {
 	public:
-		void draw(MVP&, Camera&, float aspectRatio);
+		void draw(Camera&, float aspectRatio);
 		void createGridVec(int, int);
 		~Grid();
+		void copyBufferData();
 	private:
-
+		GLuint LineShader;
 		vector<LineVertex> lineVerts;
 		Transform MVPMatrix;
 		GLuint lineBuff;
+		MVP MVPLineShaderLoc;
+		
 };

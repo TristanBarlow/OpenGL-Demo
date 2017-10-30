@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 
 using namespace glm;
-struct vertex
+struct Vertex
 {
 	vec3 vertexPos;
 	vec4 vertexCol;

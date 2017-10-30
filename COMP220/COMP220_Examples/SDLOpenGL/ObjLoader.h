@@ -36,7 +36,7 @@ bool objLoader2(const char * filename)
 	}
 };
 
-bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & elemtArray)
+bool loadOBJ(const char * path, vector <Vertex> & out_vertices, vector<int> & elemtArray)
 {
 	vector<vec3> temp_vertices;
 	std::vector< unsigned int > vertexIndices;
@@ -113,7 +113,7 @@ bool loadOBJ(const char * path, vector <vertex> & out_vertices, vector<int> & el
 			foob = vec2(0.0f, 1.0f);
 			temp = 0;
 		}
-		vertex foo = { vert, vertexCol, foob };
+		Vertex foo = { vert, vertexCol, foob };
 		out_vertices.push_back(foo);
 		//cout << vertex.x << " : " << vertex.y << " : " << vertex.z << endl;
 	}

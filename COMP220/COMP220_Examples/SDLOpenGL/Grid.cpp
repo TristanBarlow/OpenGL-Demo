@@ -3,6 +3,10 @@
 
 void Grid::createGridVec(int numberX, int numberY)
 {
+	LineShader = LoadShaders("vertexShader.txt", "fragmentShader.txt");
+	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
+		glGetUniformLocation(LineShader, "viewMatrix"),
+		glGetUniformLocation(LineShader, "projectionMatrix") };
 	glGenBuffers(1, &lineBuff);
 	for (int i = 0; i < numberX; i++)
 	{
@@ -34,16 +38,17 @@ void Grid::createGridVec(int numberX, int numberY)
 		}
 
 	}
+	copyBufferData();
 }
 
-void Grid::draw(MVP &MVPLocation, Camera &camera, float aspectRatio)
+void Grid::draw(Camera &camera, float aspectRatio)
 {
+	glUseProgram(LineShader);
 	MVPMatrix = calculateTransform(camera, aspectRatio);
-	glUniformMatrix4fv(MVPLocation.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
-	glUniformMatrix4fv(MVPLocation.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
-	glUniformMatrix4fv(MVPLocation.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+	glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+	glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 	glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
-	glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(LineVertex), &lineVerts[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex), 0);
 	glEnableVertexAttribArray(1);
@@ -55,4 +60,11 @@ void Grid::draw(MVP &MVPLocation, Camera &camera, float aspectRatio)
 Grid::~Grid()
 {
 	glDeleteBuffers(1, &lineBuff);
+
+}
+
+void Grid::copyBufferData()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
+	glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(LineVertex), &lineVerts[0], GL_STATIC_DRAW);
 }

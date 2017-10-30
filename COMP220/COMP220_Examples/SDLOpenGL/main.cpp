@@ -84,27 +84,21 @@ int main(int argc, char* args[])
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
+	Mesh tank;
+	tank.init("Tank1.FBX");
+
 	//initialse vertices vector that will take the vertices of the obj file
-	
-	vector<int> blah;
-	vector<vertex> foo;
-	Mesh sphereMesh;
-	loadOBJ("only_quad_sphere.txt", sphereMesh.vertArray, sphereMesh.elementBuff);
-	Sphere sphere1;
-	sphere1.begin(vec3(20.0f, 0.0f, 20.0f), vec3(20.0f, 20.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), sphereMesh);
-	Sphere sphere2;
-	sphere2.begin(vec3(50.0f, 0.0f, 50.0f), vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 10.0f, 10.0f), sphereMesh);
 
 	Grid grid;
-	grid.createGridVec(100,100);
+	grid.createGridVec(101,101);
 
 
-	GLuint textureID = loadTexture("Crate.jpg");
+	GLuint textureID = loadTexture("Tank1DF.png");
 
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("TexVert.txt", "TexFrag.txt");
-	GLuint programID2 = LoadShaders("vertexShader.txt", "fragmentShader.txt");
+	
 
 	//create MVP location Struct
 	MVP MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
@@ -122,16 +116,14 @@ int main(int argc, char* args[])
 	glEnable(GL_DEPTH_TEST);
 
 	Transform MVPMatrix;
-	MVP MVPLoc2 = { glGetUniformLocation(programID2, "modelMatrix"),
-		glGetUniformLocation(programID2, "viewMatrix"),
-		glGetUniformLocation(programID2, "projectionMatrix") };
+
 	GLint textureLocation = glGetUniformLocation(programID, "baseTexture");
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
 	//set up variables to handle mouse movement
-	float mouseSens = 500.0;
+	float mouseSens = 200.0;
 	float TurnDegreesFromOriginX = 90.0f;
 	float TurnDegreesFromOriginY = 0.0f;
 	float itterator = 0;
@@ -154,8 +146,8 @@ int main(int argc, char* args[])
 				TurnDegreesFromOriginX += ev.motion.xrel / mouseSens;
 				TurnDegreesFromOriginY += -ev.motion.yrel / mouseSens;
 				// Clamp Y
-				if (TurnDegreesFromOriginY > 85.0f)	TurnDegreesFromOriginY = 85.0f;
-				else if (TurnDegreesFromOriginY < -85.0f)	TurnDegreesFromOriginY = -85.0f;
+				if (TurnDegreesFromOriginY < -80.0f)	TurnDegreesFromOriginY = -80.0f;
+				if (TurnDegreesFromOriginY > 80.0f)	TurnDegreesFromOriginY = 80.0f;
 
 				// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
 				camera.centre = camera.worldPos + camera.length * vec3(cos(TurnDegreesFromOriginX), tan(TurnDegreesFromOriginY), sin(TurnDegreesFromOriginX));
@@ -203,9 +195,6 @@ int main(int argc, char* args[])
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
 		glUseProgram(programID);
@@ -216,10 +205,10 @@ int main(int argc, char* args[])
 		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 		glUniform1i(textureLocation, 0);
-		sphere1.draw(vertexbuffer, ebo, programID);
-		sphere2.draw(vertexbuffer, ebo, programID);
-		glUseProgram(programID2);
-		grid.draw(MVPLoc2,camera, aspectRatio);
+
+		tank.render(camera, programID);
+
+		grid.draw(camera, aspectRatio);
 
 		SDL_GL_SwapWindow(window);
 		
