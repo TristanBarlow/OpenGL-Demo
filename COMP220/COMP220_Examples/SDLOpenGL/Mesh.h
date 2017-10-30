@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "MVP.h"
 #include "Transform.h"
+#include "subMesh.h"
 
 class Mesh
 {
@@ -31,22 +32,5 @@ private:
 	MVP MVPLoc;
 
 };
-class subMesh
-{
-public:
-	~subMesh()
-	{
 
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
-	}
-	void copyBufferData();
-	std::vector<unsigned int> meshElementArray;
-	std::vector <Vertex> meshVertex;
-	void init();
-	GLuint m_VBO;
-	GLuint m_EBO;
-	GLuint m_VAO;
-};
-bool loadMeshFromFile(const std::string&, std::vector<subMesh>&);
+bool loadMeshFromFile(const std::string&, std::vector<subMesh*>&);

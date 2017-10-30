@@ -28,10 +28,10 @@ void Mesh::render(Camera &camera, GLuint programID)
 	for (int i = 0; i < subMeshes.size(); i++)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, subMeshes[i]->m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, subMeshes[i]->meshVertex.size() * sizeof(Vertex), &meshVertex[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, subMeshes[i]->meshVertex.size() * sizeof(Vertex), &subMeshes[i]->meshVertex[0], GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshElementArray.size() * sizeof(int), &meshElementArray[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, subMeshes[i]->m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, subMeshes[i]->meshElementArray.size() * sizeof(int), &subMeshes[i]->meshElementArray[0], GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
@@ -41,7 +41,7 @@ void Mesh::render(Camera &camera, GLuint programID)
 
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, textureCoords)));
-		glDrawElements(GL_TRIANGLES, meshElementArray.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
 	}
 }
 
@@ -100,21 +100,4 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 	return true;
 }
 
-void subMesh::copyBufferData()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, meshVertex.size() * sizeof(Vertex), &meshVertex[0], GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshElementArray.size() * sizeof(int), &meshElementArray[0], GL_STATIC_DRAW);
-}
-
-void subMesh::init()
-{
-	glGenVertexArrays(1, &m_VAO);
-	glBindVertexArray(m_VAO);
-	glGenBuffers(1, &m_VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glGenBuffers(1, &m_EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-}

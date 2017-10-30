@@ -138,6 +138,7 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="subMesh.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +149,7 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClInclude Include="MVP.h" />
     <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="subMesh.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />

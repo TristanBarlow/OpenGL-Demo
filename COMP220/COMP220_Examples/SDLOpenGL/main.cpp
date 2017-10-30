@@ -84,8 +84,7 @@ int main(int argc, char* args[])
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	Mesh tank;
-	tank.init("Tank1.FBX");
+
 
 	//initialse vertices vector that will take the vertices of the obj file
 
@@ -99,6 +98,8 @@ int main(int argc, char* args[])
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("TexVert.txt", "TexFrag.txt");
 	
+	Mesh tank;
+	tank.init("Tank1.FBX", programID);
 
 	//create MVP location Struct
 	MVP MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
