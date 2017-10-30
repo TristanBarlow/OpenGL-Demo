@@ -8,7 +8,7 @@
 #include "MVP.h"
 #include"Transform.h"
 #include "Camera.h"
-
+#include <iostream>
 using namespace std;
 using glm::vec3;
 using glm::vec4;
