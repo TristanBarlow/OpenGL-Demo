@@ -24,4 +24,6 @@ public:
 	GLuint m_VBO;
 	GLuint m_EBO;
 	GLuint m_VAO;
+	bool hasTexture;
+	bool lightMe;
 };

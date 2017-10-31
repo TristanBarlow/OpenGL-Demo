@@ -144,6 +144,7 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="lightSource.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MVP.h" />
@@ -157,6 +158,8 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
   <ItemGroup>
     <Text Include="fragmentShader.txt" />
     <Text Include="TexFrag.txt" />
+    <Text Include="TexLightFrag.txt" />
+    <Text Include="TexLightVert.txt" />
     <Text Include="TexVert.txt" />
     <Text Include="vertexShader.txt" />
   </ItemGroup>

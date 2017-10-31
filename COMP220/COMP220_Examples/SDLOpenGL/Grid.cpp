@@ -1,17 +1,19 @@
 #pragma once
 #include "Grid.h"
 
-void Grid::createGridVec(int numberX, int numberY)
+void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 {
-	LineShader = LoadShaders("vertexShader.txt", "fragmentShader.txt");
+	LineShader = programID;
 	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
 		glGetUniformLocation(LineShader, "viewMatrix"),
 		glGetUniformLocation(LineShader, "projectionMatrix") };
 	glGenBuffers(1, &lineBuff);
-	for (int i = 0; i < numberX; i++)
+	int startPosX = 0 - numberX / 2;
+	int startPosY = 0 - numberY / 2;
+	for (int i = startPosX; i < startPosX*-1; i++)
 	{
 		
-		for (int j = 0; j < numberY; j++)
+		for (int j = startPosY; j < startPosY*-1; j++)
 		{
 			vec3 lineVert1 = vec3(i, -1, j);
 			vec3 lineVert2 = vec3(i, -1, 0);

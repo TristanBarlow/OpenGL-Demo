@@ -18,7 +18,7 @@ class Grid
 {
 	public:
 		void draw(Camera&, float aspectRatio);
-		void createGridVec(int, int);
+		void createGridVec(int, int, GLuint);
 		~Grid();
 		void copyBufferData();
 	private:
@@ -26,6 +26,5 @@ class Grid
 		vector<LineVertex> lineVerts;
 		Transform MVPMatrix;
 		GLuint lineBuff;
-		MVP MVPLineShaderLoc;
-		
+		MVP MVPLineShaderLoc;	
 };

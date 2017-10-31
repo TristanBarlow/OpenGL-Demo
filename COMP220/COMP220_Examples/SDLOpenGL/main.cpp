@@ -88,37 +88,46 @@ int main(int argc, char* args[])
 
 	//initialse vertices vector that will take the vertices of the obj file
 
+	GLuint defaultShader = LoadShaders("vertexShader.txt", "fragmentShader.txt");
+	GLuint TextureShader = LoadShaders("TexVert.txt", "TexFrag.txt");
+	GLuint TexLightShader = LoadShaders("TexLightVert.txt", "TexLightFrag.txt");
+
+
 	Grid grid;
-	grid.createGridVec(101,101);
+	grid.createGridVec(101,101, defaultShader);
 
 
 	GLuint textureID = loadTexture("Tank1DF.png");
+	GLuint drumMagID = loadTexture("DrumMag_Low_blinn6_BaseColor.png");
 
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("TexVert.txt", "TexFrag.txt");
+	
 	
 	Mesh tank;
-	tank.init("Tank1.FBX", programID);
+	tank.init("Tank1.FBX", TexLightShader);
+	tank.worldPos = (vec3(0.0f, 20.0, 0.0));
+
+	Mesh cube;
+	cube.init("testCubes.obj", defaultShader);
+	cube.worldPos = (vec3(10.0f, 0.0f, 0.0f));
+	cube.worldScale = (vec3(3.0f, 3.0f, 3.0f));
+
+
+	Mesh drumMag;
+	drumMag.init("drumMag.obj",TexLightShader);
+	drumMag.worldScale = vec3(10.0f, 10.0f, 10.0f);
+
+
 
 	//create MVP location Struct
-	MVP MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
-				   glGetUniformLocation(programID, "viewMatrix"),
-				   glGetUniformLocation(programID, "projectionMatrix")};
-
-	// This will identify our vertex buffer
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-
-	GLuint ebo;
-	glGenBuffers(1, &ebo);
 
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
 	Transform MVPMatrix;
 
-	GLint textureLocation = glGetUniformLocation(programID, "baseTexture");
+	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
@@ -192,23 +201,24 @@ int main(int argc, char* args[])
 		//uppdate and draw game
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
-		glUseProgram(programID);
 		
-		MVPMatrix = calculateTransform(camera,aspectRatio, vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
+		cube.worldRot.y += 0.01;
+		cube.render(camera);
 
-		glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
-		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
-		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
-		glUniform1i(textureLocation, 0);
-		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		tank.worldPos.y += 10*sin(itterator/100);
+		tank.worldRot.y += 0.01;
+		tank.render(camera);
 
-		tank.render(camera, programID);
+		itterator++;
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, drumMagID);
+		drumMag.render(camera);
 
 		grid.draw(camera, aspectRatio);
 
@@ -217,9 +227,9 @@ int main(int argc, char* args[])
 	}
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	glDeleteProgram(programID);
-	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteBuffers(1, &ebo);
+	glDeleteProgram(defaultShader);
+	glDeleteProgram(TexLightShader);
+	glDeleteProgram(TextureShader);
 	glDeleteTextures(1, &textureID);
 	glDeleteVertexArrays(1, &VertexArray);
 	Close();

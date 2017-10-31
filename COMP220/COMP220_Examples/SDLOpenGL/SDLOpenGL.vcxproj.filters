@@ -68,6 +68,9 @@
     <ClInclude Include="subMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lightSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TexFrag.txt">
@@ -80,6 +83,12 @@
       <Filter>Source Files</Filter>
     </Text>
     <Text Include="vertexShader.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="TexLightFrag.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="TexLightVert.txt">
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>
