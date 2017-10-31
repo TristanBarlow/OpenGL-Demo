@@ -6,10 +6,11 @@ in vec2 vertexTextureCoordOut;
 in vec3 vertexNormalDir;
 uniform sampler2D baseTexture;
 uniform vec3 lightLocation;
+uniform float lightDistance;
 void main()
 {
 	float cosTheta = dot(vertexNormalDir, lightLocation );
   //colour = fragmentColour;
-  colour=cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
+  colour= lightDistance*cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
 
 }

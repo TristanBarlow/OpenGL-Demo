@@ -24,6 +24,7 @@
 #include "MVP.h"
 #include "Grid.h"
 #include "Mesh.h"
+#include "Light.h"
 
 using namespace std;
 using namespace glm;

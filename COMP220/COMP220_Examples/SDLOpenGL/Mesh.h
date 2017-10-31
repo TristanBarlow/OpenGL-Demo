@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <GL\glew.h>
 #include <SDL_opengl.h>
@@ -24,8 +25,8 @@ public:
 	vec3 worldPos =vec3(0.0f, 0.0f, 0.0f);
 	vec3 worldRot = vec3(0.0f, 0.0f, 0.0f);
 	vec3 worldScale = vec3(1.0f, 1.0f, 1.0f);
-	void init(const std::string&, GLuint);
-	void render(Camera&);
+	void init(const std::string&, GLuint, bool = false);
+	void render(Camera&, vec3 = vec3(0.0f,0.0f,0.0f));
 	void movement(float);
 	std::vector<subMesh*> subMeshes;
 	void copyBufferData();
@@ -35,9 +36,12 @@ private:
 	MVP MVPLoc;
 	GLuint programToUse = 0;
 	GLint lightDirectionLoc;
+	GLint lightDistanceLoc;
+	bool islitt;
 	GLfloat directionFromLightSource[3];
-	vec3 lightSource = vec3(20.0f,10.0,20.0);
+	vec3 lightSource;
 	vec3 tempLightDir;
+	float distanceToLight;
 };
 
 bool loadMeshFromFile(const std::string&, std::vector<subMesh*>&);

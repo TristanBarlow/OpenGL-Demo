@@ -5,27 +5,39 @@
 
 
 
-void Mesh::init(const std::string& filename, GLuint programID)
+void Mesh::init(const std::string& filename, GLuint programID, bool litt)
 {
+	islitt = litt;
 	programToUse = programID;
 	loadMeshFromFile(filename,subMeshes);
 	copyBufferData();
 	MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
 		glGetUniformLocation(programID, "viewMatrix"),
 		glGetUniformLocation(programID, "projectionMatrix") };
-	lightDirectionLoc = glGetUniformLocation(programID, "lightLocation");
-
+	if (islitt)
+	{
+		lightDirectionLoc = glGetUniformLocation(programID, "lightLocation");
+		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
+		
+	}
 }
 
-void Mesh::render(Camera &camera) 
+void Mesh::render(Camera &camera, vec3 lightSourceEx) 
 {
 	glUseProgram(programToUse);
-	tempLightDir = normalize(lightSource - worldPos);
+	if (islitt)
+	{
+		lightSource = lightSourceEx;
+		distanceToLight = 20/length(lightSource - worldPos);
+		tempLightDir = normalize(lightSource - worldPos);
+		directionFromLightSource[0] = tempLightDir.x;
+		directionFromLightSource[1] = tempLightDir.y;
+		directionFromLightSource[2] = tempLightDir.z;
+		glUniform1f(lightDistanceLoc, distanceToLight);
+		glUniform3fv(lightDirectionLoc, 1, directionFromLightSource);
+	}
+
 	MVPMatrix = calculateTransform(camera, aspectRatio, worldPos, worldRot, worldScale);
-	directionFromLightSource[0] = tempLightDir.x;
-	directionFromLightSource[1] = tempLightDir.y;
-	directionFromLightSource[2] = tempLightDir.z;
-	glUniform3fv(lightDirectionLoc, 1, directionFromLightSource);
 	glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
@@ -51,7 +63,6 @@ void Mesh::render(Camera &camera)
 		{
 			glEnableVertexAttribArray(3);
 			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexNormals)));
-			printf("lighting layer being called\n");
 		}
 		glDrawElements(GL_TRIANGLES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
 	}
@@ -122,7 +133,7 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 			}
 			else 
 			{
-				currentVertex.vertexCol = { 0.0f, 0.0f, sin(rand() % 100), 1.0f };
+				currentVertex.vertexCol = {1.0f,1.0f,0.0f , 1.0f };
 				pSubMesh->hasTexture = false;
 				
 			}

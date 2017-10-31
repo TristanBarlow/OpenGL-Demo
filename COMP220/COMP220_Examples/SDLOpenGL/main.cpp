@@ -98,27 +98,14 @@ int main(int argc, char* args[])
 
 
 	GLuint textureID = loadTexture("Tank1DF.png");
-	GLuint drumMagID = loadTexture("DrumMag_Low_blinn6_BaseColor.png");
-
 
 	// Create and compile our GLSL program from the shaders
-	
+	Light light;
+	light.init(defaultShader);
 	
 	Mesh tank;
-	tank.init("Tank1.FBX", TexLightShader);
-	tank.worldPos = (vec3(0.0f, 20.0, 0.0));
-
-	Mesh cube;
-	cube.init("testCubes.obj", defaultShader);
-	cube.worldPos = (vec3(10.0f, 0.0f, 0.0f));
-	cube.worldScale = (vec3(3.0f, 3.0f, 3.0f));
-
-
-	Mesh drumMag;
-	drumMag.init("drumMag.obj",TexLightShader);
-	drumMag.worldScale = vec3(10.0f, 10.0f, 10.0f);
-
-
+	tank.init("Tank1.FBX", TexLightShader, true);
+	tank.worldPos = (vec3(0.0f, 0.0f, 0.0f));
 
 	//create MVP location Struct
 
@@ -204,21 +191,13 @@ int main(int argc, char* args[])
 
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
-		
-		cube.worldRot.y += 0.01;
-		cube.render(camera);
+
+		light.render(camera);
+		light.moveCircle();
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		tank.worldPos.y += 10*sin(itterator/100);
-		tank.worldRot.y += 0.01;
-		tank.render(camera);
-
-		itterator++;
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, drumMagID);
-		drumMag.render(camera);
+		tank.render(camera, light.location);
 
 		grid.draw(camera, aspectRatio);
 

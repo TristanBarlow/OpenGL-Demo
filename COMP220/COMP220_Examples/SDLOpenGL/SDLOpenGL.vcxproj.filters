@@ -33,6 +33,9 @@
     <ClCompile Include="subMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -68,7 +71,7 @@
     <ClInclude Include="subMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lightSource.h">
+    <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
