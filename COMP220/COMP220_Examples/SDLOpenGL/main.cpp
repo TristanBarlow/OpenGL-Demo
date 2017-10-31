@@ -206,6 +206,7 @@ int main(int argc, char* args[])
 		glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 		glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 		glUniform1i(textureLocation, 0);
+		
 
 		tank.render(camera, programID);
 

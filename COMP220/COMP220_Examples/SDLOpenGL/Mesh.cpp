@@ -45,6 +45,12 @@ void Mesh::render(Camera &camera, GLuint programID)
 	}
 }
 
+void Mesh::movement(float move)
+{
+	worldPos += worldRot*move;
+	worldRot = normalize(vec3(0.0f, 0.0f, 0.0f) - worldPos);
+}
+
 
 bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes)
 {
