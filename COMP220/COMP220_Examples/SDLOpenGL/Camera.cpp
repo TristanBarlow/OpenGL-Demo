@@ -25,13 +25,15 @@ void Camera::lift(float y)
 	worldPos.y += liftDirection.y;
 	centre.y += liftDirection.y;
 }
-void Camera::rotateX(float x)
+void Camera::rotate(float x, float y)
 {
-	centre.z = (float)(centre.z + sin(x)*forward.x + cos(x)*forward.z);
-	centre.x = (float)(centre.x + cos(x)*forward.x - sin(x)*forward.z);
-}
-void Camera::rotateY(float y)
-{
-	glRotatef(-y, centre.x, centre.y, centre.z);
-
+	TurnDegreesFromOriginX +=  x/ mouseSens;
+	TurnDegreesFromOriginY -= y/ mouseSens;
+	float TanTurnFromOriginY = tan(TurnDegreesFromOriginY);
+	std::cout << TanTurnFromOriginY << std::endl;
+	if (TanTurnFromOriginY > 5.0f)  TanTurnFromOriginY = 5.0f;
+	if (TanTurnFromOriginY < -5.0f)  TanTurnFromOriginY = -5.0f;
+	std::cout << TanTurnFromOriginY << std::endl;
+	// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
+	centre = worldPos + length * vec3(cos(TurnDegreesFromOriginX), TanTurnFromOriginY, sin(TurnDegreesFromOriginX));
 }

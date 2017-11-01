@@ -120,9 +120,6 @@ int main(int argc, char* args[])
 	SDL_Event ev;
 
 	//set up variables to handle mouse movement
-	float mouseSens = 200.0;
-	float TurnDegreesFromOriginX = 90.0f;
-	float TurnDegreesFromOriginY = 0.0f;
 	float itterator = 0;
 	//main loop
 	while (running)
@@ -140,14 +137,7 @@ int main(int argc, char* args[])
 				running = false;
 				break;
 			case SDL_MOUSEMOTION:
-				TurnDegreesFromOriginX += ev.motion.xrel / mouseSens;
-				TurnDegreesFromOriginY += -ev.motion.yrel / mouseSens;
-				// Clamp Y
-				if (TurnDegreesFromOriginY < -80.0f)	TurnDegreesFromOriginY = -80.0f;
-				if (TurnDegreesFromOriginY > 80.0f)	TurnDegreesFromOriginY = 80.0f;
-
-				// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
-				camera.centre = camera.worldPos + camera.length * vec3(cos(TurnDegreesFromOriginX), tan(TurnDegreesFromOriginY), sin(TurnDegreesFromOriginX));
+				camera.rotate(ev.motion.xrel, ev.motion.yrel);
 				break;
 
 				//KEYDOWN Message, called when a key has been pressed down

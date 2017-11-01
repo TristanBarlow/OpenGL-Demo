@@ -1,6 +1,7 @@
 #pragma once
 #include<GL/glew.h>
 #include<glm/glm.hpp>
+#include <iostream>
 using namespace glm;
 class Camera
 {
@@ -19,7 +20,9 @@ public:
 	void strafe(float);
 	void move(float );
 	void lift(float);
-	void rotateX(float );
-	void rotateY(float);
-	void rotateCamera();
+	void rotate(float, float);
+private:
+	float mouseSens = 200.0;
+	float TurnDegreesFromOriginX = 90.0f;
+	float TurnDegreesFromOriginY= 0.0;
 };
