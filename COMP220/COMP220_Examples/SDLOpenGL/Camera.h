@@ -14,9 +14,6 @@ public:
 	vec3 centreMag = (centre - worldPos);
 
 	float length = centreMag.length();
-	float rotatedX = 0;
-	float rotatedY = 0;
-	float rotatedZ = 0;
 	void strafe(float);
 	void move(float );
 	void lift(float);

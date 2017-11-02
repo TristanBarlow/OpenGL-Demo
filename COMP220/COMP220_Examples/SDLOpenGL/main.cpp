@@ -96,23 +96,23 @@ int main(int argc, char* args[])
 	Grid grid;
 	grid.createGridVec(101,101, defaultShader);
 
-
-	GLuint textureID = loadTexture("Tank1DF.png");
-
 	// Create and compile our GLSL program from the shaders
 	Light light;
 	light.init(defaultShader);
 	
 	Mesh tank;
-	tank.init("Tank1.FBX", TexLightShader, true);
+	tank.init("Tank1.FBX", TexLightShader, true, "Tank1DF.png");
 	tank.worldPos = (vec3(0.0f, 0.0f, 0.0f));
+
+	Mesh drumMag;
+	drumMag.init("drumMag.obj", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
+	drumMag.worldPos=(vec3(10.0, 5.0, 10.0));
+	drumMag.worldScale = vec3(5.0f, 5.0f, 5.0f);
 
 	//create MVP location Struct
 
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-
-	Transform MVPMatrix;
 
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
 
@@ -173,8 +173,6 @@ int main(int argc, char* args[])
 			}
 		}
 
-
-
 		//uppdate and draw game
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -185,9 +183,9 @@ int main(int argc, char* args[])
 		light.render(camera);
 		light.moveCircle();
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
 		tank.render(camera, light.location);
+
+		drumMag.render(camera, light.location);
 
 		grid.draw(camera, aspectRatio);
 
@@ -199,7 +197,6 @@ int main(int argc, char* args[])
 	glDeleteProgram(defaultShader);
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);
-	glDeleteTextures(1, &textureID);
 	glDeleteVertexArrays(1, &VertexArray);
 	Close();
 	return 0;

@@ -5,7 +5,26 @@
 
 
 
-void Mesh::init(const std::string& filename, GLuint programID, bool litt)
+Mesh::~Mesh()
+{
+	auto iter = subMeshes.begin();
+	while (iter != subMeshes.end())
+	{
+		if ((*iter))
+		{
+			delete (*iter);
+			iter = subMeshes.erase(iter);    // iter = ... because it will return back the next iter value to use next
+		}
+		else
+		{
+			iter++;
+		}
+	}
+	subMeshes.clear();
+	glDeleteTextures(1, &textureID);
+}
+
+void Mesh::init(const std::string& filename, GLuint programID, bool litt, const std::string& texturefilename)
 {
 	islitt = litt;
 	programToUse = programID;
@@ -18,7 +37,11 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt)
 	{
 		lightDirectionLoc = glGetUniformLocation(programID, "lightLocation");
 		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
-		
+	}
+	if (texturefilename!= "")
+	{
+		hasTexture = true;
+		textureID = loadTexture(texturefilename);
 	}
 }
 
@@ -41,6 +64,12 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 	glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+
+	if (hasTexture) 
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+	}
 	for (int i = 0; i < subMeshes.size(); i++)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, subMeshes[i]->m_VBO);
@@ -146,8 +175,6 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 			pSubMesh->meshElementArray.push_back(currentModelFace.mIndices[0]);
 			pSubMesh->meshElementArray.push_back(currentModelFace.mIndices[1]);
 		}
-		pSubMesh->copyBufferData();
-
 		meshes.push_back(pSubMesh);
 		vertices.clear();
 		indices.clear();
