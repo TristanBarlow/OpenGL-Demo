@@ -99,6 +99,7 @@ int main(int argc, char* args[])
 	// Create and compile our GLSL program from the shaders
 	Light light;
 	light.init(defaultShader);
+	light.location = vec3(-10.0, 0.0, 10.0);
 	
 	Mesh tank;
 	tank.init("Tank1.FBX", TexLightShader, true, "Tank1DF.png");
@@ -111,7 +112,7 @@ int main(int argc, char* args[])
 
 	//create MVP location Struct
 
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");

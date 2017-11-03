@@ -4,7 +4,6 @@ void Light::init(GLuint programID)
 {
 	staticMesh.init("only_quad_sphere.txt", programID);
 	staticMesh.worldPos = location;
-
 }
 
 void Light::render(Camera &camera)
@@ -19,5 +18,5 @@ void Light::moveCircle()
 {
 	angle += 0.005;
 	location.x += 0.1 *sin(angle);
-	location.z += 0.1 *cos(angle);
+	location.y += 0.1 *cos(angle);
 }

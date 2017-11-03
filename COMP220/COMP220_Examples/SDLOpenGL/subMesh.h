@@ -17,7 +17,6 @@ public:
 		glDeleteBuffers(1, &m_VBO);
 		glDeleteBuffers(1, &m_EBO);
 	}
-	void copyBufferData();
 	std::vector<unsigned int> meshElementArray;
 	std::vector <Vertex> meshVertex;
 	void init();

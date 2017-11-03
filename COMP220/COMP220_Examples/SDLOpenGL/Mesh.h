@@ -46,6 +46,7 @@ private:
 	float distanceToLight;
 	GLuint textureID;
 	bool hasTexture;
+	GLint textureLocation;
 };
 
 bool loadMeshFromFile(const std::string&, std::vector<subMesh*>&);
