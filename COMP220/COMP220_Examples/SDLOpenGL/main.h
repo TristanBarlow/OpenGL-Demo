@@ -25,6 +25,7 @@
 #include "Grid.h"
 #include "Mesh.h"
 #include "Light.h"
+#include "WorldObject.h"
 
 using namespace std;
 using namespace glm;

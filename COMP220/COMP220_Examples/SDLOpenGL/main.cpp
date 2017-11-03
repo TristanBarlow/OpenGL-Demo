@@ -99,19 +99,28 @@ int main(int argc, char* args[])
 	// Create and compile our GLSL program from the shaders
 	Light light;
 	light.init(defaultShader);
-	
-	Mesh tank;
-	tank.init("Tank1.FBX", TexLightShader, true, "Tank1DF.png");
-	tank.worldPos = (vec3(0.0f, 0.0f, 0.0f));
+	light.location = vec3(-10.0, 0.0, 10.0);
+
 
 	Mesh drumMag;
-	drumMag.init("DrumMag_Finished.fbx", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
-	drumMag.worldPos=(vec3(10.0, 5.0, 10.0));
-	drumMag.worldScale = vec3(5.0f, 5.0f, 5.0f);
+	drumMag.init("drumMag.obj", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
+
+	vector <WorldObject> worldObjects;
+
+	Mesh tank;
+	tank.init("Tank1.FBX", TexLightShader, true, "Tank1DF.png");
+
+	for (int i = 0; i < 20; i++)
+	{
+		WorldObject foo;
+		foo.init(tank);
+		foo.worldLocation = vec3(rand() % 40, 0.0, rand() % 40);
+		worldObjects.push_back(foo);
+	}
 
 	//create MVP location Struct
 
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
@@ -182,8 +191,11 @@ int main(int argc, char* args[])
 
 		light.render(camera);
 		light.moveCircle();
-
-		tank.render(camera, light.location);
+			
+		for (int i = 0; i < worldObjects.size(); i++)
+		{
+			worldObjects[i].draw(camera, light.location);
+		}
 
 		drumMag.render(camera, light.location);
 

@@ -13,7 +13,7 @@ struct Transform
 	mat4 projectionMatrix;
 };
 
-inline Transform calculateTransform(Camera& camera, float aspectRatio, vec3 spawnLocation = vec3(0.0f, 0.0f, 0.0f), vec3 spawnRotation = vec3(0.0f, 0.0f, 0.0f), vec3 spawnScale = vec3(1.0f, 1.0f, 1.0f))
+inline Transform calculateTransform(Camera& camera, float aspectRatio, vec3 &spawnLocation = vec3(0.0f, 0.0f, 0.0f), vec3 &spawnRotation = vec3(0.0f, 0.0f, 0.0f), vec3 &spawnScale = vec3(1.0f, 1.0f, 1.0f))
 {
 
 	vec3 trianglePosition = spawnLocation;

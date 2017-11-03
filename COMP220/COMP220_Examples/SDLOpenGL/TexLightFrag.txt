@@ -11,6 +11,6 @@ void main()
 {
 	float cosTheta = dot(vertexNormalDir, lightLocation );
   //colour = fragmentColour;
-  colour= lightDistance*cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
+  colour= 1.3*lightDistance*cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
 
 }

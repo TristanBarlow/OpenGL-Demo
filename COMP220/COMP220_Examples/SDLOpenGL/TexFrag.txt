@@ -10,5 +10,4 @@ void main()
 {
   //colour = fragmentColour;
   colour=texture2D(baseTexture,vertexTextureCoordOut);
-
 }

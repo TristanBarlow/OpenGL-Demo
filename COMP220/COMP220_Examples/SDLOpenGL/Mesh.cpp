@@ -2,9 +2,6 @@
 
 #include "Mesh.h"
 
-
-
-
 Mesh::~Mesh()
 {
 	auto iter = subMeshes.begin();
@@ -13,7 +10,7 @@ Mesh::~Mesh()
 		if ((*iter))
 		{
 			delete (*iter);
-			iter = subMeshes.erase(iter);    // iter = ... because it will return back the next iter value to use next
+			iter = subMeshes.erase(iter); 
 		}
 		else
 		{
@@ -42,6 +39,7 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, const 
 	{
 		hasTexture = true;
 		textureID = loadTexture(texturefilename);
+		textureLocation = glGetUniformLocation(programID, "baseTexture");
 	}
 }
 
@@ -64,6 +62,7 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 	glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+	glUniform1i(textureLocation, 0);
 
 	if (hasTexture) 
 	{
@@ -179,7 +178,6 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 		vertices.clear();
 		indices.clear();
 	}
-
 	return true;
 }
 
