@@ -105,7 +105,7 @@ int main(int argc, char* args[])
 	tank.worldPos = (vec3(0.0f, 0.0f, 0.0f));
 
 	Mesh drumMag;
-	drumMag.init("drumMag.obj", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
+	drumMag.init("DrumMag_Finished.fbx", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
 	drumMag.worldPos=(vec3(10.0, 5.0, 10.0));
 	drumMag.worldScale = vec3(5.0f, 5.0f, 5.0f);
 

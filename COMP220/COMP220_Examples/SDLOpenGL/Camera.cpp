@@ -31,7 +31,6 @@ void Camera::rotate(float x, float y)
 	TurnDegreesFromOriginY -= tan(y/ mouseSens);
 	if (TurnDegreesFromOriginY > 3.0f)  TurnDegreesFromOriginY = 3.0f;
 	if (TurnDegreesFromOriginY < -3.0f)  TurnDegreesFromOriginY = -3.0f;
-	std::cout << "centre.x:"<< centre.x << "centre.y:" << centre.y << "centre.z:" << centre.z << std::endl;
 	// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
 	centre = worldPos + length * vec3(cos(TurnDegreesFromOriginX), TurnDegreesFromOriginY, sin(TurnDegreesFromOriginX));
 }
