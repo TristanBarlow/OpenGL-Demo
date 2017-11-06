@@ -34,7 +34,7 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, const 
 	{
 		lightDirectionLoc = glGetUniformLocation(programID, "lightDirection");
 		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
-		cameraDirection = glGetUniformLocation(programID, "cameraDirection");
+		cameraLocationLoc = glGetUniformLocation(programID, "cameraLocation");
 	}
 	if (texturefilename!= "")
 	{
@@ -54,7 +54,8 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 		directionFromLightSource = normalize(lightSource - worldPos);
 		glUniform1f(lightDistanceLoc, distanceToLight);
 		glUniform3fv(lightDirectionLoc, 1, value_ptr(directionFromLightSource));
-		glUniform3fv(cameraDirection, 1, value_ptr(camera.forward));
+		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.worldPos));
+
 	}
 
 	MVPMatrix = calculateTransform(camera, aspectRatio, worldPos, worldRot, worldScale);

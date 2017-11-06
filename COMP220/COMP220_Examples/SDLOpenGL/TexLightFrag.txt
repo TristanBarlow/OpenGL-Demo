@@ -4,6 +4,7 @@ out vec4 colour;
 in vec4 vertexColourOut;
 in vec2 vertexTextureCoordOut;
 in vec3 vertexNormalDir;
+in vec3 vertCameraDir;
 
 uniform sampler2D baseTexture;
 
@@ -11,7 +12,6 @@ uniform vec3 lightDirection;
 uniform vec4 diffuseLightColour;
 uniform float lightDistance;
 uniform vec4 diffuseMaterialColour;
-uniform vec3 cameraDirection;
 
 
 vec3 shine;
@@ -19,12 +19,15 @@ vec3 shine;
 
 void main()
 {
-	shine = vec3(cameraDirection + lightDirection);
-	float shineness = dot(vertexNormalDir, shine);
-	shineness = clamp(shineness, 0, 1);
+	float shineness = dot(vertexNormalDir, vertCameraDir);
+	shineness = pow(clamp(shineness, 0, 1), 50.0);
+	vec4 specular = shineness* vec4(1.0f,1.0f,1.0f,1.0f) * vec4(1.0f,1.0f,1.0f,1.0f);
+
 	float cosTheta = dot(vertexNormalDir, lightDirection );
 	cosTheta = clamp(cosTheta, 0,1);
+    vec4 diffuse = cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
+
   //colour = fragmentColour;
-  colour= shineness* 40*lightDistance*cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
+  colour= diffuse+ specular;
 
 }
