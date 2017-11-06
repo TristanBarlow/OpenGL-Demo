@@ -161,7 +161,7 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 			}
 			else 
 			{
-				currentVertex.vertexCol = {1.0f,1.0f,0.0f , 1.0f };
+				currentVertex.vertexCol = {1.0f,1.0f,1.0f , 1.0f };
 				pSubMesh->hasTexture = false;
 				
 			}

@@ -100,6 +100,7 @@ int main(int argc, char* args[])
 	Light light;
 	light.init(defaultShader);
 	light.location = vec3(-10.0, 0.0, 10.0);
+	light.scale = vec3(1.0f, 1.0f, 1.0f);
 
 
 	Mesh drumMag;
@@ -110,11 +111,20 @@ int main(int argc, char* args[])
 	Mesh tank;
 	tank.init("Tank1.FBX", TexLightShader, true, "Tank1DF.png");
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i <10; i++)
 	{
 		WorldObject foo;
 		foo.init(tank);
-		foo.worldLocation = vec3(rand() % 40, 0.0, rand() % 40);
+		foo.worldLocation = vec3((rand() % 40)-20, 0.0, (rand() % 40) - 20);
+		worldObjects.push_back(foo);
+	}
+
+	for (int i = 0; i <10; i++)
+	{
+		WorldObject foo;
+		foo.init(drumMag);
+		foo.worldLocation = vec3((rand() % 40) - 20, 0.0, (rand() % 40) - 20);
+		foo.worldScale = vec3(5.0, 5.0, 5.0);
 		worldObjects.push_back(foo);
 	}
 

@@ -17,5 +17,4 @@ private:
 		Mesh staticMesh;
 		int radius = 4;
 		double angle = 0.1;
-
 };
