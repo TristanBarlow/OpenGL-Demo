@@ -1,7 +1,7 @@
 #include "Camera.h"
 void  Camera::strafe(float x)
 {
-	vec3 forward = normalize(centre - worldPos);
+	forward = normalize(centre - worldPos);
 	right = cross(up, forward);
 	vec3 strafeDirection = right*x;
 	worldPos.x += strafeDirection.x;
@@ -12,7 +12,7 @@ void  Camera::strafe(float x)
 
 void Camera:: move(float z)
 {
-	vec3 forward = normalize(centre - worldPos);
+	forward = normalize(centre - worldPos);
 	vec3 moveDirection = forward*z;
 	worldPos.x += moveDirection.x;
 	worldPos.z += moveDirection.z;
@@ -29,6 +29,7 @@ void Camera::rotate(float x, float y)
 {
 	TurnDegreesFromOriginX +=  x/ mouseSens;
 	TurnDegreesFromOriginY -= tan(y/ mouseSens);
+	forward = normalize(centre - worldPos);
 	if (TurnDegreesFromOriginY > 1.0f)  TurnDegreesFromOriginY = 1.0f;
 	if (TurnDegreesFromOriginY < -1.0f)  TurnDegreesFromOriginY = -1.0f;
 	// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position

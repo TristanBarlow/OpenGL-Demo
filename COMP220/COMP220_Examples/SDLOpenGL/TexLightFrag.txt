@@ -4,13 +4,27 @@ out vec4 colour;
 in vec4 vertexColourOut;
 in vec2 vertexTextureCoordOut;
 in vec3 vertexNormalDir;
+
 uniform sampler2D baseTexture;
-uniform vec3 lightLocation;
+
+uniform vec3 lightDirection;
+uniform vec4 diffuseLightColour;
 uniform float lightDistance;
+uniform vec4 diffuseMaterialColour;
+uniform vec3 cameraDirection;
+
+
+vec3 shine;
+
+
 void main()
 {
-	float cosTheta = dot(vertexNormalDir, lightLocation );
+	shine = vec3(cameraDirection + lightDirection);
+	float shineness = dot(vertexNormalDir, shine);
+	shineness = clamp(shineness, 0, 1);
+	float cosTheta = dot(vertexNormalDir, lightDirection );
+	cosTheta = clamp(cosTheta, 0,1);
   //colour = fragmentColour;
-  colour= 1.3*lightDistance*cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
+  colour= shineness* 40*lightDistance*cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
 
 }

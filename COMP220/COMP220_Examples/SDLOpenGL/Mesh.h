@@ -39,8 +39,9 @@ private:
 	GLuint programToUse = 0;
 	GLint lightDirectionLoc;
 	GLint lightDistanceLoc;
+	GLint cameraDirection;
 	bool islitt;
-	GLfloat directionFromLightSource[3];
+	vec3 directionFromLightSource;
 	vec3 lightSource;
 	vec3 tempLightDir;
 	float distanceToLight;

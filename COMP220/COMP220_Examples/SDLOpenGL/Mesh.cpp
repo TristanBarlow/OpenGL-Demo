@@ -32,8 +32,9 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, const 
 		glGetUniformLocation(programID, "projectionMatrix") };
 	if (islitt)
 	{
-		lightDirectionLoc = glGetUniformLocation(programID, "lightLocation");
+		lightDirectionLoc = glGetUniformLocation(programID, "lightDirection");
 		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
+		cameraDirection = glGetUniformLocation(programID, "cameraDirection");
 	}
 	if (texturefilename!= "")
 	{
@@ -49,13 +50,11 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 	if (islitt)
 	{
 		lightSource = lightSourceEx;
-		distanceToLight = 20/length(lightSource - worldPos);
-		tempLightDir = normalize(lightSource - worldPos);
-		directionFromLightSource[0] = tempLightDir.x;
-		directionFromLightSource[1] = tempLightDir.y;
-		directionFromLightSource[2] = tempLightDir.z;
+		distanceToLight = 1/length(lightSource - worldPos);
+		directionFromLightSource = normalize(lightSource - worldPos);
 		glUniform1f(lightDistanceLoc, distanceToLight);
-		glUniform3fv(lightDirectionLoc, 1, directionFromLightSource);
+		glUniform3fv(lightDirectionLoc, 1, value_ptr(directionFromLightSource));
+		glUniform3fv(cameraDirection, 1, value_ptr(camera.forward));
 	}
 
 	MVPMatrix = calculateTransform(camera, aspectRatio, worldPos, worldRot, worldScale);
