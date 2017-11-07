@@ -32,7 +32,7 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, const 
 		glGetUniformLocation(programID, "projectionMatrix") };
 	if (islitt)
 	{
-		lightDirectionLoc = glGetUniformLocation(programID, "lightDirection");
+		lightDirectionLoc = glGetUniformLocation(programID, "lightLocation");
 		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
 		cameraLocationLoc = glGetUniformLocation(programID, "cameraLocation");
 	}
@@ -51,9 +51,8 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 	{
 		lightSource = lightSourceEx;
 		distanceToLight = 1/length(lightSource - worldPos);
-		directionFromLightSource = normalize(lightSource - worldPos);
 		glUniform1f(lightDistanceLoc, distanceToLight);
-		glUniform3fv(lightDirectionLoc, 1, value_ptr(directionFromLightSource));
+		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSource));
 		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.worldPos));
 
 	}
