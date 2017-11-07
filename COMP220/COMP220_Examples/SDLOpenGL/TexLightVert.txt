@@ -10,6 +10,7 @@ out vec2 vertexTextureCoordOut;
 out vec3 vertexNormalDir;
 out vec3 vertCameraDir;
 out vec3 lightDirection;
+out float lightDistance;
 
 
 uniform mat4 modelMatrix;
@@ -19,8 +20,12 @@ uniform vec3 lightLocation;
 uniform vec3 cameraLocation;
 
 
+
 void main()
-{	vertexNormalDir = vertexNormal;
+{	
+	lightDistance = 200/pow(length(lightLocation-vertexPos), 2);
+
+	vertexNormalDir = vertexNormal;
 	vertexColourOut=vertexColour;
 	vertexTextureCoordOut=vertexTextureCoord;
 

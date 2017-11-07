@@ -40,10 +40,12 @@ private:
 	GLint lightDirectionLoc;
 	GLint lightDistanceLoc;
 	GLint cameraLocationLoc;
+	GLint specularMaterialColour;
 	bool islitt;
 	vec3 directionFromLightSource;
 	vec3 lightSource;
 	vec3 tempLightDir;
+	vec4 specularLightColour;
 	float distanceToLight;
 	GLuint textureID;
 	bool hasTexture;
