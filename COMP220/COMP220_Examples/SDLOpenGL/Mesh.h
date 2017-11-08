@@ -27,7 +27,7 @@ public:
 	vec3 worldPos =vec3(0.0f, 0.0f, 0.0f);
 	vec3 worldRot = vec3(0.0f, 0.0f, 0.0f);
 	vec3 worldScale = vec3(1.0f, 1.0f, 1.0f);
-	void init(const std::string&, GLuint, bool = false, const std::string& = "" );
+	void init(const std::string&, GLuint, bool = false, bool = false, const std::string& = "");
 	void render(Camera&, vec3 = vec3(0.0f,0.0f,0.0f));
 	void movement(float);
 	std::vector<subMesh*> subMeshes;
@@ -41,7 +41,7 @@ private:
 	GLint lightDistanceLoc;
 	GLint cameraLocationLoc;
 	GLint specularMaterialColour;
-	GLint lightColour;
+	GLint lightColourLoc;
 	bool islitt;
 	vec3 directionFromLightSource;
 	vec3 lightSource;
@@ -49,8 +49,9 @@ private:
 	vec4 specularLightColour;
 	float distanceToLight;
 	GLuint textureID;
-	bool hasTexture;
+	bool hasTexture = false;
 	GLint textureLocation;
+	vec4 noTextureColour;
 };
 
 bool loadMeshFromFile(const std::string&, std::vector<subMesh*>&);

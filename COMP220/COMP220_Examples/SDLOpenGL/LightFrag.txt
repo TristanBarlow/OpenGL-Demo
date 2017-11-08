@@ -20,12 +20,12 @@ void main()
 {
 	vec3 foo = normalize(reflect(lightDirection, normalize(vertexNormalDir)));
 	float shineness = dot(vertCameraDir, foo);
-	float specularAngle = pow(clamp(shineness, 0, 1), 25.0f);
+	float specularAngle = pow(clamp(shineness, 0, 1), 50.0f);
 	vec4 specular = specularAngle* specularMaterialColour * vec4(1.0f,1.0f,1.0f,1.0f);
 
 	float cosTheta = dot(vertexNormalDir, lightDirection );
 	cosTheta = clamp(cosTheta, 0,1);
-    vec4 diffuse = cosTheta*vertexColourOut;
+    vec4 diffuse = cosTheta*vec4(0.5,0.5,0.5,1.0);
 	colour= diffuse + specular;
 
 }

@@ -113,12 +113,12 @@ int main(int argc, char* args[])
 	sphereObj.worldScale = vec3(3.0f, 3.0f, 3.0f);
 
 	Mesh drumMag;
-	drumMag.init("drumMag.obj", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
+	drumMag.init("drumMag.obj", TexLightShader, true, true, "DrumMag_Low_blinn6_BaseColor.png");
 
 	vector <WorldObject> worldObjects;
 
 	Mesh tank;
-	tank.init("Tank1.FBX", TexLightShader, true, "Tank1DF.png");
+	tank.init("Tank1.FBX", TexLightShader, true,true, "Tank1DF.png");
 
 	for (int i = 0; i <10; i++)
 	{
