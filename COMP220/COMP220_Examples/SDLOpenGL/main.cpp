@@ -103,6 +103,7 @@ int main(int argc, char* args[])
 	light.scale = vec3(1.0f, 1.0f, 1.0f);
 
 
+
 	Mesh drumMag;
 	drumMag.init("drumMag.obj", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
 

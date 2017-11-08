@@ -55,7 +55,7 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 		glUniform1f(lightDistanceLoc, distanceToLight);
 		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSource));
 		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.worldPos));
-		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(0.2,1.0,0.2, 1.0)));
+		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0,1.0,0.1, 1.0)));
 
 
 	}
@@ -163,7 +163,7 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 			}
 			else 
 			{
-				currentVertex.vertexCol = {1.0f,1.0f,1.0f , 1.0f };
+				currentVertex.vertexCol = {1.0f,1.0f,(rand()%10/100) , 1.0f };
 				pSubMesh->hasTexture = false;
 				
 			}

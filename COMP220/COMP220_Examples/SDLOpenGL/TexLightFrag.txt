@@ -20,14 +20,14 @@ vec3 shine;
 
 void main()
 {
-	vec3 foo = lightDirection + vertCameraDir;
-	float shineness = dot(vertexNormalDir, foo);
-	shineness = pow(clamp(shineness, 0, 1), 5.0f);
-	vec4 specular = shineness* specularMaterialColour * vec4(1.0f,1.0f,1.0f,1.0f);
+	vec3 foo = normalize(reflect(lightDirection, normalize(vertexNormalDir)));
+	float shineness = dot(vertCameraDir, foo);
+	float specularAngle = pow(clamp(shineness, 0, 1), 25.0f);
+	vec4 specular = specularAngle* specularMaterialColour * vec4(1.0f,1.0f,1.0f,1.0f);
 
 	float cosTheta = dot(vertexNormalDir, lightDirection );
 	cosTheta = clamp(cosTheta, 0,1);
-    vec4 diffuse = lightDistance*cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
+    vec4 diffuse = cosTheta*texture2D(baseTexture,vertexTextureCoordOut);
 
   //colour = fragmentColour;
   colour= diffuse + specular;
