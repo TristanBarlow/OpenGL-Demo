@@ -36,6 +36,7 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, const 
 		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
 		cameraLocationLoc = glGetUniformLocation(programID, "cameraLocation");
 		specularMaterialColour = glGetUniformLocation(programID, "specularMaterialColour");
+		lightColour = glGetUniformLocation(programID, "objectColour");
 	}
 	if (texturefilename!= "")
 	{
@@ -56,7 +57,7 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSource));
 		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.worldPos));
 		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0,1.0,0.1, 1.0)));
-
+		glUniform3fv(lightColour, 1, value_ptr(vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 
 	}
 

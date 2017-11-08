@@ -41,6 +41,7 @@ private:
 	GLint lightDistanceLoc;
 	GLint cameraLocationLoc;
 	GLint specularMaterialColour;
+	GLint lightColour;
 	bool islitt;
 	vec3 directionFromLightSource;
 	vec3 lightSource;

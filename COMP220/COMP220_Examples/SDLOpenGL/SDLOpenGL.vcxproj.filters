@@ -100,5 +100,11 @@
     <Text Include="TexLightVert.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="LightFrag.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="LightVert.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

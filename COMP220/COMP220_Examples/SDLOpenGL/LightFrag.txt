@@ -1,0 +1,31 @@
+#version 330 core
+out vec4 colour;
+
+in vec4 vertexColourOut;
+in vec3 vertexNormalDir;
+in vec3 vertCameraDir;
+in vec3 lightDirection;
+in float lightDistance;
+
+
+uniform vec4 diffuseLightColour;
+uniform vec4 diffuseMaterialColour;
+uniform vec4 specularMaterialColour;
+uniform vec4 objectColour;
+
+vec3 shine;
+
+
+void main()
+{
+	vec3 foo = normalize(reflect(lightDirection, normalize(vertexNormalDir)));
+	float shineness = dot(vertCameraDir, foo);
+	float specularAngle = pow(clamp(shineness, 0, 1), 25.0f);
+	vec4 specular = specularAngle* specularMaterialColour * vec4(1.0f,1.0f,1.0f,1.0f);
+
+	float cosTheta = dot(vertexNormalDir, lightDirection );
+	cosTheta = clamp(cosTheta, 0,1);
+    vec4 diffuse = cosTheta*vertexColourOut;
+	colour= diffuse + specular;
+
+}

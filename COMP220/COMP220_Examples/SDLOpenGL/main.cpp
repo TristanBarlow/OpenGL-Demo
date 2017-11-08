@@ -91,6 +91,7 @@ int main(int argc, char* args[])
 	GLuint defaultShader = LoadShaders("vertexShader.txt", "fragmentShader.txt");
 	GLuint TextureShader = LoadShaders("TexVert.txt", "TexFrag.txt");
 	GLuint TexLightShader = LoadShaders("TexLightVert.txt", "TexLightFrag.txt");
+	GLuint LightShader = LoadShaders("LightVert.txt", "LightFrag.txt");
 
 
 	Grid grid;
@@ -102,7 +103,14 @@ int main(int argc, char* args[])
 	light.location = vec3(-10.0, 0.0, 10.0);
 	light.scale = vec3(1.0f, 1.0f, 1.0f);
 
+	Mesh sphere;
+	sphere.init("only_quad_sphere.txt", LightShader, true);
 
+
+	WorldObject sphereObj;
+	sphereObj.init(sphere);
+	sphereObj.worldLocation = vec3(4.0f, 10.0f, 1.0f);
+	sphereObj.worldScale = vec3(3.0f, 3.0f, 3.0f);
 
 	Mesh drumMag;
 	drumMag.init("drumMag.obj", TexLightShader, true, "DrumMag_Low_blinn6_BaseColor.png");
@@ -209,6 +217,8 @@ int main(int argc, char* args[])
 		}
 
 		drumMag.render(camera, light.location);
+
+		sphereObj.draw(camera, light.location);
 
 		grid.draw(camera, aspectRatio);
 

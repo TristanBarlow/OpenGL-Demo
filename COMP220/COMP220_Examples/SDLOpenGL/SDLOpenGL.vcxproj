@@ -160,6 +160,8 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentShader.txt" />
+    <Text Include="LightFrag.txt" />
+    <Text Include="LightVert.txt" />
     <Text Include="TexFrag.txt" />
     <Text Include="TexLightFrag.txt" />
     <Text Include="TexLightVert.txt" />

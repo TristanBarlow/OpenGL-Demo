@@ -6,7 +6,6 @@ layout(location=3) in vec3 vertexNormal;
 
 
 out vec4 vertexColourOut;
-out vec2 vertexTextureCoordOut;
 out vec3 vertexNormalDir;
 out vec3 vertCameraDir;
 out vec3 lightDirection;
@@ -27,10 +26,10 @@ void main()
 
 	vertexNormalDir = vertexNormal;
 	vertexColourOut=vertexColour;
-	vertexTextureCoordOut=vertexTextureCoord;
 
 	mat4 MVPmatrix = projectionMatrix*viewMatrix*modelMatrix;
 	gl_Position =MVPmatrix * vec4(vertexPos,1.0);
+
 	vertCameraDir = normalize(cameraLocation - vertexPos);
 	lightDirection = normalize(lightLocation - vertexPos);
 }
