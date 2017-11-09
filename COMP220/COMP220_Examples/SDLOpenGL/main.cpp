@@ -103,14 +103,13 @@ int main(int argc, char* args[])
 	light.location = vec3(-10.0, 0.0, 10.0);
 	light.scale = vec3(1.0f, 1.0f, 1.0f);
 
+	// load sphere Mesh
 	Mesh sphere;
-	sphere.init("only_quad_sphere.txt", LightShader, true);
-
-	// init sphere and set up attributes
-	WorldObject sphereObj;
-	sphereObj.init(sphere);
-	sphereObj.worldLocation = vec3(4.0f, 10.0f, 1.0f);
-	sphereObj.worldScale = vec3(3.0f, 3.0f, 3.0f);
+	sphere.init("only_quad_sphere.txt", LightShader, true);	
+	
+	//load and create the static mesh for the tank
+	Mesh tank;
+	tank.init("Tank1.FBX", TexLightShader, true,true, "Tank1DF.png");
 
 	//load and create the static mesh drum mag
 	Mesh drumMag;
@@ -118,9 +117,12 @@ int main(int argc, char* args[])
 
 	vector <WorldObject> worldObjects;
 
-	//load and create the static mesh for the tank
-	Mesh tank;
-	tank.init("Tank1.FBX", TexLightShader, true,true, "Tank1DF.png");
+	// init sphere and set up attributes
+	WorldObject sphereObj;
+	sphereObj.init(sphere);
+	sphereObj.worldLocation = vec3(4.0f, 10.0f, 1.0f);
+	sphereObj.worldScale = vec3(3.0f, 3.0f, 3.0f);
+	worldObjects.push_back(sphereObj);
 
 	for (int i = 0; i <10; i++)
 	{
@@ -216,10 +218,6 @@ int main(int argc, char* args[])
 		{
 			worldObjects[i].draw(camera, light.location);
 		}
-
-		drumMag.render(camera, light.location);
-
-		sphereObj.draw(camera, light.location);
 
 		grid.draw(camera, aspectRatio);
 
