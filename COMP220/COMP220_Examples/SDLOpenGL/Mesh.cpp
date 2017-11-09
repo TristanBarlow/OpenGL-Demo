@@ -76,7 +76,7 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 	}
 	else
 	{
-		glUniform3fv(lightColourLoc, 1, value_ptr(noTextureColour));
+		glUniform4fv(lightColourLoc, 1, value_ptr(noTextureColour));
 		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0f,1.0f,1.0f,1.0f)));
 	}
 	for (int i = 0; i < subMeshes.size(); i++)

@@ -106,17 +106,19 @@ int main(int argc, char* args[])
 	Mesh sphere;
 	sphere.init("only_quad_sphere.txt", LightShader, true);
 
-
+	// init sphere and set up attributes
 	WorldObject sphereObj;
 	sphereObj.init(sphere);
 	sphereObj.worldLocation = vec3(4.0f, 10.0f, 1.0f);
 	sphereObj.worldScale = vec3(3.0f, 3.0f, 3.0f);
 
+	//load and create the static mesh drum mag
 	Mesh drumMag;
 	drumMag.init("drumMag.obj", TexLightShader, true, true, "DrumMag_Low_blinn6_BaseColor.png");
 
 	vector <WorldObject> worldObjects;
 
+	//load and create the static mesh for the tank
 	Mesh tank;
 	tank.init("Tank1.FBX", TexLightShader, true,true, "Tank1DF.png");
 
@@ -138,7 +140,6 @@ int main(int argc, char* args[])
 	}
 
 	//create MVP location Struct
-
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
