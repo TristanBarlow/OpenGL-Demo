@@ -234,14 +234,17 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClInclude Include="WorldObject.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="fragmentShader.txt" />
-    <Text Include="LightFrag.txt" />
-    <Text Include="LightVert.txt" />
-    <Text Include="TexFrag.txt" />
-    <Text Include="TexLightFrag.txt" />
-    <Text Include="TexLightVert.txt" />
-    <Text Include="TexVert.txt" />
-    <Text Include="vertexShader.txt" />
+    <Text Include="Shaders\fragmentShader.txt" />
+    <Text Include="Shaders\LightFrag.txt" />
+    <Text Include="Shaders\LightVert.txt" />
+    <Text Include="Shaders\only_quad_sphere.txt" />
+    <Text Include="Shaders\PostProcFragment.txt" />
+    <Text Include="Shaders\PostProcVertex.txt" />
+    <Text Include="Shaders\TexFrag.txt" />
+    <Text Include="Shaders\TexLightFrag.txt" />
+    <Text Include="Shaders\TexLightVert.txt" />
+    <Text Include="Shaders\TexVert.txt" />
+    <Text Include="Shaders\vertexShader.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

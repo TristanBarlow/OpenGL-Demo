@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{1d1b6aba-27ba-42e9-8dff-d4880a352683}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -82,29 +85,38 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="TexFrag.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\fragmentShader.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="TexVert.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\LightFrag.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="fragmentShader.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\LightVert.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="vertexShader.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\only_quad_sphere.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="TexLightFrag.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\PostProcFragment.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="TexLightVert.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\PostProcVertex.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="LightFrag.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\TexFrag.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="LightVert.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="Shaders\TexLightFrag.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
+    <Text Include="Shaders\TexLightVert.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
+    <Text Include="Shaders\TexVert.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
+    <Text Include="Shaders\vertexShader.txt">
+      <Filter>Source Files\shaders</Filter>
     </Text>
   </ItemGroup>
 </Project>
