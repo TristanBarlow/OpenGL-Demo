@@ -19,6 +19,10 @@ Mesh::~Mesh()
 	}
 	subMeshes.clear();
 	glDeleteTextures(1, &textureID);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
 }
 
 void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool textured, const std::string& texturefilename)

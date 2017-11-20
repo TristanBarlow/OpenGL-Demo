@@ -80,11 +80,6 @@ int main(int argc, char* args[])
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is close
 	bool running = true;
 
-	GLuint VertexArray;
-	glGenVertexArrays(1, &VertexArray);
-	glBindVertexArray(VertexArray);
-
-
 
 	//initialse vertices vector that will take the vertices of the obj file
 
@@ -92,7 +87,6 @@ int main(int argc, char* args[])
 	GLuint TextureShader = LoadShaders("Shaders/TexVert.txt", "Shaders/TexFrag.txt");
 	GLuint TexLightShader = LoadShaders("Shaders/TexLightVert.txt", "Shaders/TexLightFrag.txt");
 	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
-	GLuint PostProcShader = LoadShaders("Shaders/PostProcVertex.txt", "Shaders/PostProcFragment.txt");
 
 	Grid grid;
 	grid.createGridVec(101, 101, defaultShader);
@@ -140,54 +134,15 @@ int main(int argc, char* args[])
 		foo.worldScale = vec3(5.0, 5.0, 5.0);
 		worldObjects.push_back(foo);
 	}
-	//The texture we are going to render to
-	GLuint renderTextureID = createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-	//The depth buffer
-	GLuint depthBufferID;
-	glGenRenderbuffers(1, &depthBufferID);
-	//Bind the depth buffer
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
-	//Set the format of the depth buffer
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	//The frambuffer
-	GLuint frameBufferID;
-	glGenFramebuffers(1, &frameBufferID);
-
-	//Bind the framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
-
-	//Bind the depth buffer as a depth attachment
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
-	//Bind the texture as a colour attachment 0 to the active framebuffer
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTextureID, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		cout << "checkFrameBufferStatus fail:" << endl;
-	}
-
-
-
-	//create fullscreen quad
-	GLfloat vertices[8] = { -1.0f, -1.0f, 1.0f, -1.0f,-1.0f, 1.0f, 1.0f, 1.0f };
-
-	GLuint screenQuadVBOID;
-	glGenBuffers(1, &screenQuadVBOID);
-	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBOID);
-	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-
-	GLuint screenVAO;
-	glGenVertexArrays(1, &screenVAO);
-	glBindVertexArray(screenVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBOID);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	GLuint PostProcTexLoc = glGetUniformLocation(PostProcShader, "texture0");
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
 
+	PostProcessor postProcGrey;
+	postProcGrey.init("Shaders/PostProcVert.txt","Shaders/PostProcGreyScaleFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+	PostProcessor postProcBlur;
+	postProcBlur.init("Shaders/PostProcVert.txt", "Shaders/PostProcBlurFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
@@ -246,17 +201,15 @@ int main(int argc, char* args[])
 			}
 		}
 
-
-
-		//uppdate and draw game
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+		glDisable(GL_BLEND);
+		//bind post processor buffer
+		postProcBlur.bindBuff();
+
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Accept fragment if it closer to the camera than the former one
 
 		light.render(camera);
 		light.moveCircle();
@@ -266,45 +219,22 @@ int main(int argc, char* args[])
 			worldObjects[i].draw(camera, light.location);
 		}
 
+		// post processor draw
+
 		grid.draw(camera, aspectRatio);
 
-		glDisable(GL_DEPTH_TEST);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		postProcGrey.bindBuff();
+		postProcBlur.drawTexture();
+		postProcGrey.drawTexture();
 
-		//Bind our Postprocessing Program
-		glUseProgram(PostProcShader);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, renderTextureID);
-		glUniform1i(PostProcTexLoc, 0);
-
-		glBindVertexArray(screenVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBOID);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-
-		//Send across any values to the shader
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		//Draw the quad!
 
 		SDL_GL_SwapWindow(window);
 		
 	}
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
 	glDeleteProgram(defaultShader);
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);
 	glDeleteProgram(LightShader);
-	glDeleteVertexArrays(1, &screenVAO);
-	glDeleteProgram(PostProcShader);
-	glDeleteRenderbuffers(1, &depthBufferID);
-	glDeleteFramebuffers(1, &frameBufferID);
-	glDeleteTextures(1,&renderTextureID);
-
-	glDeleteVertexArrays(1, &VertexArray);
 	Close();
 	return 0;
 }
