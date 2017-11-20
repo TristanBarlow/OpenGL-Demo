@@ -24,7 +24,7 @@ inline Transform calculateTransform(Camera& camera, float aspectRatio, vec3 &spa
 	mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
 	mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
 	mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
-
+	  
 	//create scaling matrix
 	vec3 scaleVec = spawnScale;
 	mat4 ScalingMatrix = scale(scaleVec);
@@ -32,7 +32,7 @@ inline Transform calculateTransform(Camera& camera, float aspectRatio, vec3 &spa
 
 	mat4 modelMatrix = translationMatrix*rotationMatix*ScalingMatrix;
 
-	mat4 cameraMatrix = lookAt(camera.worldPos, camera.centre, camera.up);
+	mat4 cameraMatrix = camera.cameraMatrix;
 
 	mat4 projectionMatrix = perspective(radians(90.0f), aspectRatio, 0.1f, 200.0f);
 

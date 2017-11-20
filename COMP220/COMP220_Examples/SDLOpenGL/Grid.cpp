@@ -5,8 +5,8 @@ void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 {
 	LineShader = programID;
 	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
-		glGetUniformLocation(LineShader, "viewMatrix"),
-		glGetUniformLocation(LineShader, "projectionMatrix") };
+						 glGetUniformLocation(LineShader, "viewMatrix"),
+						 glGetUniformLocation(LineShader, "projectionMatrix") };
 	glGenBuffers(1, &lineBuff);
 	int startPosX = 0 - numberX / 2;
 	int startPosY = 0 - numberY / 2;
