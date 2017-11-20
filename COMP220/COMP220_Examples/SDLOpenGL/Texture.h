@@ -10,3 +10,5 @@
 using namespace std;
 
 GLuint loadTexture(const string& filename);
+
+GLuint createTexture(int= 800, int = 600);

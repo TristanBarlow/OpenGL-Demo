@@ -1,0 +1,19 @@
+#version 330 core
+out vec4 color;
+in vec2 textureCoords;
+uniform sampler2D texture0;
+float simplifyStrength = 3;
+float blurIntensity = 0.001;
+void main()
+{
+	vec2 bottomLeftTextureCoords=  vec2(textureCoords.x-blurIntensity, textureCoords.y-blurIntensity);	
+	vec2 upLeftTextureCoords=	   vec2(textureCoords.x-blurIntensity, textureCoords.y+blurIntensity);
+	vec2 upRightTextureCoords=	   vec2(textureCoords.x+blurIntensity, textureCoords.y+blurIntensity);
+	vec2 bottomRightTextureCoords= vec2(textureCoords.x+blurIntensity, textureCoords.y-blurIntensity);
+	
+	float fooR = ((texture(texture0, textureCoords).r + texture(texture0, bottomLeftTextureCoords).r + texture(texture0, upLeftTextureCoords).r + texture(texture0, upRightTextureCoords).r + texture(texture0, bottomRightTextureCoords).r)/5);
+	float fooG = ((texture(texture0, textureCoords).g + texture(texture0, bottomLeftTextureCoords).g + texture(texture0, upLeftTextureCoords).g + texture(texture0, upRightTextureCoords).g + texture(texture0, bottomRightTextureCoords).r)/5);
+	float fooB = ((texture(texture0, textureCoords).b + texture(texture0, bottomLeftTextureCoords).b + texture(texture0, upLeftTextureCoords).b + texture(texture0, upRightTextureCoords).b + texture(texture0, bottomRightTextureCoords).r)/5);
+	//Read the texture and do some processing!
+	color = vec4(fooR,fooG,fooB,1.0f);
+}

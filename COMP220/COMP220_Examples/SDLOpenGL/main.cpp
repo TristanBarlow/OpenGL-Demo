@@ -80,22 +80,16 @@ int main(int argc, char* args[])
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is close
 	bool running = true;
 
-	GLuint VertexArray;
-	glGenVertexArrays(1, &VertexArray);
-	glBindVertexArray(VertexArray);
-
-
 
 	//initialse vertices vector that will take the vertices of the obj file
 
-	GLuint defaultShader = LoadShaders("vertexShader.txt", "fragmentShader.txt");
-	GLuint TextureShader = LoadShaders("TexVert.txt", "TexFrag.txt");
-	GLuint TexLightShader = LoadShaders("TexLightVert.txt", "TexLightFrag.txt");
-	GLuint LightShader = LoadShaders("LightVert.txt", "LightFrag.txt");
-
+	GLuint defaultShader = LoadShaders("Shaders/vertexShader.txt", "Shaders/fragmentShader.txt");
+	GLuint TextureShader = LoadShaders("Shaders/TexVert.txt", "Shaders/TexFrag.txt");
+	GLuint TexLightShader = LoadShaders("Shaders/TexLightVert.txt", "Shaders/TexLightFrag.txt");
+	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
 
 	Grid grid;
-	grid.createGridVec(101,101, defaultShader);
+	grid.createGridVec(101, 101, defaultShader);
 
 	// Create and compile our GLSL program from the shaders
 	Light light;
@@ -105,11 +99,11 @@ int main(int argc, char* args[])
 
 	// load sphere Mesh
 	Mesh sphere;
-	sphere.init("only_quad_sphere.txt", LightShader, true);	
-	
+	sphere.init("only_quad_sphere.txt", LightShader, true);
+
 	//load and create the static mesh for the tank
 	Mesh tank;
-	tank.init("Tank1.FBX", TexLightShader, true,true, "Tank1DF.png");
+	tank.init("Tank1.FBX", TexLightShader, true, true, "Tank1DF.png");
 
 	//load and create the static mesh drum mag
 	Mesh drumMag;
@@ -124,15 +118,15 @@ int main(int argc, char* args[])
 	sphereObj.worldScale = vec3(3.0f, 3.0f, 3.0f);
 	worldObjects.push_back(sphereObj);
 
-	for (int i = 0; i <10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		WorldObject foo;
 		foo.init(tank);
-		foo.worldLocation = vec3((rand() % 40)-20, 0.0, (rand() % 40) - 20);
+		foo.worldLocation = vec3((rand() % 40) - 20, 0.0, (rand() % 40) - 20);
 		worldObjects.push_back(foo);
 	}
 
-	for (int i = 0; i <10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		WorldObject foo;
 		foo.init(drumMag);
@@ -141,12 +135,17 @@ int main(int argc, char* args[])
 		worldObjects.push_back(foo);
 	}
 
-	//create MVP location Struct
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
 
+	// PostProcessoring SHTUFF
+	PostProcessor postProcGrey;
+	postProcGrey.init("Shaders/PostProcVert.txt","Shaders/PostProcGreyScaleFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+	
+	PostProcessor postProcBlur;
+	postProcBlur.init("Shaders/PostProcVert.txt", "Shaders/PostProcBlurFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	PostProcessor postProcOutline;
+	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
@@ -203,13 +202,16 @@ int main(int argc, char* args[])
 				}
 			}
 		}
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
 
-		//uppdate and draw game
-		glClearColor(0.0, 0.0, 0.0, 1.0);
+		//bind post processor buffer
+		postProcGrey.bindBuff();
+
+		glClearColor(0.9, 0.9, 0.9, 1.0);
+		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Accept fragment if it closer to the camera than the former one
-		glDepthFunc(GL_LESS);
 
 		light.render(camera);
 		light.moveCircle();
@@ -218,18 +220,25 @@ int main(int argc, char* args[])
 		{
 			worldObjects[i].draw(camera, light.location);
 		}
+		
+		//grid.draw(camera, aspectRatio);
 
-		grid.draw(camera, aspectRatio);
+		// post processor draw
+		postProcOutline.bindBuff();
+		postProcGrey.drawTexture();
 
+		postProcBlur.bindBuff();
+		postProcOutline.drawTexture();
+
+		postProcBlur.drawTexture();
+		
 		SDL_GL_SwapWindow(window);
 		
 	}
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
 	glDeleteProgram(defaultShader);
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);
-	glDeleteVertexArrays(1, &VertexArray);
+	glDeleteProgram(LightShader);
 	Close();
 	return 0;
 }

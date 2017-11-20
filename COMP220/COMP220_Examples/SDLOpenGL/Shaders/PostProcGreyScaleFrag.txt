@@ -1,0 +1,11 @@
+#version 330 core
+out vec4 color;
+in vec2 textureCoords;
+uniform sampler2D texture0;
+void main()
+{
+	
+	float foo = ((texture(texture0, textureCoords).x + texture(texture0, textureCoords).y + texture(texture0, textureCoords).z))/3;
+	//Read the texture and do some processing!
+	color = vec4(foo,foo,foo,1.0f);
+}
