@@ -124,10 +124,10 @@
     <Text Include="Shaders\PostProcVert.txt">
       <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="Shaders\PostProc3DoFrag.txt">
+    <Text Include="Shaders\PostProcBlurFrag.txt">
       <Filter>Source Files\shaders</Filter>
     </Text>
-    <Text Include="Shaders\PostProcBlurFrag.txt">
+    <Text Include="Shaders\PostProcOutlineFrag.txt">
       <Filter>Source Files\shaders</Filter>
     </Text>
   </ItemGroup>

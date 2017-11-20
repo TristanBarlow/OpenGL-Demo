@@ -46,6 +46,8 @@ void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 void Grid::draw(Camera &camera, float aspectRatio)
 {
 	glUseProgram(LineShader);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	MVPMatrix = calculateTransform(camera, aspectRatio);
 	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));

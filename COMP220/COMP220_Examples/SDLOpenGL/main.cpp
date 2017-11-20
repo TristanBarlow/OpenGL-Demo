@@ -137,13 +137,15 @@ int main(int argc, char* args[])
 
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
 
+	// PostProcessoring SHTUFF
 	PostProcessor postProcGrey;
 	postProcGrey.init("Shaders/PostProcVert.txt","Shaders/PostProcGreyScaleFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+	
 	PostProcessor postProcBlur;
 	postProcBlur.init("Shaders/PostProcVert.txt", "Shaders/PostProcBlurFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	
-
+	PostProcessor postProcOutline;
+	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
@@ -200,14 +202,14 @@ int main(int argc, char* args[])
 				}
 			}
 		}
-
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
-		//bind post processor buffer
-		postProcBlur.bindBuff();
 
-		glClearColor(0.0, 0.0, 0.0, 1.0);
+		//bind post processor buffer
+		postProcGrey.bindBuff();
+
+		glClearColor(0.9, 0.9, 0.9, 1.0);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -218,16 +220,18 @@ int main(int argc, char* args[])
 		{
 			worldObjects[i].draw(camera, light.location);
 		}
+		
+		//grid.draw(camera, aspectRatio);
 
 		// post processor draw
-
-		grid.draw(camera, aspectRatio);
-
-		postProcGrey.bindBuff();
-		postProcBlur.drawTexture();
+		postProcOutline.bindBuff();
 		postProcGrey.drawTexture();
 
+		postProcBlur.bindBuff();
+		postProcOutline.drawTexture();
 
+		postProcBlur.drawTexture();
+		
 		SDL_GL_SwapWindow(window);
 		
 	}

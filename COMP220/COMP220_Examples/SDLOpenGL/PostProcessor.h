@@ -13,6 +13,9 @@ public:
 	void init(const char*, const char*, int = 800, int =600);
 	void bindBuff();
 	void unbindBuff();
+	/*
+	*If only one post process being called make sure to call PostProcessor.unBindBuff();
+	*/
 	void drawTexture();
 	void setInputTexture(GLuint&);
 	~PostProcessor();

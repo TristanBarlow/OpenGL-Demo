@@ -50,6 +50,7 @@ void PostProcessor::init(const char* vertShader, const char* fragShader, int SCR
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	PostProcTexLoc = glGetUniformLocation(PostProcShader, "texture0");
+	unbindBuff();
 }
 
 void PostProcessor::bindBuff()
@@ -65,7 +66,7 @@ void PostProcessor::unbindBuff()
 void PostProcessor::drawTexture()
 {
 	glDisable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Bind our Postprocessing Program
