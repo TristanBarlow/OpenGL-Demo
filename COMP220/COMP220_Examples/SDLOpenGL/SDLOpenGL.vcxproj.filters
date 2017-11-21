@@ -130,5 +130,11 @@
     <Text Include="Shaders\PostProcOutlineFrag.txt">
       <Filter>Source Files\shaders</Filter>
     </Text>
+    <Text Include="Shaders\cellFragShader.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
+    <Text Include="Shaders\cellVertShader.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>

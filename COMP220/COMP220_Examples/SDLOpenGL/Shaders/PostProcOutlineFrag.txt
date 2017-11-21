@@ -4,14 +4,14 @@ in vec2 textureCoords;
 uniform sampler2D texture0;
 void main()
 {
-	vec2 LeftTextureCoords =  vec2(textureCoords.x-0.005, textureCoords.y);	
+	vec2 LeftTextureCoords =  vec2(textureCoords.x-0.01, textureCoords.y);	
 	float rDiff = (texture(texture0, textureCoords).r - texture(texture0, LeftTextureCoords).r);
 	float gDiff = (texture(texture0, textureCoords).g - texture(texture0, LeftTextureCoords).g);
 	float bDiff = (texture(texture0, textureCoords).b - texture(texture0, LeftTextureCoords).b);
 	float likeness = sqrt(rDiff+gDiff+bDiff);
 	 if(likeness > 0.90f)
 	 {
-		color = vec4(0.5f,0.2f,0.5f,1.0f);
+		color = vec4(0.0f,0.0f,0.0f,1.0f);
 	 }
 	else
 	{

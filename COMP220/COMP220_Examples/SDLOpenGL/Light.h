@@ -6,6 +6,7 @@
 class Light
 {
 public:
+	Light(Camera&);
 	vec3 location = vec3(20.0, 50.0, 0.0);
 	vec3 rotation = vec3(0.0, 0.0, 0.0);
 	vec3 scale = vec3(3.0, 3.0, 3.0);

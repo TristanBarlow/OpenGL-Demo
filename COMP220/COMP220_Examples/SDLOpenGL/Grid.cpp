@@ -47,13 +47,8 @@ void Grid::draw(Camera &camera, float aspectRatio)
 {
 	glUseProgram(LineShader);
 
-	glStencilFunc(GL_NOTEQUAL, 1, -1);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
 	glLineWidth(5);
 	glPolygonMode(GL_FRONT, GL_LINE);
-
-	glEnable(GL_STENCIL_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, -1);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
