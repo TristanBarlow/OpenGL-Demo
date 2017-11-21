@@ -71,7 +71,6 @@ void Grid::draw(Camera &camera, float aspectRatio)
 Grid::~Grid()
 {
 	glDeleteBuffers(1, &lineBuff);
-
 }
 
 void Grid::copyBufferData()
