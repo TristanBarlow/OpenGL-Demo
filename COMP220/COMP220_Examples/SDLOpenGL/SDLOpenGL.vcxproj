@@ -236,6 +236,8 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClInclude Include="WorldObject.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Shaders\cellFragShader.txt" />
+    <Text Include="Shaders\cellVertShader.txt" />
     <Text Include="Shaders\fragmentShader.txt" />
     <Text Include="Shaders\LightFrag.txt" />
     <Text Include="Shaders\LightVert.txt" />

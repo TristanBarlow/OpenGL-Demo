@@ -46,6 +46,13 @@ void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 void Grid::draw(Camera &camera, float aspectRatio)
 {
 	glUseProgram(LineShader);
+
+	glLineWidth(5);
+	glPolygonMode(GL_FRONT, GL_LINE);
+
+	glStencilFunc(GL_ALWAYS, 1, -1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	MVPMatrix = calculateTransform(camera, aspectRatio);
@@ -64,7 +71,6 @@ void Grid::draw(Camera &camera, float aspectRatio)
 Grid::~Grid()
 {
 	glDeleteBuffers(1, &lineBuff);
-
 }
 
 void Grid::copyBufferData()

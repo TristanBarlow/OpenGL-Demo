@@ -2,10 +2,10 @@
 
 
 
-void WorldObject::draw(Camera& camera, vec3& lightLocation )
+void WorldObject::draw(vec3& lightLocation )
 {
 	update();
-	mesh->render(camera, lightLocation);
+	mesh->render(lightLocation);
 }
 
 void WorldObject::update()

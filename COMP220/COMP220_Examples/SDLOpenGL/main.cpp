@@ -87,27 +87,30 @@ int main(int argc, char* args[])
 	GLuint TextureShader = LoadShaders("Shaders/TexVert.txt", "Shaders/TexFrag.txt");
 	GLuint TexLightShader = LoadShaders("Shaders/TexLightVert.txt", "Shaders/TexLightFrag.txt");
 	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
+	GLuint vertOutliner = LoadShaders("Shaders/cellVertShader.txt", "Shaders/cellFragShader.txt");
 
 	Grid grid;
 	grid.createGridVec(101, 101, defaultShader);
 
-	// Create and compile our GLSL program from the shaders
-	Light light;
-	light.init(defaultShader);
-	light.location = vec3(-10.0, 0.0, 10.0);
-	light.scale = vec3(1.0f, 1.0f, 1.0f);
-
 	// load sphere Mesh
-	Mesh sphere;
+	Mesh sphere(camera);
 	sphere.init("only_quad_sphere.txt", LightShader, true);
+	sphere.initCell(vertOutliner);
 
 	//load and create the static mesh for the tank
-	Mesh tank;
+	Mesh tank(camera);
 	tank.init("Tank1.FBX", TexLightShader, true, true, "Tank1DF.png");
+	tank.initCell(vertOutliner);
 
 	//load and create the static mesh drum mag
-	Mesh drumMag;
+	Mesh drumMag(camera);
 	drumMag.init("drumMag.obj", TexLightShader, true, true, "DrumMag_Low_blinn6_BaseColor.png");
+	drumMag.initCell(vertOutliner);
+
+	Light light(camera);
+	light.init(defaultShader);
+	light.location = vec3(-10.0, 30.0, 10.0);
+	light.scale = vec3(1.0f, 1.0f, 1.0f);
 
 	vector <WorldObject> worldObjects;
 
@@ -122,7 +125,7 @@ int main(int argc, char* args[])
 	{
 		WorldObject foo;
 		foo.init(tank);
-		foo.worldLocation = vec3((rand() % 40) - 20, 0.0, (rand() % 40) - 20);
+		foo.worldLocation = vec3((rand() % 40) - 20, 2.0, (rand() % 40) - 20);
 		worldObjects.push_back(foo);
 	}
 
@@ -130,7 +133,7 @@ int main(int argc, char* args[])
 	{
 		WorldObject foo;
 		foo.init(drumMag);
-		foo.worldLocation = vec3((rand() % 40) - 20, 0.0, (rand() % 40) - 20);
+		foo.worldLocation = vec3((rand() % 40) - 20, 3.0, (rand() % 40) - 20);
 		foo.worldScale = vec3(5.0, 5.0, 5.0);
 		worldObjects.push_back(foo);
 	}
@@ -204,34 +207,39 @@ int main(int argc, char* args[])
 		}
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
+		glEnable(GL_STENCIL_TEST);
+
 
 		//bind post processor buffer
-		postProcGrey.bindBuff();
+		//postProcGrey.bindBuff();
+		//postProcOutline.bindBuff();
 
 		glClearColor(0.9, 0.9, 0.9, 1.0);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Render the mesh into the stencil buffer.
+
 		light.render(camera);
-		light.moveCircle();
-			
+
+		
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
-			worldObjects[i].draw(camera, light.location);
+			worldObjects[i].draw(light.location);
 		}
 		
-		//grid.draw(camera, aspectRatio);
+		grid.draw(camera, aspectRatio);
 
 		// post processor draw
-		postProcOutline.bindBuff();
-		postProcGrey.drawTexture();
+		
+		//postProcGrey.drawTexture();
 
 		//postProcBlur.bindBuff();
-		postProcOutline.drawTexture();
-
+		//postProcOutline.unbindBuff();
+		//postProcOutline.drawTexture();
+		//
 		//postProcBlur.drawTexture();
-		
+
 		SDL_GL_SwapWindow(window);
 		
 	}

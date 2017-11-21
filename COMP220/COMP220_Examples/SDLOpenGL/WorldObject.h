@@ -12,7 +12,7 @@ public:
 	float speedOfTravel;
 	float mass;
 	bool hasGravity = true;
-	void draw(Camera&, vec3& = vec3(0.0f,0.0f,0.0f));
+	void draw(vec3& = vec3(0.0f,0.0f,0.0f));
 	void update();
 	void init(Mesh &meshAd);
 private:

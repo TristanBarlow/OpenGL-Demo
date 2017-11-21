@@ -25,6 +25,11 @@ Mesh::~Mesh()
 	glDisableVertexAttribArray(3);
 }
 
+Mesh::Mesh(Camera& camera1):camera(camera1)
+{
+
+}
+
 void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool textured, const std::string& texturefilename)
 {
 	islitt = litt;
@@ -54,8 +59,9 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool t
 	}
 }
 
-void Mesh::render(Camera &camera, vec3 lightSourceEx) 
+void Mesh::render(vec3 lightSourceEx) 
 {
+
 	glUseProgram(programToUse);
 	if (islitt)
 	{
@@ -106,6 +112,25 @@ void Mesh::render(Camera &camera, vec3 lightSourceEx)
 			glEnableVertexAttribArray(3);
 			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexNormals)));
 		}
+		if (vertOutlinerMe)
+		{
+			glEnable(GL_STENCIL_TEST);
+			glUseProgram(LineShader);
+			glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+			glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+			glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+			glUniform3fv(vertOutlinerColourLoc, 1, value_ptr(vertOutlinerColour));
+
+			glLineWidth(2);
+			glPolygonMode(GL_FRONT, GL_LINE);
+
+			glStencilFunc(GL_ALWAYS, 1, -1);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+			glDrawElements(GL_LINES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
+			glUseProgram(programToUse);
+
+		}
 		glDrawElements(GL_TRIANGLES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
 	}
 }
@@ -114,6 +139,18 @@ void Mesh::movement(float move)
 {
 	worldPos += worldRot*move;
 	worldRot = normalize(vec3(0.0f, 0.0f, 0.0f) - worldPos);
+}
+
+void Mesh::initCell(GLuint vertOutliner, vec3 colour)
+{
+	vertOutlinerMe = true;
+	LineShader = vertOutliner;
+	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
+		glGetUniformLocation(LineShader, "viewMatrix"),
+		glGetUniformLocation(LineShader, "projectionMatrix") };
+	vertOutlinerColourLoc = glGetUniformLocation(LineShader, "cellShaderColour");
+	vertOutlinerColour = colour;
+
 }
 
 void Mesh::copyBufferData()
