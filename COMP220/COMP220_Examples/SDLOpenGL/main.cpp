@@ -122,7 +122,7 @@ int main(int argc, char* args[])
 	{
 		WorldObject foo;
 		foo.init(tank);
-		foo.worldLocation = vec3((rand() % 40) - 20, 0.0, (rand() % 40) - 20);
+		foo.worldLocation = vec3((rand() % 40) - 20, 2.0, (rand() % 40) - 20);
 		worldObjects.push_back(foo);
 	}
 
@@ -130,7 +130,7 @@ int main(int argc, char* args[])
 	{
 		WorldObject foo;
 		foo.init(drumMag);
-		foo.worldLocation = vec3((rand() % 40) - 20, 0.0, (rand() % 40) - 20);
+		foo.worldLocation = vec3((rand() % 40) - 20, 3.0, (rand() % 40) - 20);
 		foo.worldScale = vec3(5.0, 5.0, 5.0);
 		worldObjects.push_back(foo);
 	}
@@ -207,31 +207,37 @@ int main(int argc, char* args[])
 		glDisable(GL_BLEND);
 
 		//bind post processor buffer
-		postProcGrey.bindBuff();
+		//postProcGrey.bindBuff();
 
 		glClearColor(0.9, 0.9, 0.9, 1.0);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glClearStencil(0);
+		glClear(GL_STENCIL_BUFFER_BIT);
+
+		// Render the mesh into the stencil buffer.
+
 		light.render(camera);
 		light.moveCircle();
-			
+		
+
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
 			worldObjects[i].draw(camera, light.location);
 		}
 		
-		//grid.draw(camera, aspectRatio);
+		grid.draw(camera, aspectRatio);
 
 		// post processor draw
-		postProcOutline.bindBuff();
+		/*postProcOutline.bindBuff();
 		postProcGrey.drawTexture();
 
 		postProcBlur.bindBuff();
 		postProcOutline.drawTexture();
 
 		postProcBlur.drawTexture();
-		
+		*/
 		SDL_GL_SwapWindow(window);
 		
 	}
