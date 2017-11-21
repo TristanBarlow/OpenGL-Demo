@@ -227,10 +227,10 @@ int main(int argc, char* args[])
 		postProcOutline.bindBuff();
 		postProcGrey.drawTexture();
 
-		postProcBlur.bindBuff();
+		//postProcBlur.bindBuff();
 		postProcOutline.drawTexture();
 
-		postProcBlur.drawTexture();
+		//postProcBlur.drawTexture();
 		
 		SDL_GL_SwapWindow(window);
 		
