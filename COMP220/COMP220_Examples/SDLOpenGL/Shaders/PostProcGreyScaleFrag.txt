@@ -5,7 +5,7 @@ uniform sampler2D texture0;
 void main()
 {
 	
-	float foo = ((texture(texture0, textureCoords).x + texture(texture0, textureCoords).y + texture(texture0, textureCoords).z))/3;
+	float foo = ((texture(texture0, textureCoords).x + texture(texture0, textureCoords).y + texture(texture0, textureCoords).z))/1.5;
 	//Read the texture and do some processing!
 	color = vec4(foo,foo,foo,1.0f);
 }
