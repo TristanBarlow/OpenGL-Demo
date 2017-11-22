@@ -127,7 +127,7 @@ void Mesh::render(vec3 lightSourceEx)
 			glStencilFunc(GL_ALWAYS, 1, -1);
 			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-			glDrawElements(GL_LINES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_LINE_STRIP, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
 			glUseProgram(programToUse);
 
 		}
