@@ -1,6 +1,10 @@
 #pragma once
 #include "Grid.h"
 
+Grid::Grid(Camera& cam):camera(cam)
+{
+}
+
 void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 {
 	LineShader = programID;
@@ -43,7 +47,7 @@ void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 	copyBufferData();
 }
 
-void Grid::draw(Camera &camera, float aspectRatio)
+void Grid::draw(float aspectRatio)
 {
 	glUseProgram(LineShader);
 

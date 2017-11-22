@@ -121,7 +121,7 @@ void Mesh::render(vec3 lightSourceEx)
 			glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 			glUniform3fv(vertOutlinerColourLoc, 1, value_ptr(vertOutlinerColour));
 
-			glLineWidth(2);
+			glLineWidth(7);
 			glPolygonMode(GL_FRONT, GL_LINE);
 
 			glStencilFunc(GL_ALWAYS, 1, -1);

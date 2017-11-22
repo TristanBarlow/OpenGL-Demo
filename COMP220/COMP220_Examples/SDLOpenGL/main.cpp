@@ -89,18 +89,18 @@ int main(int argc, char* args[])
 	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
 	GLuint vertOutliner = LoadShaders("Shaders/cellVertShader.txt", "Shaders/cellFragShader.txt");
 
-	Grid grid;
+	Grid grid(camera);
 	grid.createGridVec(101, 101, defaultShader);
 
 	// load sphere Mesh
 	Mesh sphere(camera);
 	sphere.init("only_quad_sphere.txt", LightShader, true);
-	sphere.initCell(vertOutliner);
+	sphere.initCell(vertOutliner, vec3(0.5,0.2,0.5));
 
 	//load and create the static mesh for the tank
 	Mesh tank(camera);
 	tank.init("Tank1.FBX", TexLightShader, true, true, "Tank1DF.png");
-	tank.initCell(vertOutliner);
+	tank.initCell(vertOutliner, vec3(1.0f,1.0f,1.0f));
 
 	//load and create the static mesh drum mag
 	Mesh drumMag(camera);
@@ -228,7 +228,7 @@ int main(int argc, char* args[])
 			worldObjects[i].draw(light.location);
 		}
 		
-		grid.draw(camera, aspectRatio);
+		grid.draw(aspectRatio);
 
 		// post processor draw
 		

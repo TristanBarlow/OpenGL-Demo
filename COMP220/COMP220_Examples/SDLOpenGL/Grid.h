@@ -17,11 +17,13 @@ using glm::vec4;
 class Grid
 {
 	public:
-		void draw(Camera&, float aspectRatio);
+		Grid(Camera&);
+		void draw(float aspectRatio);
 		void createGridVec(int, int, GLuint);
 		~Grid();
 		void copyBufferData();
 	private:
+		Camera& camera;
 		GLuint LineShader;
 		vector<LineVertex> lineVerts;
 		Transform MVPMatrix;
