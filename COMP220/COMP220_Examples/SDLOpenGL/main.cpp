@@ -95,17 +95,14 @@ int main(int argc, char* args[])
 	// load sphere Mesh
 	Mesh sphere(camera);
 	sphere.init("only_quad_sphere.txt", LightShader, true);
-	sphere.initCell(vertOutliner);
 
 	//load and create the static mesh for the tank
 	Mesh tank(camera);
 	tank.init("Tank1.FBX", TexLightShader, true, true, "Tank1DF.png");
-	tank.initCell(vertOutliner);
 
 	//load and create the static mesh drum mag
 	Mesh drumMag(camera);
 	drumMag.init("drumMag.obj", TexLightShader, true, true, "DrumMag_Low_blinn6_BaseColor.png");
-	drumMag.initCell(vertOutliner);
 
 	Light light(camera);
 	light.init(defaultShader);
