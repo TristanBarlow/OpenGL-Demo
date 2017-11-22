@@ -89,7 +89,7 @@ int main(int argc, char* args[])
 	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
 	GLuint vertOutliner = LoadShaders("Shaders/cellVertShader.txt", "Shaders/cellFragShader.txt");
 
-	Grid grid;
+	Grid grid(camera);
 	grid.createGridVec(101, 101, defaultShader);
 
 	// load sphere Mesh
@@ -225,7 +225,7 @@ int main(int argc, char* args[])
 			worldObjects[i].draw(light.location);
 		}
 		
-		grid.draw(camera, aspectRatio);
+		grid.draw(aspectRatio);
 
 		// post processor draw
 		
