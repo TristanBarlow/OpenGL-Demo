@@ -18,7 +18,7 @@ class RayCast
 {
 	public:
 		RayCast(Camera&,vec3&, vec3&, int length, GLuint, vec4& = vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		void draw(float aspectRatio);
+		void draw();
 		~RayCast();
 		void copyBufferData();
 	private:

@@ -233,7 +233,7 @@ int main(int argc, char* args[])
 
 		// Render the mesh into the stencil buffer.
 
-		light.render(camera);
+		light.render();
 
 		// draw world objects
 		for (int i = 0; i < worldObjects.size(); i++)
@@ -246,11 +246,11 @@ int main(int argc, char* args[])
 		{
 			for (int i = 0; i < rayCastVec.size(); i++)
 			{
-				rayCastVec[i]->draw(aspectRatio);
+				rayCastVec[i]->draw();
 			}
 		}
 
-		grid.draw(aspectRatio);
+		grid.draw();
 
 		// post processor draw
 		

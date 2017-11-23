@@ -12,7 +12,7 @@ public:
 	vec3 scale = vec3(3.0, 3.0, 3.0);
 	float intensity = 2.0f;
 	void init(GLuint programID);
-	void render(Camera&);
+	void render();
 	void moveCircle();
 private:
 		Mesh staticMesh;

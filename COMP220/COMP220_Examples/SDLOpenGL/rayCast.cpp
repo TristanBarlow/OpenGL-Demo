@@ -1,12 +1,12 @@
 #include "rayCast.h"
 
-RayCast::RayCast(Camera &cam,vec3& start, vec3& direction, int length, GLuint programID, vec4& colour):camera(cam)
+RayCast::RayCast(Camera &cam,vec3& start, vec3& direction, int length, GLuint programID, vec4& colour):camera(cam), MVPMatrix(cam,cam.aspectRatio)
 {
 	LineShader = programID;
-	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
-		glGetUniformLocation(LineShader, "viewMatrix"),
-		glGetUniformLocation(LineShader, "projectionMatrix")
-	};
+	MVP	LineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
+						  glGetUniformLocation(LineShader, "viewMatrix"),
+						  glGetUniformLocation(LineShader, "projectionMatrix")
+						};
 	glGenBuffers(1, &lineBuff);
 	vec3 lineVertStart = start;
 	vec3 lineVertEnd = vec3(direction.x * length, direction.y * length, direction.z * length);
@@ -16,7 +16,7 @@ RayCast::RayCast(Camera &cam,vec3& start, vec3& direction, int length, GLuint pr
 	copyBufferData();
 }
 
-void RayCast::draw(float aspectRatio)
+void RayCast::draw()
 {
 	glUseProgram(LineShader);
 
@@ -28,7 +28,7 @@ void RayCast::draw(float aspectRatio)
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	MVPMatrix = calculateTransform(camera, aspectRatio);
+	MVPMatrix.calculateTransform();
 	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));

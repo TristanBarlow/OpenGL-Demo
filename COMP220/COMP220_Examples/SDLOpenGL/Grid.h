@@ -18,7 +18,7 @@ class Grid
 {
 	public:
 		Grid(Camera&);
-		void draw(float aspectRatio);
+		void draw();
 		void createGridVec(int, int, GLuint);
 		~Grid();
 		void copyBufferData();

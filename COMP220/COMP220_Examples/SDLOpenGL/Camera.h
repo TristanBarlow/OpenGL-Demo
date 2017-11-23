@@ -10,7 +10,7 @@ using namespace glm;
 class Camera
 {
 public:
-	Camera(vec3& = vec3(40.0f, 5.0f, 40.0f), vec3& = vec3(45.0f, 0.0f, 45.0f), vec3& = vec3(0.0f, 1.0f, 0.0f));
+	Camera(float, vec3& = vec3(40.0f, 5.0f, 40.0f), vec3& = vec3(45.0f, 0.0f, 45.0f), vec3& = vec3(0.0f, 1.0f, 0.0f));
 	vec3 worldPos = vec3(40.0f, 5.0f, 40.0f);  //pos of the camera
 	vec3 centre = vec3(45.0f, 0.0f, 45.0f);   //point the camera looks at
 	vec3 up = vec3(0.0f, 1.0f, 0.0f);		 //the up direction of the camera(where is directly above of the camera)
@@ -19,6 +19,7 @@ public:
 	vec3 centreMag = (centre - worldPos);
 	mat4 cameraMatrix;
 	float length = centreMag.length();
+	float aspectRatio;
 	void strafe(float);
 	void move(float);
 	void lift(float);
