@@ -25,7 +25,7 @@ Mesh::~Mesh()
 	glDisableVertexAttribArray(3);
 }
 
-Mesh::Mesh(Camera& camera1):camera(camera1)
+Mesh::Mesh(Camera& camera1):camera(camera1),MVPMatrix(camera1, camera1.aspectRatio)
 {
 
 }
@@ -73,7 +73,7 @@ void Mesh::render(vec3 lightSourceEx)
 		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0,1.0,0.1, 1.0)));
 	}
 
-	MVPMatrix = calculateTransform(camera, aspectRatio, worldPos, worldRot, worldScale);
+	MVPMatrix.calculateTransform(worldPos, worldRot, worldScale);
 	glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
@@ -10,17 +9,17 @@
 #include "Camera.h"
 #include <iostream>
 #include "ShaderLoader.h"
+
 using namespace std;
 using glm::vec3;
 using glm::vec4;
 
-class Grid
+class RayCast
 {
 	public:
-		Grid(Camera&);
+		RayCast(Camera&,vec3&, vec3&, int length, GLuint, vec4& = vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		void draw();
-		void createGridVec(int, int, GLuint);
-		~Grid();
+		~RayCast();
 		void copyBufferData();
 	private:
 		Camera& camera;
@@ -28,5 +27,6 @@ class Grid
 		vector<LineVertex> lineVerts;
 		Transform MVPMatrix;
 		GLuint lineBuff;
-		MVP MVPLineShaderLoc;	
+		MVP MVPLineShaderLoc;
+
 };

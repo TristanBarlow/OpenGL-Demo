@@ -27,6 +27,7 @@
 #include "Light.h"
 #include "WorldObject.h"
 #include "PostProcessor.h"
+#include "rayCast.h"
 
 using namespace std;
 using namespace glm;
@@ -38,7 +39,7 @@ SDL_GLContext glContext;
 int SCREEN_WIDTH = 1200;
 int SCREEN_HEIGHT = 800;
 float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
-Camera camera;
+Camera camera(SCREEN_WIDTH/SCREEN_HEIGHT);
 
 
 // initialises modules

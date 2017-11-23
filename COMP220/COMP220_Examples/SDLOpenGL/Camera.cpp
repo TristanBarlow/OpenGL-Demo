@@ -1,6 +1,7 @@
 #include "Camera.h"
-Camera::Camera(vec3& worldPos, vec3& centre, vec3& up)
+Camera::Camera(float aspect, vec3& worldPos, vec3& centre, vec3& up)
 {
+	aspectRatio = aspect;
 	this->worldPos = worldPos; 
 	this->centre = centre;  
 	this->up = up;
