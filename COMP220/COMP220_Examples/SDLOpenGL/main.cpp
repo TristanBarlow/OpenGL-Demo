@@ -215,11 +215,8 @@ int main(int argc, char* args[])
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Render the mesh into the stencil buffer.
-
 		light.render(camera);
 
-		
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
 			worldObjects[i].draw(light.location);
