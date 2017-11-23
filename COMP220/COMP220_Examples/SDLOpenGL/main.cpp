@@ -178,7 +178,7 @@ int main(int argc, char* args[])
 				switch(ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
-						newRayCast = new RayCast(camera, camera.worldPos, camera.forward, 500, defaultShader, vec4(rand(),0.0,0.0,1.0f));
+						newRayCast = new RayCast(camera, camera.worldPos, camera.forward, 500, defaultShader, vec4(rand()%10/10,0.0 , 0.0f,1.0f));
 						rayCastVec.push_back(newRayCast);
 						break;
 					case SDL_BUTTON_RIGHT:
