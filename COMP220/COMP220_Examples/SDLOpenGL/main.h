@@ -27,6 +27,7 @@
 #include "Light.h"
 #include "WorldObject.h"
 #include "PostProcessor.h"
+#include "rayCast.h"
 
 using namespace std;
 using namespace glm;

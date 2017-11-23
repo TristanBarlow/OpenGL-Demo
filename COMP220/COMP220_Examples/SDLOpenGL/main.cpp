@@ -2,6 +2,7 @@
 
 #include "main.h"
 
+
 bool Init()
 {
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
@@ -104,6 +105,7 @@ int main(int argc, char* args[])
 	Mesh drumMag(camera);
 	drumMag.init("drumMag.obj", TexLightShader, true, true, "DrumMag_Low_blinn6_BaseColor.png");
 
+	// init light
 	Light light(camera);
 	light.init(defaultShader);
 	light.location = vec3(-10.0, 30.0, 10.0);
@@ -137,6 +139,8 @@ int main(int argc, char* args[])
 
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
 
+	vector <RayCast*> rayCastVec;
+
 	// PostProcessoring SHTUFF
 	PostProcessor postProcGrey;
 	postProcGrey.init("Shaders/PostProcVert.txt","Shaders/PostProcGreyScaleFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -148,6 +152,7 @@ int main(int argc, char* args[])
 	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
+	RayCast* newRayCast;
 
 	//set up variables to handle mouse movement
 	float itterator = 0;
@@ -169,7 +174,17 @@ int main(int argc, char* args[])
 			case SDL_MOUSEMOTION:
 				camera.rotate(ev.motion.xrel, ev.motion.yrel);
 				break;
-
+			case SDL_MOUSEBUTTONDOWN:
+				switch(ev.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+						newRayCast = new RayCast(camera, camera.worldPos, camera.forward, 500, defaultShader, vec4(rand(),0.0,0.0,1.0f));
+						rayCastVec.push_back(newRayCast);
+						break;
+					case SDL_BUTTON_RIGHT:
+						break;
+				}
+				break;
 				//KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
 				//Check the actual key code of the key that has been pressed
@@ -200,6 +215,7 @@ int main(int argc, char* args[])
 				case SDLK_0:
 					break;
 				}
+				break;
 			}
 		}
 		glEnable(GL_CULL_FACE);
@@ -219,12 +235,21 @@ int main(int argc, char* args[])
 
 		light.render(camera);
 
-		
+		// draw world objects
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
 			worldObjects[i].draw(light.location);
 		}
-		
+
+		// draw any raycasts
+		if (rayCastVec.size() > 0)
+		{
+			for (int i = 0; i < rayCastVec.size(); i++)
+			{
+				rayCastVec[i]->draw(aspectRatio);
+			}
+		}
+
 		grid.draw(aspectRatio);
 
 		// post processor draw
@@ -239,6 +264,19 @@ int main(int argc, char* args[])
 
 		SDL_GL_SwapWindow(window);
 		
+	}
+	auto iter = rayCastVec.begin();
+	while (iter != rayCastVec.end())
+	{
+		if ((*iter))
+		{
+			delete (*iter);
+			iter = rayCastVec.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
 	}
 	glDeleteProgram(defaultShader);
 	glDeleteProgram(TexLightShader);
