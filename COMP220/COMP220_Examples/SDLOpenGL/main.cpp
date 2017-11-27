@@ -232,7 +232,7 @@ int main(int argc, char* args[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the mesh into the stencil buffer.
-
+		light.moveCircle();
 		light.render();
 
 		// draw world objects

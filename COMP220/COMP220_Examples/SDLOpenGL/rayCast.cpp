@@ -3,7 +3,7 @@
 RayCast::RayCast(Camera &cam,vec3& start, vec3& direction, int length, GLuint programID, vec4& colour):camera(cam), MVPMatrix(cam,cam.aspectRatio)
 {
 	LineShader = programID;
-	MVP	LineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
+	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
 						  glGetUniformLocation(LineShader, "viewMatrix"),
 						  glGetUniformLocation(LineShader, "projectionMatrix")
 						};
