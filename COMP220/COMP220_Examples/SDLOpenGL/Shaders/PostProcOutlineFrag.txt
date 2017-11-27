@@ -2,16 +2,38 @@
 out vec4 color;
 in vec2 textureCoords;
 uniform sampler2D texture0;
+uniform vec3 outlineColour;
+float distanceCheck = 0.005;
 void main()
 {
-	vec2 LeftTextureCoords =  vec2(textureCoords.x-0.01, textureCoords.y);	
-	float rDiff = (texture(texture0, textureCoords).r - texture(texture0, LeftTextureCoords).r);
-	float gDiff = (texture(texture0, textureCoords).g - texture(texture0, LeftTextureCoords).g);
-	float bDiff = (texture(texture0, textureCoords).b - texture(texture0, LeftTextureCoords).b);
-	float likeness = sqrt(rDiff+gDiff+bDiff);
+	vec2 LeftUpTextureCoords =  vec2(textureCoords.x - distanceCheck, textureCoords.y + distanceCheck);	
+	float rDiff1 = (texture(texture0, textureCoords).r - texture(texture0, LeftUpTextureCoords).r);
+	float gDiff1 = (texture(texture0, textureCoords).g - texture(texture0, LeftUpTextureCoords).g);
+	float bDiff1 = (texture(texture0, textureCoords).b - texture(texture0, LeftUpTextureCoords).b);
+
+	vec2 LeftDownTextureCoords =  vec2(textureCoords.x - distanceCheck, textureCoords.y - distanceCheck);	
+	float rDiff2 = (texture(texture0, textureCoords).r - texture(texture0, LeftDownTextureCoords).r);
+	float gDiff2 = (texture(texture0, textureCoords).g - texture(texture0, LeftDownTextureCoords).g);
+	float bDiff2 = (texture(texture0, textureCoords).b - texture(texture0, LeftDownTextureCoords).b);
+
+	vec2 RightUpTextureCoords =  vec2(textureCoords.x + distanceCheck, textureCoords.y + distanceCheck);	
+	float rDiff3 = (texture(texture0, textureCoords).r - texture(texture0, RightUpTextureCoords).r);
+	float gDiff3 = (texture(texture0, textureCoords).g - texture(texture0, RightUpTextureCoords).g);
+	float bDiff3 = (texture(texture0, textureCoords).b - texture(texture0, RightUpTextureCoords).b);
+
+	vec2 RightDownTextureCoords =  vec2(textureCoords.x + distanceCheck, textureCoords.y - distanceCheck);	
+	float rDiff4 = (texture(texture0, textureCoords).r - texture(texture0, RightDownTextureCoords).r);
+	float gDiff4 = (texture(texture0, textureCoords).g - texture(texture0, RightDownTextureCoords).g);
+	float bDiff4 = (texture(texture0, textureCoords).b - texture(texture0, RightDownTextureCoords).b);
+
+	float rDiffMean = ((rDiff1 + rDiff2 + rDiff3 + rDiff4)/4);
+	float gDiffMean = ((gDiff1 + gDiff2 + gDiff3 + gDiff4)/4);
+	float bDiffMean = ((bDiff1 + bDiff2 + bDiff3 + bDiff4)/4);
+
+	float likeness = sqrt(rDiffMean+gDiffMean+bDiffMean);
 	 if(likeness > 0.90f)
 	 {
-		color = vec4(0.0f,0.0f,0.0f,1.0f);
+		color = vec4(outlineColour, 1.0f);
 	 }
 	else
 	{

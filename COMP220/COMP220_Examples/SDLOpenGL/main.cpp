@@ -149,7 +149,7 @@ int main(int argc, char* args[])
 	postProcBlur.init("Shaders/PostProcVert.txt", "Shaders/PostProcBlurFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	PostProcessor postProcOutline;
-	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH-40, SCREEN_HEIGHT-40, true);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 	RayCast* newRayCast;
@@ -225,7 +225,7 @@ int main(int argc, char* args[])
 
 		//bind post processor buffer
 		//postProcGrey.bindBuff();
-		//postProcOutline.bindBuff();
+		postProcOutline.bindBuff();
 
 		glClearColor(0.9, 0.9, 0.9, 1.0);
 		glClearDepth(1.0f);
@@ -257,8 +257,8 @@ int main(int argc, char* args[])
 		//postProcGrey.drawTexture();
 
 		//postProcBlur.bindBuff();
-		//postProcOutline.unbindBuff();
-		//postProcOutline.drawTexture();
+		postProcOutline.unbindBuff();
+		postProcOutline.drawTexture();
 		//
 		//postProcBlur.drawTexture();
 
