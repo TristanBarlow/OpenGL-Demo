@@ -225,7 +225,7 @@ int main(int argc, char* args[])
 
 		//bind post processor buffer
 		//postProcGrey.bindBuff();
-		postProcOutline.bindBuff();
+		//postProcOutline.bindBuff();
 
 		glClearColor(0.9, 0.9, 0.9, 1.0);
 		glClearDepth(1.0f);
@@ -257,9 +257,8 @@ int main(int argc, char* args[])
 		//postProcGrey.drawTexture();
 
 		//postProcBlur.bindBuff();
-		postProcOutline.unbindBuff();
-		postProcOutline.drawTexture();
-		//
+		//postProcOutline.unbindBuff();
+		//postProcOutline.drawTexture();
 		//postProcBlur.drawTexture();
 
 		SDL_GL_SwapWindow(window);

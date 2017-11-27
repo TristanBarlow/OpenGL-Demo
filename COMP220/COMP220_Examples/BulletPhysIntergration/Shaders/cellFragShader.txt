@@ -1,0 +1,8 @@
+#version 330 core
+out vec4 color;
+in vec4 vertexColorOut;
+uniform vec3 cellShaderColour;
+void main()
+{
+  color = vec4(cellShaderColour,1.0);
+}

@@ -39,7 +39,8 @@ SDL_GLContext glContext;
 int SCREEN_WIDTH = 1200;
 int SCREEN_HEIGHT = 800;
 float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
-Camera camera(SCREEN_WIDTH/SCREEN_HEIGHT);
+
+Camera camera(aspectRatio);
 
 
 // initialises modules

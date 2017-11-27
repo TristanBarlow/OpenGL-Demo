@@ -1,0 +1,35 @@
+#version 330 core
+layout(location = 0) in vec3 vertexPos;
+layout(location=1) in vec4 vertexColour;
+layout(location=2) in vec2 vertexTextureCoord;
+layout(location=3) in vec3 vertexNormal;
+
+
+out vec4 vertexColourOut;
+out vec3 vertexNormalDir;
+out vec3 vertCameraDir;
+out vec3 lightDirection;
+out float lightDistance;
+
+
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec3 lightLocation;
+uniform vec3 cameraLocation;
+
+
+
+void main()
+{	
+	lightDistance = 200/pow(length(lightLocation-vertexPos), 2);
+
+	vertexNormalDir = vertexNormal;
+	vertexColourOut=vertexColour;
+
+	mat4 MVPmatrix = projectionMatrix*viewMatrix*modelMatrix;
+	gl_Position =MVPmatrix * vec4(vertexPos,1.0);
+
+	vertCameraDir = normalize(cameraLocation - vertexPos);
+	lightDirection = normalize(lightLocation - vertexPos);
+}
