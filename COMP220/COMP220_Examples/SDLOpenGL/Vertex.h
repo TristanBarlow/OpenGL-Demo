@@ -11,7 +11,8 @@ struct Vertex
 };
 struct LineVertex
 {
-	LineVertex(vec3&, vec4&);
+	
 	vec3 vertexPos;
 	vec4 vertexCol;
+	LineVertex(vec3&, vec4&);
 };
