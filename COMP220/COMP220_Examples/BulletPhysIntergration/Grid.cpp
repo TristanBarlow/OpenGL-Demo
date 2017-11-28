@@ -23,8 +23,8 @@ void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 			vec3 lineVert2 = vec3(i, -1, 0);
 			vec3 lineVert3 = vec3(i, -1, j);
 			vec3 lineVert4 = vec3(0, -1, j);
-			vec4 col = vec4(0.5, 0.5, 0.5, 1.0);
-			vec4 col1 = vec4(0.5, 0.5, 0.5, 1.0);
+			vec4 col = vec4(0.3, 0.3, 0.3, 1.0);
+			vec4 col1 = vec4(0.3, 0.3, 0.3, 1.0);
 			if (j%10==0 || j== startPosY)
 			{
 				col = vec4(0.1, 1.0, 0.1, 1.0);

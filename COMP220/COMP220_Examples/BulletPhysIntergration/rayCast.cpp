@@ -20,7 +20,7 @@ void RayCast::draw()
 {
 	glUseProgram(LineShader);
 
-	glLineWidth(1);
+	glLineWidth(3);
 	glPolygonMode(GL_FRONT, GL_LINE);
 
 	glStencilFunc(GL_ALWAYS, 1, -1);

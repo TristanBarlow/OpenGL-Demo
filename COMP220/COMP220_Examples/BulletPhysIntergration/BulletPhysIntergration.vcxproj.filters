@@ -151,5 +151,11 @@
     <Text Include="Shaders\cellVertShader.txt">
       <Filter>Source Files\shaders</Filter>
     </Text>
+    <Text Include="Shaders\PostProcBloomFragPass1.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
+    <Text Include="Shaders\PostProcBloomFragPass2.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>

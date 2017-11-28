@@ -28,5 +28,4 @@ void main()
     vec4 diffuse = cosTheta*objectColour;
 
 	colour= diffuse + specular;
-
 }

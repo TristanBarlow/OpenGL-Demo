@@ -258,6 +258,8 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <Text Include="Shaders\LightFrag.txt" />
     <Text Include="Shaders\LightVert.txt" />
     <Text Include="Shaders\only_quad_sphere.txt" />
+    <Text Include="Shaders\PostProcBloomFragPass1.txt" />
+    <Text Include="Shaders\PostProcBloomFragPass2.txt" />
     <Text Include="Shaders\PostProcBlurFrag.txt" />
     <Text Include="Shaders\PostProcOutlineFrag.txt" />
     <Text Include="Shaders\PostProcGreyScaleFrag.txt" />

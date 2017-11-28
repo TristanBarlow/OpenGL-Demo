@@ -161,10 +161,15 @@ int main(int argc, char* args[])
 	postProcBlur.init("Shaders/PostProcVert.txt", "Shaders/PostProcBlurFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	PostProcessor postProcOutline;
-	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH-40, SCREEN_HEIGHT-40, true);
+	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT, true);
+
+	PostProcBloom postProcBloom;
+	postProcBloom.init("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass1.txt", SCREEN_WIDTH, SCREEN_HEIGHT, true);
+	postProcBloom.PostProcBloomInit("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass2.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 	RayCast* newRayCast;
+
 
 	int yGrav = -10;
 
@@ -192,7 +197,7 @@ int main(int argc, char* args[])
 				switch(ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
-						newRayCast = new RayCast(camera, camera.worldPos, camera.forward, 500, defaultShader, vec4(rand()%10/10,0.0 , 0.0f,1.0f));
+						newRayCast = new RayCast(camera, camera.worldPos, camera.forward, 500, defaultShader, vec4(0.7,0.3 , 0.7f,1.0f));
 						rayCastVec.push_back(newRayCast);
 						break;
 					case SDL_BUTTON_RIGHT:
@@ -242,10 +247,9 @@ int main(int argc, char* args[])
 
 
 		//bind post processor buffer
-		//postProcGrey.bindBuff();
-		//postProcOutline.bindBuff();
+		postProcBloom.bind1stBuff();
 
-		glClearColor(0.9, 0.9, 0.9, 1.0);
+		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -272,12 +276,9 @@ int main(int argc, char* args[])
 
 		// post processor draw
 		
-		//postProcGrey.drawTexture();
+		postProcBloom.applyBloom();
 
-		//postProcBlur.bindBuff();
-		//postProcOutline.unbindBuff();
-		//postProcOutline.drawTexture();
-		//postProcBlur.drawTexture();
+
 
 		SDL_GL_SwapWindow(window);
 		
