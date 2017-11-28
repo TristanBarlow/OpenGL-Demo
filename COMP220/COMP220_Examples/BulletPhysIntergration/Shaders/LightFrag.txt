@@ -26,6 +26,7 @@ void main()
 	float cosTheta = dot(vertexNormalDir, lightDirection );
 	cosTheta = clamp(cosTheta, 0,1);
     vec4 diffuse = cosTheta*objectColour;
+
 	colour= diffuse + specular;
 
 }

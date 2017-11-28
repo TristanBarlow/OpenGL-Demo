@@ -28,10 +28,15 @@ void WorldObject::update()
 
 void WorldObject::init(Mesh& meshAd)
 {
+	worldRotation = vec3(rand()%90, rand()%90, rand()%90);
 	mesh = &meshAd;
 }
 
 void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3 size, btScalar mass)
 {
-	rigidBody = physSim.creatRigidBodyCube(size, mass, btVector3(worldLocation.x, worldLocation.y, worldLocation.z));
+	btQuaternion QuatAroundX = btQuaternion(btVector3(1.0, 0.0, 0.0), worldRotation.x);
+	btQuaternion QuatAroundY = btQuaternion(btVector3(0.0, 1.0, 0.0), worldRotation.y);
+	btQuaternion QuatAroundZ = btQuaternion(btVector3(0.0, 0.0, 1.0), worldRotation.z);
+	btQuaternion finalOrientation = QuatAroundX * QuatAroundY * QuatAroundZ;
+	rigidBody = physSim.creatRigidBodyCube(size, mass, btVector3(worldLocation.x, worldLocation.y, worldLocation.z),finalOrientation );
 }

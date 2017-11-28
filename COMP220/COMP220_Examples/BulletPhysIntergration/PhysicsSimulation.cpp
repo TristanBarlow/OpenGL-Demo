@@ -61,7 +61,7 @@ PhysicsSimulation::~PhysicsSimulation()
 	delete collisionConfiguration;
 }
 
-btRigidBody* PhysicsSimulation::creatRigidBodyCube(btVector3& size, btScalar objMass,  btVector3& location)
+btRigidBody* PhysicsSimulation::creatRigidBodyCube(btVector3& size, btScalar objMass,  btVector3& location, btQuaternion& rotation)
 {
 	// physics shtuff
 	btCollisionShape* newShape = new btBoxShape(size);
@@ -69,6 +69,7 @@ btRigidBody* PhysicsSimulation::creatRigidBodyCube(btVector3& size, btScalar obj
 	btTransform newTransform;
 	newTransform.setIdentity();
 	newTransform.setOrigin(location);
+	newTransform.setRotation(rotation);
 
 	btScalar mass(objMass);
 	btVector3 localInertia(0,0,0);

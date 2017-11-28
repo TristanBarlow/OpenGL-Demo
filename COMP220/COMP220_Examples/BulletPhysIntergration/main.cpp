@@ -134,8 +134,8 @@ int main(int argc, char* args[])
 	{
 		WorldObject foo;
 		foo.init(tank);
-		foo.worldLocation = vec3(((rand()% 40)-20), 20, ((rand() % 40) -20));
-		foo.addRigidBody(physSim, btVector3(5.0, 1.0, 5.0), btScalar(1.0));
+		foo.worldLocation = vec3(((rand()% 30)-20), 20, ((rand() % 30) -20));
+		foo.addRigidBody(physSim, btVector3(3.0, 2.0, 3.0), btScalar(0.2));
 		worldObjects.push_back(foo);
 	}
 
@@ -143,10 +143,10 @@ int main(int argc, char* args[])
 	{
 		WorldObject foo;
 		foo.init(drumMag);
-		foo.worldLocation = vec3((rand() % 40) - 20, 3.0, (rand() % 40) - 20);
+		foo.worldLocation = vec3((rand() % 30) - 20, 20, (rand() % 30) - 20);
 		foo.worldScale = vec3(5.0, 5.0, 5.0);
+		foo.addRigidBody(physSim, btVector3(3.0, 2.0, 2.0), btScalar(0.1));
 		worldObjects.push_back(foo);
-		foo.addRigidBody(physSim, btVector3(5.0, 5.0, 5.0), btScalar(100.0));
 	}
 
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");

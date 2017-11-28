@@ -24,12 +24,16 @@ void main()
 {	
 	lightDistance = 200/pow(length(lightLocation-vertexPos), 2);
 
-	vertexNormalDir = vertexNormal;
+	//Make surface pos and normals relative to the new  model matrix!!!!
+	vec3 normal = normalize(transpose(inverse(mat3(modelMatrix))) * vertexNormal);
+	vec3 surfacePos = vec3(modelMatrix * vec4(vertexPos, 1));
+
+	vertexNormalDir = normal;
 	vertexColourOut=vertexColour;
 
 	mat4 MVPmatrix = projectionMatrix*viewMatrix*modelMatrix;
 	gl_Position =MVPmatrix * vec4(vertexPos,1.0);
 
-	vertCameraDir = normalize(cameraLocation - vertexPos);
-	lightDirection = normalize(lightLocation - vertexPos);
+	vertCameraDir = normalize(cameraLocation - surfacePos);
+	lightDirection = normalize(lightLocation - surfacePos);
 }

@@ -16,7 +16,6 @@ uniform vec4 diffuseMaterialColour;
 uniform vec4 specularMaterialColour;
 
 vec3 shine;
-float roundAmount = 80.0f;
 
 void main()
 {

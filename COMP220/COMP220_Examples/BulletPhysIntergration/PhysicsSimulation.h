@@ -8,7 +8,7 @@ class PhysicsSimulation
 public:
 	PhysicsSimulation();
 	~PhysicsSimulation();
-	btRigidBody* creatRigidBodyCube(btVector3& = btVector3(btScalar(50.), btScalar(1.), btScalar(50.)), btScalar = btScalar(0.), btVector3& = btVector3(0, -56, 0));
+	btRigidBody* creatRigidBodyCube(btVector3& size = btVector3(btScalar(50.), btScalar(1.), btScalar(50.)), btScalar mass = btScalar(0.), btVector3& location = btVector3(0, -56, 0), btQuaternion& rot = btQuaternion(0.0,0.0,0.0,1.0));
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 private:
