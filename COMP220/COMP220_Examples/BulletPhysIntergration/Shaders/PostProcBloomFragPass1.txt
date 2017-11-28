@@ -7,7 +7,7 @@ void main()
 {
 	float luminance = sqrt(texture(texture0, textureCoords).x*texture(texture0, textureCoords).x + texture(texture0, textureCoords).y*texture(texture0, textureCoords).y +texture(texture0, textureCoords).z*texture(texture0, textureCoords).z);
 	//Read the texture and do some processing!
-	if (luminance > 0.95)
+	if (luminance > 0.9)
 	{
 	color = texture(texture0, textureCoords);
 	}

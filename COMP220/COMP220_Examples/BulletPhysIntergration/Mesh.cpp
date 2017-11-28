@@ -70,7 +70,7 @@ void Mesh::render(vec3 lightSourceEx)
 		glUniform1f(lightDistanceLoc, distanceToLight);
 		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSource));
 		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.worldPos));
-		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0,1.0,0.8, 1.0)));
+		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0,1.0,0.5, 1.0)));
 	}
 
 	MVPMatrix.calculateTransform(worldPos, worldRot, worldScale);

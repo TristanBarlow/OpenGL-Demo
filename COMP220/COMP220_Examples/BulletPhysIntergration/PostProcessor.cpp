@@ -120,7 +120,7 @@ void PostProcBloom::PostProcBloomInit(const char* vertShader, const char* fragSh
 {
 	bloomShader = LoadShaders(vertShader, fragShader);
 	
-	resolution = 1024;
+	resolution = 2048;
 	radius = 3;
 
 	//The texture we are going to render to
