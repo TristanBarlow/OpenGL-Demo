@@ -83,3 +83,25 @@ btRigidBody* PhysicsSimulation::creatRigidBodyCube(btVector3& size, btScalar obj
 	dynamicsWorld->addRigidBody(newBody);
 	return newBody;
 }
+btRigidBody* PhysicsSimulation::createConvexHullShape(btVector3& size, btScalar objMass, btVector3& location, btQuaternion& rotation)
+{
+	// physics shtuff
+	btCollisionShape* newShape = new btBoxShape(size);
+
+	btTransform newTransform;
+	newTransform.setIdentity();
+	newTransform.setOrigin(location);
+	newTransform.setRotation(rotation);
+
+	btScalar mass(objMass);
+	btVector3 localInertia(0, 0, 0);
+
+	//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(newTransform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, newShape, localInertia);
+	btRigidBody* newBody = new btRigidBody(rbInfo);
+
+	//add the body to the dynamics world
+	dynamicsWorld->addRigidBody(newBody);
+	return newBody;
+}
