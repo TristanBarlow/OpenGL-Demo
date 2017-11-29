@@ -10,7 +10,7 @@ struct Transform
 {
 	Transform(Camera&cam, float aspectRatio) :viewMatrix(cam.cameraMatrix)
 	{
-		projectionMatrix = perspective(radians(90.0f), aspectRatio, 0.1f, 200.0f);
+		projectionMatrix = perspective(radians(90.0f), aspectRatio, 0.1f, 1000.0f);
 	};
 	mat4 modelMatrix;
 	mat4& viewMatrix;

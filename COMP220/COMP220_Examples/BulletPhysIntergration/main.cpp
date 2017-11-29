@@ -88,9 +88,8 @@ int main(int argc, char* args[])
 	PhysicsSimulation physSim;
 
 	btRigidBody* ground = physSim.creatRigidBodyCube(btVector3(100, 1, 100),0, btVector3(0, -1, 0));
+
 	btRigidBody* celing = physSim.creatRigidBodyCube(btVector3(100,1,100), 0.0, btVector3(0,56,0));
-
-
 
 	//initialse vertices vector that will take the vertices of the obj file
 
@@ -105,15 +104,20 @@ int main(int argc, char* args[])
 
 	// load sphere Mesh
 	Mesh sphere(camera);
-	sphere.init("only_quad_sphere.txt", LightShader, true);
+	sphere.init("Meshes/only_quad_sphere.txt", LightShader, true);
 
 	//load and create the static mesh for the tank
 	Mesh tank(camera);
-	tank.init("Tank1.FBX", TexLightShader, true, true, "Tank1DF.png");
+	tank.init("Meshes/Tank1.FBX", TexLightShader, true, true, "Textures/Tank1DF.png");
 
 	//load and create the static mesh drum mag
 	Mesh drumMag(camera);
-	drumMag.init("drumMag.obj", TexLightShader, true, true, "DrumMag_Low_blinn6_BaseColor.png");
+	drumMag.init("Meshes/drumMag.obj", TexLightShader, true, true, "Textures/DrumMag_Low_blinn6_BaseColor.png");
+
+	Mesh skyBoxMesh(camera);
+	skyBoxMesh.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
+	skyBoxMesh.worldScale = vec3(400.0, 400.0, 400.0);
+	skyBoxMesh.worldPos = vec3(250, 0.0, 150);
 
 	// init light
 	Light light(camera);
@@ -245,7 +249,6 @@ int main(int argc, char* args[])
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_STENCIL_TEST);
 
-
 		//bind post processor buffer
 		postProcBloom.bind1stBuff();
 
@@ -274,11 +277,11 @@ int main(int argc, char* args[])
 
 		grid.draw();
 
+		glDisable(GL_CULL_FACE);
+		skyBoxMesh.render();
+
 		// post processor draw
-		
 		postProcBloom.applyBloom();
-
-
 
 		SDL_GL_SwapWindow(window);
 		

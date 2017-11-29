@@ -228,6 +228,7 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClCompile Include="PhysicsSimulation.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="rayCast.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="subMesh.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -245,6 +246,7 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="rayCast.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="subMesh.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />

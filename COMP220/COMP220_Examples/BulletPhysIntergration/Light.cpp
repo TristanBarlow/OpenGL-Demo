@@ -6,7 +6,7 @@ Light::Light(Camera& camera):staticMesh(camera)
 
 void Light::init(GLuint programID)
 {
-	staticMesh.init("only_quad_sphere.txt", programID);
+	staticMesh.init("Meshes/only_quad_sphere.txt", programID);
 	staticMesh.worldPos = location;
 }
 
