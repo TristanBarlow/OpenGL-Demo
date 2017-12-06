@@ -45,19 +45,17 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool t
 		lightDirectionLoc = glGetUniformLocation(programID, "lightLocation");
 		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
 		cameraLocationLoc = glGetUniformLocation(programID, "cameraLocation");
-		specularMaterialColour = glGetUniformLocation(programID, "specularMaterialColour");
+		specularMaterialColourLoc = glGetUniformLocation(programID, "specularMaterialColour");
+		lightColourLoc = glGetUniformLocation(programID, "objectColour");
+		diffuseMaterialColourLoc = glGetUniformLocation(programID, "diffuseLightColour");
+		specularIntensityLoc = glGetUniformLocation(programID, "specularIntensity");
 	}
 	if (hasTexture)
 	{
 		textureID = loadTexture(texturefilename);
 		textureLocation = glGetUniformLocation(programID, "baseTexture");
 	}
-	else
-	{
-		lightColourLoc = glGetUniformLocation(programID, "objectColour");
-		noTextureColour = vec4(0.5, 0.5, 0.5, 1.0f);
-	}
-}
+} 
 
 void Mesh::render(vec3 lightSourceEx) 
 {
@@ -65,12 +63,13 @@ void Mesh::render(vec3 lightSourceEx)
 	glUseProgram(programToUse);
 	if (islitt)
 	{
-		lightSource = lightSourceEx;
-		distanceToLight = 1/length(lightSource - worldPos);
+		distanceToLight = 1/length(lightSourceEx - worldPos);
 		glUniform1f(lightDistanceLoc, distanceToLight);
-		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSource));
+		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSourceEx));
 		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.worldPos));
-		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0,1.0,0.5, 1.0)));
+		glUniform4fv(specularMaterialColourLoc, 1, value_ptr(specularColour));
+		glUniform4fv(specularIntensityLoc, 1, value_ptr(specularIntensity));
+		glUniform4fv(diffuseMaterialColourLoc, 1, value_ptr(diffuseLightColour));
 	}
 
 	MVPMatrix.calculateTransform(worldPos, worldRot, worldScale);
@@ -87,7 +86,7 @@ void Mesh::render(vec3 lightSourceEx)
 	else
 	{
 		glUniform4fv(lightColourLoc, 1, value_ptr(noTextureColour));
-		glUniform4fv(specularMaterialColour, 1, value_ptr(vec4(1.0f,1.0f,1.0f,1.0f)));
+		glUniform4fv(specularMaterialColourLoc, 1, value_ptr(specularColour));
 	}
 	for (int i = 0; i < subMeshes.size(); i++)
 	{
@@ -112,6 +111,7 @@ void Mesh::render(vec3 lightSourceEx)
 			glEnableVertexAttribArray(3);
 			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexNormals)));
 		}
+
 		if (vertOutlinerMe)
 		{
 			glEnable(GL_STENCIL_TEST);
@@ -135,13 +135,7 @@ void Mesh::render(vec3 lightSourceEx)
 	}
 }
 
-void Mesh::movement(float move)
-{
-	worldPos += worldRot*move;
-	worldRot = normalize(vec3(0.0f, 0.0f, 0.0f) - worldPos);
-}
-
-void Mesh::initCell(GLuint vertOutliner, vec3 colour)
+void Mesh::initVertOutline(GLuint vertOutliner, vec3 colour)
 {
 	vertOutlinerMe = true;
 	LineShader = vertOutliner;
@@ -165,7 +159,38 @@ void Mesh::copyBufferData()
 	}
 }
 
-bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes)
+void Mesh::maxMinCheck(subMesh * pSubmesh, vec3 & currentVector)
+{
+
+	if (pSubmesh->maxXYZ.x < currentVector.x)
+	{
+		pSubmesh->maxXYZ.x = currentVector.x;
+	}
+	if (pSubmesh->maxXYZ.y < currentVector.y)
+	{
+		pSubmesh->maxXYZ.y = currentVector.y;
+	}
+	if (pSubmesh->maxXYZ.z < currentVector.z)
+	{
+		pSubmesh->maxXYZ.z = currentVector.z;
+	}
+
+	if (pSubmesh->minXYZ.x > currentVector.x)
+	{
+		pSubmesh->minXYZ.x = currentVector.x;
+	}
+	if (pSubmesh->minXYZ.y > currentVector.y)
+	{
+		pSubmesh->minXYZ.y = currentVector.y;
+	}
+	if (pSubmesh->minXYZ.z > currentVector.z)
+	{
+		pSubmesh->minXYZ.z = currentVector.z;
+	}
+
+}
+
+bool Mesh::loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes)
 {
 
 	std::vector<Vertex> vertices;
@@ -194,6 +219,7 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 			{
 				aiVector3D currentModelVertex = currentMesh->mVertices[v];
 				currentVertex.vertexPos = { currentModelVertex.x, currentModelVertex.y, currentModelVertex.z };
+				maxMinCheck(pSubMesh, currentVertex.vertexPos);
 				currentVertex.vertexCol = { 1.0f, 1.0f, 1.0f, 1.0f };
 			}
 
@@ -225,6 +251,7 @@ bool loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &meshes
 			pSubMesh->meshElementArray.push_back(currentModelFace.mIndices[0]);
 			pSubMesh->meshElementArray.push_back(currentModelFace.mIndices[1]);
 		}
+		pSubMesh->calcSizes();
 		meshes.push_back(pSubMesh);
 		vertices.clear();
 		indices.clear();

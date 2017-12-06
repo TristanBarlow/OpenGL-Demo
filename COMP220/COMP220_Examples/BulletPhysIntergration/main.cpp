@@ -87,9 +87,10 @@ int main(int argc, char* args[])
 	//Create physics simulation
 	PhysicsSimulation physSim;
 
-	btRigidBody* ground = physSim.creatRigidBodyCube(btVector3(100, 1, 100),0, btVector3(0, -1, 0));
+	btRigidBody* ground = physSim.creatRigidBodyCube(btVector3(100, 1, 100),0, btVector3(0, -56, 0));
 
 	btRigidBody* celing = physSim.creatRigidBodyCube(btVector3(100,1,100), 0.0, btVector3(0,56,0));
+
 
 	//initialse vertices vector that will take the vertices of the obj file
 
@@ -114,7 +115,10 @@ int main(int argc, char* args[])
 	Mesh drumMag(camera);
 	drumMag.init("Meshes/drumMag.obj", TexLightShader, true, true, "Textures/DrumMag_Low_blinn6_BaseColor.png");
 
-	Mesh skyBoxMesh(camera);
+	Mesh cube(camera);
+	cube.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
+
+	SkyBox skyBoxMesh(camera);
 	skyBoxMesh.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
 	skyBoxMesh.worldScale = vec3(400.0, 400.0, 400.0);
 	skyBoxMesh.worldPos = vec3(250, 0.0, 150);
@@ -125,32 +129,32 @@ int main(int argc, char* args[])
 	light.location = vec3(-10.0, 30.0, 10.0);
 	light.scale = vec3(1.0f, 1.0f, 1.0f);
 
-	vector <WorldObject> worldObjects;
+	vector <WorldObject*> worldObjects;
 
 	// init sphere and set up attributes
-	WorldObject sphereObj;
-	sphereObj.init(sphere);
-	sphereObj.worldLocation = vec3(4.0f, 10.0f, 1.0f);
-	sphereObj.worldScale = vec3(3.0f, 3.0f, 3.0f);
+	WorldObject* sphereObj = new WorldObject;
+	sphereObj->init(sphere);
+	sphereObj->worldLocation = vec3(4.0f, 10.0f, 1.0f);
+	sphereObj->worldScale = vec3(3.0f, 3.0f, 3.0f);
 	worldObjects.push_back(sphereObj);
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		WorldObject foo;
-		foo.init(tank);
-		foo.worldLocation = vec3(((rand()% 30)-20), 20, ((rand() % 30) -20));
-		foo.addRigidBody(physSim, btVector3(3.0, 2.0, 3.0), btScalar(0.2));
-		worldObjects.push_back(foo);
+		WorldObject* newTank = new WorldObject;
+		newTank->init(tank);
+		newTank->worldLocation = vec3(((rand()% 30)-20), 20, ((rand() % 30) -20));
+		newTank->addCompoundBody(physSim);
+		worldObjects.push_back(newTank);
 	}
 
 	for (int i = 0; i < 10; i++)
 	{
-		WorldObject foo;
-		foo.init(drumMag);
-		foo.worldLocation = vec3((rand() % 30) - 20, 20, (rand() % 30) - 20);
-		foo.worldScale = vec3(5.0, 5.0, 5.0);
-		foo.addRigidBody(physSim, btVector3(3.0, 2.0, 2.0), btScalar(0.1));
-		worldObjects.push_back(foo);
+		WorldObject* newDrumMag = new WorldObject;
+		newDrumMag->init(drumMag);
+		newDrumMag->worldLocation = vec3((rand() % 30) - 20, 20, (rand() % 30) - 20);
+		newDrumMag->worldScale = vec3(5.0, 5.0, 5.0);
+		newDrumMag->addCompoundBody(physSim);
+		worldObjects.push_back(newDrumMag);
 	}
 
 	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
@@ -172,8 +176,10 @@ int main(int argc, char* args[])
 	postProcBloom.PostProcBloomInit("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass2.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
+
 	RayCast* newRayCast;
 
+	bool bloom = true;
 
 	int yGrav = -10;
 
@@ -235,9 +241,23 @@ int main(int argc, char* args[])
 				case SDLK_e:
 					camera.lift(0.5);
 						break;
+				case SDLK_b:
+					if (bloom)bloom = false;
+					else bloom = true;
 				case SDLK_0:
 					yGrav *= -1;
 					physSim.dynamicsWorld->setGravity(btVector3(0.0, yGrav, 0.0));
+					break;
+				case SDLK_9:
+					for (int i = 0; i < worldObjects.size(); i++)
+					{
+						btVector3 foo(0.0f, 10000.0f, 0.0f); 
+						btVector3 bar(0.0f, 0.0f, 0.0f);
+						if (worldObjects[i]->rigidBody != NULL)
+						{
+							worldObjects[i]->rigidBody->applyForce(foo, bar);
+						}
+						}
 					break;
 				}
 				break;
@@ -250,7 +270,7 @@ int main(int argc, char* args[])
 		glEnable(GL_STENCIL_TEST);
 
 		//bind post processor buffer
-		postProcBloom.bind1stBuff();
+		if (bloom) postProcBloom.bind1stBuff();
 
 		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glClearDepth(1.0f);
@@ -263,7 +283,7 @@ int main(int argc, char* args[])
 		// draw world objects
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
-			worldObjects[i].draw(light.location);
+			worldObjects[i]->draw(light.location);
 		}
 
 		// draw any raycasts
@@ -281,24 +301,13 @@ int main(int argc, char* args[])
 		skyBoxMesh.render();
 
 		// post processor draw
-		postProcBloom.applyBloom();
+		if (bloom)postProcBloom.applyBloom();
 
 		SDL_GL_SwapWindow(window);
 		
 	}
-	auto iter = rayCastVec.begin();
-	while (iter != rayCastVec.end())
-	{
-		if ((*iter))
-		{
-			delete (*iter);
-			iter = rayCastVec.erase(iter);
-		}
-		else
-		{
-			iter++;
-		}
-	}
+	destroyWorldObjects(worldObjects);
+	destroyRaycast(rayCastVec);
 	glDeleteProgram(defaultShader);
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);

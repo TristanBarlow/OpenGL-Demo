@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Mesh.h"
 #include "PhysicsSimulation.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -17,8 +19,11 @@ public:
 	void update();
 	void init(Mesh &meshAd);
 	void addRigidBody(PhysicsSimulation&, btVector3 = btVector3(btScalar(50.), btScalar(1.), btScalar(50.)), btScalar = (0.) );
-private:
+	void addCompoundBody(PhysicsSimulation&);
 	Mesh* mesh;
 	btRigidBody* rigidBody = NULL;
+private:
+
+	
 	
 };

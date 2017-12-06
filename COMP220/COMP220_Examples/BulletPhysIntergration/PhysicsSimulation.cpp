@@ -18,7 +18,7 @@ PhysicsSimulation::PhysicsSimulation()
 
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
 
-	dynamicsWorld->setGravity(btVector3(0, -10, 0));
+	dynamicsWorld->setGravity(btVector3(0, -9.81, 0));
 
 	///-----initialization_end-----
 }
@@ -79,15 +79,32 @@ btRigidBody* PhysicsSimulation::creatRigidBodyCube(btVector3& size, btScalar obj
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, newShape, localInertia);
 	btRigidBody* newBody = new btRigidBody(rbInfo);
 
+	collisionShapes.push_back(newShape);
+
 	//add the body to the dynamics world
 	dynamicsWorld->addRigidBody(newBody);
 	return newBody;
 }
-btRigidBody* PhysicsSimulation::createConvexHullShape(btVector3& size, btScalar objMass, btVector3& location, btQuaternion& rotation)
+btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref, btScalar objMass, btVector3& location, btQuaternion& rotation, btScalar& size)
 {
+	btCompoundShape* newCompoundShape = new btCompoundShape();
 	// physics shtuff
-	btCollisionShape* newShape = new btBoxShape(size);
+	for (int i = 0; i < subMeshref.size(); i++)
+	{
+		btVector3 tempTrans(btScalar(subMeshref[i]->minXYZ.x), btScalar(subMeshref[i]->minXYZ.y), btScalar(subMeshref[i]->minXYZ.z));
+		btVector3 tempVec(btScalar(subMeshref[i]->xSize), btScalar(subMeshref[i]->ySize), btScalar(subMeshref[i]->zSize));
 
+
+		btTransform newTransform;
+		newTransform.setIdentity();
+		newTransform.setOrigin(location);
+		newTransform.setRotation(rotation);
+
+		btCollisionShape* newShape = new btBoxShape(tempVec);
+		collisionShapes.push_back(newShape);
+
+		newCompoundShape->addChildShape(newTransform, newShape);
+	}
 	btTransform newTransform;
 	newTransform.setIdentity();
 	newTransform.setOrigin(location);
@@ -98,10 +115,12 @@ btRigidBody* PhysicsSimulation::createConvexHullShape(btVector3& size, btScalar 
 
 	//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(newTransform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, newShape, localInertia);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, newCompoundShape, localInertia);
 	btRigidBody* newBody = new btRigidBody(rbInfo);
 
+	collisionShapes.push_back(newCompoundShape);
 	//add the body to the dynamics world
 	dynamicsWorld->addRigidBody(newBody);
 	return newBody;
+
 }

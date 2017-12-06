@@ -11,3 +11,12 @@ void subMesh::init()
 	glGenBuffers(1, &m_EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 }
+
+void subMesh::calcSizes()
+{
+	xSize = maxXYZ.x - minXYZ.x;
+	ySize = maxXYZ.y - minXYZ.y;
+	zSize = maxXYZ.z - minXYZ.z;
+	minXYZ = vec3(minXYZ.x - (xSize / 2), minXYZ.y - (ySize / 2), minXYZ.z - (zSize / 2));
+	dir = maxXYZ - minXYZ;
+}

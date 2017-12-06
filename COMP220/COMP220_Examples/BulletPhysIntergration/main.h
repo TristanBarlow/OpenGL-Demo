@@ -16,7 +16,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 #include "Texture.h"
 #include "Vertex.h"
 #include "Camera.h"
@@ -31,6 +30,8 @@
 #include "PostProcessor.h"
 #include "rayCast.h"
 #include "PhysicsSimulation.h"
+#include "SkyBox.h"
+#include "DestructionIterator.h"
 
 using namespace std;
 using namespace glm;
