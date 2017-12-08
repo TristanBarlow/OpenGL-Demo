@@ -37,19 +37,22 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool t
 	programToUse = programID;
 	loadMeshFromFile(filename,subMeshes);
 	copyBufferData();
+
 	MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
-		glGetUniformLocation(programID, "viewMatrix"),
-		glGetUniformLocation(programID, "projectionMatrix") };
+		       glGetUniformLocation(programID, "viewMatrix"),
+		       glGetUniformLocation(programID, "projectionMatrix")};
+
 	if (islitt)
 	{
-		lightDirectionLoc = glGetUniformLocation(programID, "lightLocation");
-		lightDistanceLoc = glGetUniformLocation(programID, "lightDistance");
-		cameraLocationLoc = glGetUniformLocation(programID, "cameraLocation");
+		lightDirectionLoc =			glGetUniformLocation(programID, "lightLocation");
+		lightDistanceLoc =			glGetUniformLocation(programID, "lightDistance");
+		cameraLocationLoc =			glGetUniformLocation(programID, "cameraLocation");
 		specularMaterialColourLoc = glGetUniformLocation(programID, "specularMaterialColour");
-		lightColourLoc = glGetUniformLocation(programID, "objectColour");
-		diffuseMaterialColourLoc = glGetUniformLocation(programID, "diffuseLightColour");
-		specularIntensityLoc = glGetUniformLocation(programID, "specularIntensity");
+		lightColourLoc =			glGetUniformLocation(programID, "objectColour");
+		diffuseMaterialColourLoc =  glGetUniformLocation(programID, "diffuseLightColour");
+		specularIntensityLoc =		glGetUniformLocation(programID, "specularIntensity");
 	}
+
 	if (hasTexture)
 	{
 		textureID = loadTexture(texturefilename);
@@ -61,6 +64,7 @@ void Mesh::render(vec3 lightSourceEx)
 {
 
 	glUseProgram(programToUse);
+
 	if (islitt)
 	{
 		distanceToLight = 1/length(lightSourceEx - worldPos);
@@ -106,6 +110,7 @@ void Mesh::render(vec3 lightSourceEx)
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, textureCoords)));
 			
 		}
+
 		if (subMeshes[i]->lightMe)
 		{
 			glEnableVertexAttribArray(3);
@@ -121,7 +126,7 @@ void Mesh::render(vec3 lightSourceEx)
 			glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
 			glUniform3fv(vertOutlinerColourLoc, 1, value_ptr(vertOutlinerColour));
 
-			glLineWidth(7);
+			glLineWidth(2);
 			glPolygonMode(GL_FRONT, GL_LINE);
 
 			glStencilFunc(GL_ALWAYS, 1, -1);
@@ -139,9 +144,9 @@ void Mesh::initVertOutline(GLuint vertOutliner, vec3 colour)
 {
 	vertOutlinerMe = true;
 	LineShader = vertOutliner;
-	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
-		glGetUniformLocation(LineShader, "viewMatrix"),
-		glGetUniformLocation(LineShader, "projectionMatrix") };
+	MVPLineShaderLoc = {    glGetUniformLocation(LineShader, "modelMatrix"),
+						    glGetUniformLocation(LineShader, "viewMatrix"),
+						    glGetUniformLocation(LineShader, "projectionMatrix") };
 	vertOutlinerColourLoc = glGetUniformLocation(LineShader, "cellShaderColour");
 	vertOutlinerColour = colour;
 

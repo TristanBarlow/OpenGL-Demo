@@ -34,8 +34,11 @@ PhysicsSimulation::~PhysicsSimulation()
 		{
 			delete body->getMotionState();
 		}
-		dynamicsWorld->removeCollisionObject(obj);
-		delete obj;
+		if (obj != NULL)
+		{
+			dynamicsWorld->removeCollisionObject(obj);
+			delete obj;
+		}
 	}
 
 	//delete collision shapes
@@ -85,9 +88,11 @@ btRigidBody* PhysicsSimulation::creatRigidBodyCube(btVector3& size, btScalar obj
 	dynamicsWorld->addRigidBody(newBody);
 	return newBody;
 }
+
 btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref, btScalar objMass, btVector3& location, btQuaternion& rotation, btScalar& size)
 {
 	btCompoundShape* newCompoundShape = new btCompoundShape();
+
 	// physics shtuff
 	for (int i = 0; i < subMeshref.size(); i++)
 	{
@@ -97,14 +102,16 @@ btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref
 
 		btTransform newTransform;
 		newTransform.setIdentity();
-		newTransform.setOrigin(location);
-		newTransform.setRotation(rotation);
+		newTransform.setOrigin(tempVec/2);
+		newTransform.setRotation(btQuaternion(btScalar(0), btScalar(0), btScalar(0)));
 
 		btCollisionShape* newShape = new btBoxShape(tempVec);
 		collisionShapes.push_back(newShape);
 
 		newCompoundShape->addChildShape(newTransform, newShape);
 	}
+
+
 	btTransform newTransform;
 	newTransform.setIdentity();
 	newTransform.setOrigin(location);
@@ -123,4 +130,12 @@ btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref
 	dynamicsWorld->addRigidBody(newBody);
 	return newBody;
 
+}
+
+void PhysicsSimulation::enableDebug(Camera & camera, GLuint programID)
+{
+}
+
+void PhysicsSimulation::debugPhysicsRender()
+{
 }

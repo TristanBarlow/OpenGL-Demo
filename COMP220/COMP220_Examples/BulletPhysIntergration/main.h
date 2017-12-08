@@ -5,6 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
+#include <thread>
 #include <stdio.h>
 #include <SDL.h>
 #include <SDL_image.h>
@@ -44,7 +45,11 @@ int SCREEN_WIDTH = 1200;
 int SCREEN_HEIGHT = 800;
 float aspectRatio = (SCREEN_WIDTH / SCREEN_HEIGHT);
 
-Camera camera(aspectRatio);
+//camera Pointer
+Camera* camera;
+
+//init PhysicsWorld pointer
+PhysicsSimulation* physSim;
 
 
 // initialises modules

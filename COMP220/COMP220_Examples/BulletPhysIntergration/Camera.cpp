@@ -1,32 +1,41 @@
 #include "Camera.h"
 Camera::Camera(float aspect, vec3& worldPos, vec3& centre, vec3& up)
 {
+	//initialising variables
 	aspectRatio = aspect;
 	this->worldPos = worldPos; 
 	this->centre = centre;  
 	this->up = up;
+	
+	//creating the cameraMatrix
 	mat4 cameraMatrix = lookAt(worldPos, centre, up);
+
+	//First update after intialistion incase setups of other classes need accurate camera variables
 	update();
 }
 void  Camera::strafe(float x)
 {
-	update();
+
 	vec3 strafeDirection = right*x;
+
 	worldPos.x += strafeDirection.x;
 	worldPos.z += strafeDirection.z;
+
 	centre.x += strafeDirection.x;
 	centre.z += strafeDirection.z;
-	
+
+	update();
 };
 
 void Camera:: move(float z)
 {
-	update();
 	vec3 moveDirection = forward*z;
 	worldPos.x += moveDirection.x;
 	worldPos.z += moveDirection.z;
 	centre.z += moveDirection.z;
 	centre.x += moveDirection.x;
+
+	update();
 }
 void Camera::lift(float y)
 {

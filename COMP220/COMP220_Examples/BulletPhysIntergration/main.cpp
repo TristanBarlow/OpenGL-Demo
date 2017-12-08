@@ -3,6 +3,7 @@
 #include "main.h"
 
 
+
 bool Init()
 {
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
@@ -57,8 +58,6 @@ bool Init()
 
 void Close() 
 {
-
-
 	//DeleteContext
 	SDL_GL_DeleteContext(glContext);
 	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
@@ -67,9 +66,6 @@ void Close()
 	//https://wiki.libsdl.org/SDL_Quit
 	SDL_Quit();
 }
-
-
-
 
 int main(int argc, char* args[])
 {
@@ -84,12 +80,15 @@ int main(int argc, char* args[])
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is close
 	bool running = true;
 
+	//create new camera
+	camera = new Camera(aspectRatio);
+
 	//Create physics simulation
-	PhysicsSimulation physSim;
+	physSim = new PhysicsSimulation;
+	
+	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100),0, btVector3(0, -56, 0));
 
-	btRigidBody* ground = physSim.creatRigidBodyCube(btVector3(100, 1, 100),0, btVector3(0, -56, 0));
-
-	btRigidBody* celing = physSim.creatRigidBodyCube(btVector3(100,1,100), 0.0, btVector3(0,56,0));
+	btRigidBody* celing = physSim->creatRigidBodyCube(btVector3(100,1,100), 0.0, btVector3(0,56,0));
 
 
 	//initialse vertices vector that will take the vertices of the obj file
@@ -100,31 +99,31 @@ int main(int argc, char* args[])
 	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
 	GLuint vertOutliner = LoadShaders("Shaders/cellVertShader.txt", "Shaders/cellFragShader.txt");
 
-	Grid grid(camera);
+	Grid grid(*camera);
 	grid.createGridVec(101, 101, defaultShader);
 
 	// load sphere Mesh
-	Mesh sphere(camera);
+	Mesh sphere(*camera);
 	sphere.init("Meshes/only_quad_sphere.txt", LightShader, true);
 
 	//load and create the static mesh for the tank
-	Mesh tank(camera);
+	Mesh tank(*camera);
 	tank.init("Meshes/Tank1.FBX", TexLightShader, true, true, "Textures/Tank1DF.png");
 
 	//load and create the static mesh drum mag
-	Mesh drumMag(camera);
+	Mesh drumMag(*camera);
 	drumMag.init("Meshes/drumMag.obj", TexLightShader, true, true, "Textures/DrumMag_Low_blinn6_BaseColor.png");
 
-	Mesh cube(camera);
+	Mesh cube(*camera);
 	cube.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
 
-	SkyBox skyBoxMesh(camera);
+	SkyBox skyBoxMesh(*camera);
 	skyBoxMesh.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
 	skyBoxMesh.worldScale = vec3(400.0, 400.0, 400.0);
 	skyBoxMesh.worldPos = vec3(250, 0.0, 150);
 
 	// init light
-	Light light(camera);
+	Light light(*camera);
 	light.init(defaultShader);
 	light.location = vec3(-10.0, 30.0, 10.0);
 	light.scale = vec3(1.0f, 1.0f, 1.0f);
@@ -143,7 +142,7 @@ int main(int argc, char* args[])
 		WorldObject* newTank = new WorldObject;
 		newTank->init(tank);
 		newTank->worldLocation = vec3(((rand()% 30)-20), 20, ((rand() % 30) -20));
-		newTank->addCompoundBody(physSim);
+		newTank->addCompoundBody(*physSim);
 		worldObjects.push_back(newTank);
 	}
 
@@ -153,7 +152,7 @@ int main(int argc, char* args[])
 		newDrumMag->init(drumMag);
 		newDrumMag->worldLocation = vec3((rand() % 30) - 20, 20, (rand() % 30) - 20);
 		newDrumMag->worldScale = vec3(5.0, 5.0, 5.0);
-		newDrumMag->addCompoundBody(physSim);
+		newDrumMag->addCompoundBody(*physSim);
 		worldObjects.push_back(newDrumMag);
 	}
 
@@ -201,13 +200,13 @@ int main(int argc, char* args[])
 				running = false;
 				break;
 			case SDL_MOUSEMOTION:
-				camera.rotate(ev.motion.xrel, ev.motion.yrel);
+				camera->rotate(ev.motion.xrel, ev.motion.yrel);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				switch(ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
-						newRayCast = new RayCast(camera, camera.worldPos, camera.forward, 500, defaultShader, vec4(0.7,0.3 , 0.7f,1.0f));
+						newRayCast = new RayCast(*camera, camera->worldPos, camera->forward, 500, defaultShader, vec4(0.7,0.3 , 0.7f,1.0f));
 						rayCastVec.push_back(newRayCast);
 						break;
 					case SDL_BUTTON_RIGHT:
@@ -224,31 +223,32 @@ int main(int argc, char* args[])
 					running = false;
 					break;
 				case SDLK_w:
-					camera.move(0.5f);
+					camera->move(0.5f);
 					break;
 				case SDLK_s:
-					camera.move(-0.5f);
+					camera->move(-0.5f);
 					break;
 				case SDLK_d:
-					camera.strafe(-0.5f);
+					camera->strafe(-0.5f);
 					break;
 				case SDLK_a:
-					camera.strafe(0.5f);
+					camera->strafe(0.5f);
 					break;
 				case SDLK_q:
-					camera.lift(-0.5);
+					camera->lift(-0.5);
 					break;
 				case SDLK_e:
-					camera.lift(0.5);
+					camera->lift(0.5);
 						break;
 				case SDLK_b:
 					if (bloom)bloom = false;
 					else bloom = true;
 				case SDLK_0:
 					yGrav *= -1;
-					physSim.dynamicsWorld->setGravity(btVector3(0.0, yGrav, 0.0));
+					physSim->dynamicsWorld->setGravity(btVector3(0.0, yGrav, 0.0));
 					break;
 				case SDLK_9:
+					physSim->dynamicsWorld->clearForces();
 					for (int i = 0; i < worldObjects.size(); i++)
 					{
 						btVector3 foo(0.0f, 10000.0f, 0.0f); 
@@ -263,7 +263,7 @@ int main(int argc, char* args[])
 				break;
 			}
 		}
-		physSim.dynamicsWorld->stepSimulation(1 / 60.0f);
+		physSim->dynamicsWorld->stepSimulation(1 / 60.0f);
 
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
@@ -306,12 +306,16 @@ int main(int argc, char* args[])
 		SDL_GL_SwapWindow(window);
 		
 	}
+	delete ground;
+	delete celing;
+	delete camera;
 	destroyWorldObjects(worldObjects);
 	destroyRaycast(rayCastVec);
 	glDeleteProgram(defaultShader);
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);
 	glDeleteProgram(LightShader);
+	delete physSim;
 	Close();
 	return 0;
 }
