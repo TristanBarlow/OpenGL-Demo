@@ -44,8 +44,8 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool t
 void Mesh::uniformGetPass()
 {
 	MVPLoc = { glGetUniformLocation(programToUse, "modelMatrix"),
-		glGetUniformLocation(programToUse, "viewMatrix"),
-		glGetUniformLocation(programToUse, "projectionMatrix") };
+			   glGetUniformLocation(programToUse, "viewMatrix"),
+			   glGetUniformLocation(programToUse, "projectionMatrix") };
 
 	if (islitt)
 	{

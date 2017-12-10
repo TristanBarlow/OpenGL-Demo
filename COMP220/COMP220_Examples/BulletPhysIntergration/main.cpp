@@ -138,12 +138,22 @@ int main(int argc, char* args[])
 	worldObjects.push_back(sphereObj);
 	sphereObj->setProgamToUse(LightShader);
 
+	//Unique tank that uses the same mesh but different shader
+	WorldObject* newTank = new WorldObject;
+	newTank->init(tank);
+	newTank->setWorldLocation(vec3(((rand() % 30) - 20), 20, ((rand() % 30) - 20)));
+	newTank->addCompoundBody(*physSim);
+	newTank->setProgamToUse(defaultShader);
+	newTank->setNoTextureColour(vec4(1.0, 0.0, 1.0f, 1.0));
+	worldObjects.push_back(newTank);
+
 	for (int i = 0; i < 10; i++)
 	{
 		WorldObject* newTank = new WorldObject;
 		newTank->init(tank);
 		newTank->setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
 		newTank->addCompoundBody(*physSim);
+		newTank->setProgamToUse(TexLightShader);
 		worldObjects.push_back(newTank);
 	}
 
@@ -154,6 +164,7 @@ int main(int argc, char* args[])
 		newDrumMag->setWorldLocation(vec3((rand() % 30) - 20, 20, (rand() % 30) - 20));
 		newDrumMag->setWorldScale(vec3(5.0, 5.0, 5.0));
 		newDrumMag->addCompoundBody(*physSim);
+		newDrumMag->setProgamToUse(TexLightShader);
 		worldObjects.push_back(newDrumMag);
 	}
 
