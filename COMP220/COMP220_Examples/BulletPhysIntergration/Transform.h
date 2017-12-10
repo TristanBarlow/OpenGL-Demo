@@ -12,6 +12,7 @@ struct Transform
 	{
 		projectionMatrix = perspective(radians(90.0f), aspectRatio, 0.1f, 1000.0f);
 	};
+
 	mat4 modelMatrix;
 	mat4& viewMatrix;
 	mat4 projectionMatrix;

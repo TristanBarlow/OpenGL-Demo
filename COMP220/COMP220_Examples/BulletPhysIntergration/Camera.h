@@ -76,7 +76,7 @@ public:
 	/*Sets the private variable Centre to the argument
 	* newCentre is the new position to set to
 	*/
-	void setCentre(vec3& newCentre) { worldPos = newCentre; };
+	void setCentre(vec3& newCentre) { centre = newCentre; };
 
 	/*gets the private variable centre
 	* returns a reference to the centre

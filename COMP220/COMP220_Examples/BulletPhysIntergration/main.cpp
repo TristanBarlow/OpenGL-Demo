@@ -120,25 +120,29 @@ int main(int argc, char* args[])
 	skyBoxMesh.worldPos = vec3(250, 0.0, 150);
 
 	// init light
-	Light light(*camera);
-	light.init(defaultShader);
-	light.location = vec3(-10.0, 30.0, 10.0);
-	light.scale = vec3(1.0f, 1.0f, 1.0f);
+	Light light;
+	light.init(sphere);
+	light.setWorldLocation(vec3(-10.0, 30.0, 10.0));
+	light.setWorldScale(vec3(1.0f, 1.0f, 1.0f));
+	light.setNoTextureColour(vec4(1.0, 1.0, 1.0, 1.0));
+	light.setIsLitt(false);
+	light.setProgamToUse(defaultShader);
 
 	vector <WorldObject*> worldObjects;
 
 	// init sphere and set up attributes
 	WorldObject* sphereObj = new WorldObject;
 	sphereObj->init(sphere);
-	sphereObj->worldLocation = vec3(4.0f, 10.0f, 1.0f);
-	sphereObj->worldScale = vec3(3.0f, 3.0f, 3.0f);
+	sphereObj->setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
+	sphereObj->setWorldScale(vec3(3.0f, 3.0f, 3.0f));
 	worldObjects.push_back(sphereObj);
+	sphereObj->setProgamToUse(LightShader);
 
 	for (int i = 0; i < 10; i++)
 	{
 		WorldObject* newTank = new WorldObject;
 		newTank->init(tank);
-		newTank->worldLocation = vec3(((rand()% 30)-20), 20, ((rand() % 30) -20));
+		newTank->setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
 		newTank->addCompoundBody(*physSim);
 		worldObjects.push_back(newTank);
 	}
@@ -147,8 +151,8 @@ int main(int argc, char* args[])
 	{
 		WorldObject* newDrumMag = new WorldObject;
 		newDrumMag->init(drumMag);
-		newDrumMag->worldLocation = vec3((rand() % 30) - 20, 20, (rand() % 30) - 20);
-		newDrumMag->worldScale = vec3(5.0, 5.0, 5.0);
+		newDrumMag->setWorldLocation(vec3((rand() % 30) - 20, 20, (rand() % 30) - 20));
+		newDrumMag->setWorldScale(vec3(5.0, 5.0, 5.0));
 		newDrumMag->addCompoundBody(*physSim);
 		worldObjects.push_back(newDrumMag);
 	}
@@ -250,9 +254,9 @@ int main(int argc, char* args[])
 					{
 						btVector3 foo(0.0f, 10000.0f, 0.0f); 
 						btVector3 bar(0.0f, 0.0f, 0.0f);
-						if (worldObjects[i]->rigidBody != NULL)
+						if (worldObjects[i]->getRigidBody() != NULL)
 						{
-							worldObjects[i]->rigidBody->applyForce(foo, bar);
+							worldObjects[i]->getRigidBody()->applyForce(foo, bar);
 						}
 						}
 					break;
@@ -275,12 +279,12 @@ int main(int argc, char* args[])
 
 		// Render the mesh into the stencil buffer.
 		light.moveCircle();
-		light.render();
+		light.draw();
 
 		// draw world objects
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
-			worldObjects[i]->draw(light.location);
+			worldObjects[i]->draw(light.getWorldLocation());
 		}
 
 		// draw any raycasts

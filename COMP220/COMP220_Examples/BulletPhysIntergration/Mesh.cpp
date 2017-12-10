@@ -35,31 +35,35 @@ void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool t
 	islitt = litt;
 	hasTexture = textured;
 	programToUse = programID;
-	loadMeshFromFile(filename,subMeshes);
+	loadMeshFromFile(filename, subMeshes);
+	textureFilename = texturefilename;
+	uniformGetPass();
 	copyBufferData();
+} 
 
-	MVPLoc = { glGetUniformLocation(programID, "modelMatrix"),
-		       glGetUniformLocation(programID, "viewMatrix"),
-		       glGetUniformLocation(programID, "projectionMatrix")};
+void Mesh::uniformGetPass()
+{
+	MVPLoc = { glGetUniformLocation(programToUse, "modelMatrix"),
+		glGetUniformLocation(programToUse, "viewMatrix"),
+		glGetUniformLocation(programToUse, "projectionMatrix") };
 
 	if (islitt)
 	{
-		lightDirectionLoc =			glGetUniformLocation(programID, "lightLocation");
-		lightDistanceLoc =			glGetUniformLocation(programID, "lightDistance");
-		cameraLocationLoc =			glGetUniformLocation(programID, "cameraLocation");
-		specularMaterialColourLoc = glGetUniformLocation(programID, "specularMaterialColour");
-		lightColourLoc =			glGetUniformLocation(programID, "objectColour");
-		diffuseMaterialColourLoc =  glGetUniformLocation(programID, "diffuseLightColour");
-		specularIntensityLoc =		glGetUniformLocation(programID, "specularIntensity");
+		lightDirectionLoc = glGetUniformLocation(programToUse, "lightLocation");
+		lightDistanceLoc = glGetUniformLocation(programToUse, "lightDistance");
+		cameraLocationLoc = glGetUniformLocation(programToUse, "cameraLocation");
+		specularMaterialColourLoc = glGetUniformLocation(programToUse, "specularMaterialColour");
+		lightColourLoc = glGetUniformLocation(programToUse, "objectColour");
+		diffuseMaterialColourLoc = glGetUniformLocation(programToUse, "diffuseLightColour");
+		specularIntensityLoc = glGetUniformLocation(programToUse, "specularIntensity");
 	}
 
 	if (hasTexture)
 	{
-		textureID = loadTexture(texturefilename);
-		textureLocation = glGetUniformLocation(programID, "baseTexture");
+		textureID = loadTexture(textureFilename);
+		textureLocation = glGetUniformLocation(programToUse, "baseTexture");
 	}
-} 
-
+}
 void Mesh::render(vec3 lightSourceEx) 
 {
 

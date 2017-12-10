@@ -20,16 +20,25 @@ void WorldObject::update()
 		quat myRotation = quat(qRot.x(), qRot.y(), qRot.z(), qRot.w());
 		worldRotation = eulerAngles(myRotation);
 	}
+	mesh->setProgramToUse(programToUse);
 	
 	mesh->worldPos = worldLocation;
 	mesh->worldRot = worldRotation;
 	mesh->worldScale = worldScale;
+	
+	mesh->setNoTextureLightColour(noTextureColour);
+	mesh->setIsLitt(isLitt);
+	mesh->setMVPLocation(MVPLocToUse);
 }
 
 void WorldObject::init(Mesh& meshAd)
 {
-	worldRotation = vec3(rand()%90, rand()%90, rand()%90);
+	//getting defualt values
 	mesh = &meshAd;
+	isLitt = meshAd.getIsLitt();
+	programToUse = meshAd.getProgramToUse();
+	noTextureColour = meshAd.getNoTextureLightColour();
+	MVPLocToUse = meshAd.getMVPLocation();
 }
 
 void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3 size, btScalar mass)

@@ -36,11 +36,13 @@ public:
 	vec3 worldRot = vec3(0.0f, 0.0f, 0.0f);
 	vec3 worldScale = vec3(1.0f, 1.0f, 1.0f);
 
+	void uniformGetPass();
+
 	std::vector<subMesh*> subMeshes;
 
 	//setters getters
-	vec4& getDiffuseLightColour()					{return diffuseLightColour; }
-	void setDiffuseLightColour(vec4& diffuseColour) { diffuseLightColour = diffuseColour; }
+	vec4& getDiffuseLightColour()					         {return diffuseLightColour; }
+	void setDiffuseLightColour(vec4& diffuseColour)			 { diffuseLightColour = diffuseColour; }
 
 	vec4& getNoTextureLightColour()							 { return noTextureColour;}
 	void setNoTextureLightColour(vec4& noTextureLightColour) { noTextureColour = noTextureLightColour; }
@@ -48,17 +50,27 @@ public:
 	vec4& getSpecularLightColour()							 { return specularColour; }
 	void setSpecularLightColour(vec4& specularLightColour)   { specularColour = specularLightColour; }
 
-	vec4& getSpecularIntensity() { return specularIntensity; }
-	void setSpecularIntensity(vec4& specularIntensity1) { specularIntensity = specularIntensity1; }
+	vec4& getSpecularIntensity()							 { return specularIntensity; }
+	void setSpecularIntensity(vec4& specularIntensity1)		 { specularIntensity = specularIntensity1; }
+
+	void setIsLitt(bool newIsLitt) { islitt = newIsLitt; };
+	bool getIsLitt() { return islitt; };
+
+	void setProgramToUse(GLuint newProgram) { programToUse = newProgram; }
+	GLuint getProgramToUse() { return programToUse; };
+
+	MVP& getMVPLocation() { return MVPLoc; };
+	void setMVPLocation(MVP& newMVPLoc) { MVPLoc = newMVPLoc; };
 
 private:
 	void maxMinCheck(subMesh* pSubmesh,vec3 & currentVector);
 	Camera& camera;
 
 	Transform MVPMatrix;
+
 	MVP MVPLoc;
 
-	GLuint programToUse = 0;
+	GLuint programToUse;
 
 	GLint lightDirectionLoc;
 	GLint lightDistanceLoc;
@@ -89,6 +101,8 @@ private:
 	GLint textureLocation;
 
 	GLuint LineShader;
+
+	std::string textureFilename;
 
 };
 
