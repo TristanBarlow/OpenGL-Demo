@@ -70,7 +70,7 @@ void Mesh::render(vec3 lightSourceEx)
 		distanceToLight = 1/length(lightSourceEx - worldPos);
 		glUniform1f(lightDistanceLoc, distanceToLight);
 		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSourceEx));
-		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.worldPos));
+		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.getWorldPos()));
 		glUniform4fv(specularMaterialColourLoc, 1, value_ptr(specularColour));
 		glUniform4fv(specularIntensityLoc, 1, value_ptr(specularIntensity));
 		glUniform4fv(diffuseMaterialColourLoc, 1, value_ptr(diffuseLightColour));
@@ -136,6 +136,7 @@ void Mesh::render(vec3 lightSourceEx)
 			glUseProgram(programToUse);
 
 		}
+
 		glDrawElements(GL_TRIANGLES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
 	}
 }

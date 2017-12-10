@@ -39,21 +39,27 @@ void Camera:: move(float z)
 }
 void Camera::lift(float y)
 {
-	update();
+	
 	vec3 liftDirection = up * y;
 	worldPos.y += liftDirection.y;
 	centre.y += liftDirection.y;
+
+	update();
 }
 void Camera::rotate(float x, float y)
 {
-	update();
+	
 	TurnDegreesFromOriginX +=  x/ mouseSens;
 	TurnDegreesFromOriginY -= tan(y/ mouseSens);
 	if (TurnDegreesFromOriginY > 1.0f)  TurnDegreesFromOriginY = 1.0f;
 	if (TurnDegreesFromOriginY < -1.0f)  TurnDegreesFromOriginY = -1.0f;
+
 	// Move camera lookatpoint to a trigonometry calculated position, CameraDistance far away, relative to the camera position
 	centre = worldPos + length * vec3(cos(TurnDegreesFromOriginX), TurnDegreesFromOriginY, sin(TurnDegreesFromOriginX));
+	
+	update();
 }
+
 
 void Camera::update()
 {

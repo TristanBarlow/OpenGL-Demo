@@ -85,22 +85,19 @@ int main(int argc, char* args[])
 
 	//Create physics simulation
 	physSim = new PhysicsSimulation;
-	
-	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100),0, btVector3(0, -56, 0));
+	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0, btVector3(0, -56, 0));
+	btRigidBody* celing = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0.0, btVector3(0, 56, 0));
 
-	btRigidBody* celing = physSim->creatRigidBodyCube(btVector3(100,1,100), 0.0, btVector3(0,56,0));
-
-
-	//initialse vertices vector that will take the vertices of the obj file
-
+	// Load Shaders
 	GLuint defaultShader = LoadShaders("Shaders/vertexShader.txt", "Shaders/fragmentShader.txt");
 	GLuint TextureShader = LoadShaders("Shaders/TexVert.txt", "Shaders/TexFrag.txt");
 	GLuint TexLightShader = LoadShaders("Shaders/TexLightVert.txt", "Shaders/TexLightFrag.txt");
 	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
 	GLuint vertOutliner = LoadShaders("Shaders/cellVertShader.txt", "Shaders/cellFragShader.txt");
 
-	Grid grid(*camera);
-	grid.createGridVec(101, 101, defaultShader);
+	//Create grid
+	Grid* grid =  new Grid(*camera);
+	grid->createGridVec(101, 101, defaultShader);
 
 	// load sphere Mesh
 	Mesh sphere(*camera);
@@ -206,7 +203,7 @@ int main(int argc, char* args[])
 				switch(ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
-						newRayCast = new RayCast(*camera, camera->worldPos, camera->forward, 500, defaultShader, vec4(0.7,0.3 , 0.7f,1.0f));
+						newRayCast = new RayCast(*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(0.7,0.3 , 0.7f,1.0f));
 						rayCastVec.push_back(newRayCast);
 						break;
 					case SDL_BUTTON_RIGHT:
@@ -295,7 +292,7 @@ int main(int argc, char* args[])
 			}
 		}
 
-		grid.draw();
+		grid->draw();
 
 		glDisable(GL_CULL_FACE);
 		skyBoxMesh.render();
@@ -306,6 +303,7 @@ int main(int argc, char* args[])
 		SDL_GL_SwapWindow(window);
 		
 	}
+	delete grid;
 	delete ground;
 	delete celing;
 	delete camera;
@@ -315,7 +313,6 @@ int main(int argc, char* args[])
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);
 	glDeleteProgram(LightShader);
-	delete physSim;
 	Close();
 	return 0;
 }

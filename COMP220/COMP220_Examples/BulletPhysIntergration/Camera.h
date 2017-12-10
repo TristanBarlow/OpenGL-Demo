@@ -19,13 +19,6 @@ public:
 	*/
 	Camera(float aspectratio, vec3& location = vec3(40.0f, 5.0f, 40.0f), vec3& centre = vec3(-20.0f, 0.0f, -20.0f), vec3& up = vec3(0.0f, 1.0f, 0.0f));
 
-	//worldPosition of the camera
-	vec3 worldPos = vec3(40.0f, 5.0f, 40.0f);  
-	//point the camera looks at
-	vec3 centre =   vec3(45.0f, 0.0f, 45.0f);
-	//the up direction of the camera(where is directly above of the camera)
-	vec3 up =       vec3(0.0f, 1.0f, 0.0f);		
-	 
 	// the forward direction vector of the camera (unit vector) 
 	vec3 forward = normalize(centre - worldPos);
 	// the right direction vector of the camera (unit vector) 
@@ -68,7 +61,47 @@ public:
 	*/
 	void rotate(float x, float y);
 
+	//Setters and getters!
+
+	/*Sets the private variable WorldPos to the argument
+	* newWorldPos is the new position to set to
+	*/
+	void setWorldPos(vec3& newWorldPos) { worldPos = newWorldPos; };
+
+	/*gets the private variable WorldPos
+	* returns a reference to the worldPos
+	*/
+	vec3& getWorldPos() { return worldPos; };
+
+	/*Sets the private variable Centre to the argument
+	* newCentre is the new position to set to
+	*/
+	void setCentre(vec3& newCentre) { worldPos = newCentre; };
+
+	/*gets the private variable centre
+	* returns a reference to the centre
+	*/
+	vec3& getCentre() { return centre; };
+
+	/*Sets the private variable Centre to the argument
+	* newCentre is the new position to set to
+	*/
+	void setUp(vec3& newUp) { up = newUp; };
+
+	/*gets the private variable up
+	* returns a reference to the up
+	*/
+	vec3& getUp() { return up; };
+
 private:
+
+	//worldPosition of the camera
+	vec3 worldPos = vec3(40.0f, 5.0f, 40.0f);
+	//point the camera looks at
+	vec3 centre = vec3(45.0f, 0.0f, 45.0f);
+	//the up direction of the camera(where is directly above of the camera)
+	vec3 up = vec3(0.0f, 1.0f, 0.0f);
+
 	/*
 	* Recalculates camera values
 	*/
