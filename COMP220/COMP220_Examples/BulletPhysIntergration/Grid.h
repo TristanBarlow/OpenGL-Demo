@@ -55,8 +55,11 @@ class Grid
 
 		Camera& camera;
 		GLuint LineShader;
+		//
 		vector<LineVertex> lineVerts;
-		Transform MVPMatrix;
 		GLuint lineBuff;
+		
+
+		Transform MVPMatrix;
 		MVP MVPLineShaderLoc;	
 };

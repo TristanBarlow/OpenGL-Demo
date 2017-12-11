@@ -121,25 +121,7 @@ void Mesh::render(vec3 lightSourceEx)
 			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexNormals)));
 		}
 
-		if (vertOutlinerMe)
-		{
-			glEnable(GL_STENCIL_TEST);
-			glUseProgram(LineShader);
-			glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
-			glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
-			glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
-			glUniform3fv(vertOutlinerColourLoc, 1, value_ptr(vertOutlinerColour));
-
-			glLineWidth(2);
-			glPolygonMode(GL_FRONT, GL_LINE);
-
-			glStencilFunc(GL_ALWAYS, 1, -1);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-			glDrawElements(GL_LINE_STRIP, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
-			glUseProgram(programToUse);
-
-		}
+		if (vertOutlinerMe)vertOutliner(subMeshes[i]);
 
 		glDrawElements(GL_TRIANGLES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
 	}
@@ -167,6 +149,25 @@ void Mesh::copyBufferData()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, subMeshes[i]->m_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, subMeshes[i]->meshElementArray.size() * sizeof(int), &subMeshes[i]->meshElementArray[0], GL_STATIC_DRAW);
 	}
+}
+
+void Mesh::vertOutliner(subMesh* subMesh)
+{
+	glEnable(GL_STENCIL_TEST);
+	glUseProgram(LineShader);
+	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
+	glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
+	glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+	glUniform3fv(vertOutlinerColourLoc, 1, value_ptr(vertOutlinerColour));
+
+	glLineWidth(2);
+	glPolygonMode(GL_FRONT, GL_LINE);
+
+	glStencilFunc(GL_ALWAYS, 1, -1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	glDrawElements(GL_LINE_STRIP, subMesh->meshElementArray.size(), GL_UNSIGNED_INT, 0);
+	glUseProgram(programToUse);
 }
 
 void Mesh::maxMinCheck(subMesh * pSubmesh, vec3 & currentVector)

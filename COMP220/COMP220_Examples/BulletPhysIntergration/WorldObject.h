@@ -73,7 +73,7 @@ public:
 
 private:
 	vec3 worldLocation = vec3(0.0f, 0.0f, 0.0f);
-	vec3 worldRotation = vec3(0.0f, 0.0f, 0.0f);
+	vec3 worldRotation = vec3(0.0f, 90.0f, 0.0f);
 	vec3 worldScale = vec3(1.0f, 1.0f, 1.0f);
 
 	vec4 noTextureColour = vec4(0.3, 0.3, 0.3, 1.0);

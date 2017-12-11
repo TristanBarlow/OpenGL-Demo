@@ -63,7 +63,11 @@ public:
 	void setMVPLocation(MVP& newMVPLoc) { MVPLoc = newMVPLoc; };
 
 private:
+
+	void vertOutliner(subMesh* submesh);
+
 	void maxMinCheck(subMesh* pSubmesh,vec3 & currentVector);
+
 	Camera& camera;
 
 	Transform MVPMatrix;

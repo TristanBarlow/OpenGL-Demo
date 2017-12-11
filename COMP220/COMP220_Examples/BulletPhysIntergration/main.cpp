@@ -85,7 +85,7 @@ int main(int argc, char* args[])
 
 	//Create physics simulation
 	physSim = new PhysicsSimulation;
-	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0, btVector3(0, -56, 0));
+	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0, btVector3(0, -1, 0));
 	btRigidBody* celing = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0.0, btVector3(0, 56, 0));
 
 	// Load Shaders

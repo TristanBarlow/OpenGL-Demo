@@ -16,6 +16,7 @@ void WorldObject::update()
 		rigidBody->getMotionState()->getWorldTransform(trans);
 		btVector3 myWorldPos =  trans.getOrigin();
 		worldLocation = vec3(myWorldPos.x(), myWorldPos.y(), myWorldPos.z());
+
 		btQuaternion qRot = trans.getRotation();
 		quat myRotation = quat(qRot.x(), qRot.y(), qRot.z(), qRot.w());
 		worldRotation = eulerAngles(myRotation);
@@ -43,6 +44,7 @@ void WorldObject::init(Mesh& meshAd)
 
 void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3 size, btScalar mass)
 {
+	float converter = 3.12 / 180;
 	btQuaternion QuatAroundX = btQuaternion(btVector3(1.0, 0.0, 0.0), worldRotation.x);
 	btQuaternion QuatAroundY = btQuaternion(btVector3(0.0, 1.0, 0.0), worldRotation.y);
 	btQuaternion QuatAroundZ = btQuaternion(btVector3(0.0, 0.0, 1.0), worldRotation.z);
@@ -52,6 +54,7 @@ void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3 size, btSca
 
 void WorldObject::addCompoundBody(PhysicsSimulation & physSim)
 {
+	worldRotation = vec3(rand() % 90, rand() % 90, rand() % 90);
 	btQuaternion QuatAroundX = btQuaternion(btVector3(1.0, 0.0, 0.0), worldRotation.x);
 	btQuaternion QuatAroundY = btQuaternion(btVector3(0.0, 1.0, 0.0), worldRotation.y);
 	btQuaternion QuatAroundZ = btQuaternion(btVector3(0.0, 0.0, 1.0), worldRotation.z);

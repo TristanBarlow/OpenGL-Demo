@@ -39,6 +39,7 @@ private:
 
 };
 
+
 class PostProcBloom: public PostProcessor
 {
 public:
