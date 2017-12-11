@@ -5,6 +5,7 @@ uniform sampler2D texture0;
 
 void main()
 {
+	color = vec4(0.0f,0.0f,0.0f,1.0f);
 	float luminance = sqrt(texture(texture0, textureCoords).x*texture(texture0, textureCoords).x + texture(texture0, textureCoords).y*texture(texture0, textureCoords).y +texture(texture0, textureCoords).z*texture(texture0, textureCoords).z);
 	//Read the texture and do some processing!
 	if (luminance > 0.9)
