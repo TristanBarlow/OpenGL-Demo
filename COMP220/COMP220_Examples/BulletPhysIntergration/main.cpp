@@ -319,9 +319,8 @@ int main(int argc, char* args[])
 		
 	}
 	delete grid;
-	delete ground;
-	delete celing;
 	delete camera;
+	delete physSim;
 	destroyWorldObjects(worldObjects);
 	destroyRaycast(rayCastVec);
 	glDeleteProgram(defaultShader);

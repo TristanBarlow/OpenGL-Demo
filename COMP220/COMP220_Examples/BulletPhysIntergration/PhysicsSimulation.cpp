@@ -103,7 +103,7 @@ btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref
 		btTransform newTransform;
 		newTransform.setIdentity();
 		newTransform.setOrigin(tempVec/2);
-		newTransform.setRotation(btQuaternion(btScalar(0), btScalar(0), btScalar(0)));
+		newTransform.setRotation(rotation);
 
 		btCollisionShape* newShape = new btBoxShape(tempVec);
 		collisionShapes.push_back(newShape);
@@ -134,8 +134,12 @@ btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref
 
 void PhysicsSimulation::enableDebug(Camera & camera, GLuint programID)
 {
+	for (int i = 0; dynamicsWorld->getNumCollisionObjects(); )
+	{
+	}
 }
 
 void PhysicsSimulation::debugPhysicsRender()
 {
+
 }
