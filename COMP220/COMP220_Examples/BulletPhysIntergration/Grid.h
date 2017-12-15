@@ -6,10 +6,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Vertex.h"
 #include "MVP.h"
-#include"Transform.h"
+#include "MVPTransform.h"
 #include "Camera.h"
 #include <iostream>
 #include "ShaderLoader.h"
+#include "Transform.h"
+
 using namespace std;
 using glm::vec3;
 using glm::vec4;
@@ -17,7 +19,8 @@ using glm::vec4;
 class Grid
 {
 	public:
-
+		
+		Transform transform;
 		/*Default constructor for grid class.
 		*Takes a camera reference to get the camera view matrix. Could Just pass a red to the matrix but having a camera ref may be useful. 
 		*/
@@ -60,6 +63,6 @@ class Grid
 		GLuint lineBuff;
 		
 
-		Transform MVPMatrix;
+		MVPTransform MVPMatrix;
 		MVP MVPLineShaderLoc;	
 };

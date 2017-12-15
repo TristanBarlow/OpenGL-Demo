@@ -28,7 +28,7 @@ void RayCast::draw()
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	MVPMatrix.calculateTransform();
+	MVPMatrix.calculateTransform(worldTransform);
 	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));

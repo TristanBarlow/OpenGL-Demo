@@ -15,7 +15,7 @@
 #include "Vertex.h"
 #include "Camera.h"
 #include "MVP.h"
-#include "Transform.h"
+#include "MVPTransform.h"
 #include "subMesh.h"
 #include "Texture.h"
 
@@ -24,6 +24,7 @@ class Mesh
 public:
 	~Mesh();
 	Mesh(Camera&);
+
 	bool loadMeshFromFile(const std::string&, std::vector<subMesh*>&);
 
 	void initVertOutline(GLuint, vec3 = vec3(0.0f, 0.0f, 0.0f));
@@ -31,10 +32,8 @@ public:
 
 	void copyBufferData();
 	void render(vec3 = vec3(0.0f, 0.0f, 0.0f));
+	Transform m_Transform;
 
-	vec3 worldPos =vec3(0.0f, 0.0f, 0.0f);
-	vec3 worldRot = vec3(0.0f, 0.0f, 0.0f);
-	vec3 worldScale = vec3(1.0f, 1.0f, 1.0f);
 
 	void uniformGetPass();
 
@@ -68,9 +67,10 @@ private:
 
 	void maxMinCheck(subMesh* pSubmesh,vec3 & currentVector);
 
+
 	Camera& camera;
 
-	Transform MVPMatrix;
+	MVPTransform MVPMatrix;
 
 	MVP MVPLoc;
 

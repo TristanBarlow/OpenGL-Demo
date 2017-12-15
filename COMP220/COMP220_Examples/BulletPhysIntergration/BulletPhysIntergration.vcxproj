@@ -250,6 +250,7 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="subMesh.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="MVPTransform.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="WorldObject.h" />

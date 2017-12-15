@@ -79,7 +79,7 @@ void Grid::draw()
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	//re calculates the MVP matrix
-	MVPMatrix.calculateTransform();
+	MVPMatrix.calculateTransform(transform);
 
 	// Send uniforms across
 	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));

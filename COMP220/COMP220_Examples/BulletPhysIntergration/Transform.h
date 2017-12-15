@@ -1,38 +1,48 @@
 #pragma once
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/glm.hpp>
-#include "Camera.h"
+
+#include "glm/glm.hpp"
+
 using namespace glm;
-
-struct Transform
+class Transform
 {
-	Transform(Camera&cam, float aspectRatio) :viewMatrix(cam.cameraMatrix)
+public:
+	Transform()
 	{
-		projectionMatrix = perspective(radians(90.0f), aspectRatio, 0.1f, 1000.0f);
-	};
-
-	mat4 modelMatrix;
-	mat4& viewMatrix;
-	mat4 projectionMatrix;
-
-	void calculateTransform(vec3 &spawnLocation = vec3(0.0f, 0.0f, 0.0f), vec3 &spawnRotation = vec3(0.0f, 0.0f, 0.0f), vec3 &spawnScale = vec3(1.0f, 1.0f, 1.0f))
-	{
-
-		vec3 trianglePosition = spawnLocation;
-		mat4 translationMatrix = translate(trianglePosition);
-		//create rotation matrix
-		vec3 trianglRotation = spawnRotation;
-		mat4 rotationXMatrix = rotate(trianglRotation.x, vec3(1.0f, 0.0f, 0.0f));
-		mat4 rotationYMatrix = rotate(trianglRotation.y, vec3(0.0, 1.0f, 0.0f));
-		mat4 rotationZMatrix = rotate(trianglRotation.z, vec3(0.0, 0.0f, 1.0f));
-		mat4 rotationMatix = rotationZMatrix*rotationYMatrix*rotationXMatrix;
-
-		//create scaling matrix
-		vec3 scaleVec = spawnScale;
-		mat4 ScalingMatrix = scale(scaleVec);
-		this->modelMatrix = translationMatrix*rotationMatix*ScalingMatrix;
+		worldLocation = vec3(0.0f, 0.0f, 0.0f);
+		worldRotation = vec3(0.0f, 0.0, 0.0f);
+		worldScale	  = vec3(1.0f, 1.0f, 1.0f);
 	}
+	/**Sets the private variable WorldPos to the argument
+	* newWorldPos is the new position to set to
+	*/
+	void setWorldLocation(vec3& newWorldLocation) { worldLocation = newWorldLocation; };
 
+	/**gets the private variable WorldPos
+	* returns a reference to the worldPos
+	*/
+	vec3& getWorldLocation() { return worldLocation; };
+
+	/**Sets the private variable WorldRotation to the argument
+	* newWorldRotation is the new rotation to set to
+	*/
+	void setWorldRotation(vec3& newWorldRotation) { worldRotation = newWorldRotation; };
+
+	/**gets the private variable WorldRotation
+	* returns a reference to the WorldRotation
+	*/
+	vec3& getWorldRotation() { return worldRotation; };
+	
+	/**Sets the private variable WorldScale to the argument
+	* newWorldScale is the new size to set to
+	*/
+	void setWorldScale(vec3& newWorldScale) { worldScale = newWorldScale; };
+
+	/**gets the private memeber variable worldScale
+	*returns reference to world scale
+	*/
+	vec3& getWorldScale() { return worldScale; };
+private:
+	 vec3 worldLocation;
+	 vec3 worldRotation;
+	 vec3 worldScale;
 };

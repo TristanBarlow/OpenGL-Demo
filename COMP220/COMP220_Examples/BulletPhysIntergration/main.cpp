@@ -116,14 +116,14 @@ int main(int argc, char* args[])
 
 	SkyBox skyBoxMesh(*camera);
 	skyBoxMesh.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
-	skyBoxMesh.worldScale = vec3(400.0, 400.0, 400.0);
-	skyBoxMesh.worldPos = vec3(250, 0.0, 150);
+	skyBoxMesh.m_Transform.setWorldScale( vec3(400.0, 400.0, 400.0));
+	skyBoxMesh.m_Transform.setWorldLocation(vec3(250, 0.0, 150));
 
 	// init light
 	Light light;
 	light.init(sphere);
-	light.setWorldLocation(vec3(-10.0, 30.0, 10.0));
-	light.setWorldScale(vec3(1.0f, 1.0f, 1.0f));
+	light.worldTransform.setWorldLocation(vec3(-10.0, 30.0, 10.0));
+	light.worldTransform.setWorldScale(vec3(1.0f, 1.0f, 1.0f));
 	light.setNoTextureColour(vec4(1.0, 1.0, 1.0, 1.0));
 	light.setIsLitt(false);
 	light.setProgamToUse(defaultShader);
@@ -133,15 +133,15 @@ int main(int argc, char* args[])
 	// init sphere and set up attributes
 	WorldObject* sphereObj = new WorldObject;
 	sphereObj->init(sphere);
-	sphereObj->setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
-	sphereObj->setWorldScale(vec3(3.0f, 3.0f, 3.0f));
+	sphereObj->worldTransform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
+	sphereObj->worldTransform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
 	worldObjects.push_back(sphereObj);
 	sphereObj->setProgamToUse(LightShader);
 
 	//Unique tank that uses the same mesh but different shader
 	WorldObject* newTank = new WorldObject;
 	newTank->init(tank);
-	newTank->setWorldLocation(vec3(((rand() % 30) - 20), 20, ((rand() % 30) - 20)));
+	newTank->worldTransform.setWorldLocation(vec3(((rand() % 30) - 20), 20, ((rand() % 30) - 20)));
 	newTank->addCompoundBody(*physSim);
 	newTank->setProgamToUse(defaultShader);
 	newTank->setNoTextureColour(vec4(1.0, 0.0, 1.0f, 1.0));
@@ -151,7 +151,7 @@ int main(int argc, char* args[])
 	{
 		WorldObject* newTank = new WorldObject;
 		newTank->init(tank);
-		newTank->setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
+		newTank->worldTransform.setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
 		newTank->addCompoundBody(*physSim);
 		newTank->setProgamToUse(TexLightShader);
 		worldObjects.push_back(newTank);
@@ -161,8 +161,8 @@ int main(int argc, char* args[])
 	{
 		WorldObject* newDrumMag = new WorldObject;
 		newDrumMag->init(drumMag);
-		newDrumMag->setWorldLocation(vec3((rand() % 30) - 20, 20, (rand() % 30) - 20));
-		newDrumMag->setWorldScale(vec3(5.0, 5.0, 5.0));
+		newDrumMag->worldTransform.setWorldLocation(vec3((rand() % 30) - 20, 20, (rand() % 30) - 20));
+		newDrumMag->worldTransform.setWorldScale(vec3(5.0, 5.0, 5.0));
 		newDrumMag->addCompoundBody(*physSim);
 		newDrumMag->setProgamToUse(TexLightShader);
 		worldObjects.push_back(newDrumMag);
@@ -295,7 +295,7 @@ int main(int argc, char* args[])
 		// draw world objects
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
-			worldObjects[i]->draw(light.getWorldLocation());
+			worldObjects[i]->draw(light.worldTransform.getWorldLocation());
 		}
 
 		// draw any raycasts

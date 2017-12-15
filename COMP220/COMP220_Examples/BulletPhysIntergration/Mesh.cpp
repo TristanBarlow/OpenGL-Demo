@@ -71,16 +71,16 @@ void Mesh::render(vec3 lightSourceEx)
 
 	if (islitt)
 	{
-		distanceToLight = 1/length(lightSourceEx - worldPos);
+		distanceToLight = 1 / length(lightSourceEx - m_Transform.getWorldLocation());
 		glUniform1f(lightDistanceLoc, distanceToLight);
 		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSourceEx));
-		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->worldPos-camera.getWorldPos()));
+		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->m_Transform.getWorldLocation()-camera.getWorldPos()));
 		glUniform4fv(specularMaterialColourLoc, 1, value_ptr(specularColour));
 		glUniform4fv(specularIntensityLoc, 1, value_ptr(specularIntensity));
 		glUniform4fv(diffuseMaterialColourLoc, 1, value_ptr(diffuseLightColour));
 	}
 
-	MVPMatrix.calculateTransform(worldPos, worldRot, worldScale);
+	MVPMatrix.calculateTransform(m_Transform);
 	glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
