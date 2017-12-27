@@ -20,7 +20,6 @@
 #include "Texture.h"
 #include "Vertex.h"
 #include "Camera.h"
-#include "ObjLoader.h"
 #include "Transform.h"
 #include "ShaderLoader.h"
 #include "MVP.h"

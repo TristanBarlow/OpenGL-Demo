@@ -100,71 +100,60 @@ int main(int argc, char* args[])
 	grid->createGridVec(101, 101, defaultShader);
 
 	// load sphere Mesh
-	Mesh sphere(*camera);
-	sphere.init("Meshes/only_quad_sphere.txt", LightShader, true);
+	Mesh sphere;
+	sphere.init("Meshes/only_quad_sphere.txt");
 
 	//load and create the static mesh for the tank
-	Mesh tank(*camera);
-	tank.init("Meshes/Tank1.FBX", TexLightShader, true, true, "Textures/Tank1DF.png");
+	Mesh tank;
+	tank.init("Meshes/Tank1.FBX");
 
 	//load and create the static mesh drum mag
-	Mesh drumMag(*camera);
-	drumMag.init("Meshes/drumMag.obj", TexLightShader, true, true, "Textures/DrumMag_Low_blinn6_BaseColor.png");
+	Mesh drumMag;
+	drumMag.init("Meshes/drumMag.obj");
 
-	Mesh cube(*camera);
-	cube.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
 
-	SkyBox skyBoxMesh(*camera);
-	skyBoxMesh.init("Meshes/SkyBox.obj", TextureShader, false, true, "Textures/SkyBox2.jpg");
-	skyBoxMesh.m_Transform.setWorldScale( vec3(400.0, 400.0, 400.0));
-	skyBoxMesh.m_Transform.setWorldLocation(vec3(250, 0.0, 150));
 
 	// init light
-	Light light;
-	light.init(sphere);
-	light.worldTransform.setWorldLocation(vec3(-10.0, 30.0, 10.0));
-	light.worldTransform.setWorldScale(vec3(1.0f, 1.0f, 1.0f));
+	WorldObject light(*camera);
+	light.init(sphere, defaultShader);
+	light.w_Transform.setWorldLocation(vec3(-10.0, 30.0, 10.0));
+	light.w_Transform.setWorldScale(vec3(1.0f, 1.0f, 1.0f));
 	light.setNoTextureColour(vec4(1.0, 1.0, 1.0, 1.0));
 	light.setIsLitt(false);
-	light.setProgamToUse(defaultShader);
 
 	vector <WorldObject*> worldObjects;
 
 	// init sphere and set up attributes
-	WorldObject* sphereObj = new WorldObject;
-	sphereObj->init(sphere);
-	sphereObj->worldTransform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
-	sphereObj->worldTransform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
+	WorldObject* sphereObj = new WorldObject(*camera);
+	sphereObj->init(sphere, LightShader);
+	sphereObj->w_Transform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
+	sphereObj->w_Transform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
 	worldObjects.push_back(sphereObj);
-	sphereObj->setProgamToUse(LightShader);
 
 	//Unique tank that uses the same mesh but different shader
-	WorldObject* newTank = new WorldObject;
-	newTank->init(tank);
-	newTank->worldTransform.setWorldLocation(vec3(((rand() % 30) - 20), 20, ((rand() % 30) - 20)));
+	WorldObject* newTank = new WorldObject(*camera);
+	newTank->init(tank, TexLightShader, "Textures/Tank1DF.png");
+	newTank->w_Transform.setWorldLocation(vec3(((rand() % 30) - 20), 20, ((rand() % 30) - 20)));
 	newTank->addCompoundBody(*physSim);
-	newTank->setProgamToUse(defaultShader);
 	newTank->setNoTextureColour(vec4(1.0, 0.0, 1.0f, 1.0));
 	worldObjects.push_back(newTank);
 
 	for (int i = 0; i < 10; i++)
 	{
-		WorldObject* newTank = new WorldObject;
-		newTank->init(tank);
-		newTank->worldTransform.setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
+		WorldObject* newTank = new WorldObject(*camera);
+		newTank->init(tank, TexLightShader, "Textures/Tank1DF.png");
+		newTank->w_Transform.setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
 		newTank->addCompoundBody(*physSim);
-		newTank->setProgamToUse(TexLightShader);
 		worldObjects.push_back(newTank);
 	}
 
 	for (int i = 0; i < 10; i++)
 	{
-		WorldObject* newDrumMag = new WorldObject;
-		newDrumMag->init(drumMag);
-		newDrumMag->worldTransform.setWorldLocation(vec3((rand() % 30) - 20, 20, (rand() % 30) - 20));
-		newDrumMag->worldTransform.setWorldScale(vec3(5.0, 5.0, 5.0));
+		WorldObject* newDrumMag = new WorldObject(*camera);
+		newDrumMag->init(drumMag, TexLightShader, "Textures/DrumMag_Low_blinn6_BaseColor.png");
+		newDrumMag->w_Transform.setWorldLocation(vec3((rand() % 30) - 20, 20, (rand() % 30) - 20));
+		newDrumMag->w_Transform.setWorldScale(vec3(5.0, 5.0, 5.0));
 		newDrumMag->addCompoundBody(*physSim);
-		newDrumMag->setProgamToUse(TexLightShader);
 		worldObjects.push_back(newDrumMag);
 	}
 
@@ -180,10 +169,11 @@ int main(int argc, char* args[])
 	postProcBlur.init("Shaders/PostProcVert.txt", "Shaders/PostProcBlurFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	PostProcessor postProcOutline;
-	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT, true);
+	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	PostProcBloom postProcBloom;
-	postProcBloom.init("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass1.txt", SCREEN_WIDTH, SCREEN_HEIGHT, true);
+	postProcBloom.init("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass1.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+
 	postProcBloom.PostProcBloomInit("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass2.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
@@ -218,7 +208,7 @@ int main(int argc, char* args[])
 				switch(ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
-						newRayCast = new RayCast(*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(0.7,0.3 , 0.7f,1.0f));
+						newRayCast = new RayCast(*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
 						rayCastVec.push_back(newRayCast);
 						break;
 					case SDL_BUTTON_RIGHT:
@@ -289,13 +279,12 @@ int main(int argc, char* args[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the mesh into the stencil buffer.
-		light.moveCircle();
 		light.draw();
 
 		// draw world objects
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
-			worldObjects[i]->draw(light.worldTransform.getWorldLocation());
+			worldObjects[i]->draw(light.w_Transform.getWorldLocation());
 		}
 
 		// draw any raycasts
@@ -308,9 +297,6 @@ int main(int argc, char* args[])
 		}
 
 		grid->draw();
-
-		glDisable(GL_CULL_FACE);
-		skyBoxMesh.render();
 
 		// post processor draw
 		if (bloom)postProcBloom.applyBloom();

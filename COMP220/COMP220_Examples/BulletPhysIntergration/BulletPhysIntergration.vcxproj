@@ -224,10 +224,12 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PhysicsSimulation.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="rayCast.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="subMesh.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -240,12 +242,13 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MVP.h" />
-    <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="PhysicsSimulation.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="rayCast.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="subMesh.h" />

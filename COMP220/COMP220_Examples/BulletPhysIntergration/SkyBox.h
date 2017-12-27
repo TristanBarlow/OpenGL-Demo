@@ -9,5 +9,5 @@
 class SkyBox :public Mesh
 {
 public:
-	SkyBox(Camera&cam);
+	SkyBox();
 };

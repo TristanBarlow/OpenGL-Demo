@@ -10,13 +10,21 @@
 class WorldObject
 {
 public:
+	WorldObject(Camera & cam);
+
 	void draw(vec3& = vec3(0.0f, 0.0f, 0.0f));
+
 	void update();
-	void init(Mesh &meshAd);
+
+	void init(Mesh &meshAd, GLuint newProgramToUse , const std::string& fileName = "");
+
 	void addRigidBody(PhysicsSimulation&, btVector3 = btVector3(btScalar(50.), btScalar(1.), btScalar(50.)), btScalar = (0.));
+
 	void addCompoundBody(PhysicsSimulation&);
 	
-	Transform worldTransform;
+	void Destroy();
+
+	Transform w_Transform;
 
 	/*sets the defualt shader colour for the Mesh
 	* newNoTextureColour is the new value it will be se to
@@ -26,34 +34,44 @@ public:
 	/*sets the defualt shader colour for the Mesh
 	* newNoTextureColour is the new value it will be se to
 	*/
-	Mesh* getMesh() { return mesh; }
+	Mesh* getMesh() { return w_mesh; }
 
 	/*
 	*returns the private variable pointer to the rigid body
 	*/
-	btRigidBody* getRigidBody() { return rigidBody; };
+	btRigidBody* getRigidBody() { return w_rigidBody; };
 
 	/*
 	*Sets wether or not the object should be litt, BECAREFUL may have to change the shader program too!
 	*/
 	void setIsLitt(bool newIsLitt) { isLitt = newIsLitt; };
 
-	/*
-	*Sets the new shader program that will be used when this instance of the mesh is rendered
-	*then it will go through and update the gluniiforms needed for that particular new program
-	*/
-	void setProgamToUse(GLuint newProgram) { programToUse = newProgram; mesh->setProgramToUse(programToUse); mesh->uniformGetPass(); MVPLocToUse = mesh->getMVPLocation(); };
 
 private:
 	btQuaternion& calculateQuat();
+	
+	void setUniformLoctions();
 
 	vec4 noTextureColour = vec4(0.3, 0.3, 0.3, 1.0);
 	bool isLitt = false;
 
-	Mesh* mesh;
-	btRigidBody* rigidBody = NULL;
+	Mesh* w_mesh = NULL;
+	btRigidBody* w_rigidBody = NULL;
 
 	GLuint programToUse;
-	MVP MVPLocToUse;
+
+	MVP w_MVPLocToUse;
+	MVPTransform w_MVPTransform;
 	
+	Material w_material;
+	MaterialLocation w_materialLocation;
+
+	GLint lightDirectionLoc;
+	GLint lightDistanceLoc;
+	GLint cameraLocationLoc;
+
+	GLuint textureID;
+	GLint textureLocation;
+
+	Camera & camera;
 };

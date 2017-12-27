@@ -49,10 +49,10 @@ void Grid::createGridVec(int numberX, int numberY, GLuint programID)
 			}
 
 			//creates the vertecies with the generated colour and the positions
-			LineVertex lineVertex =  { lineVert1, tempColourY };
-			LineVertex lineVertex2 = { lineVert2, tempColourY };
-			LineVertex lineVertex3 = { lineVert3, tempColourX };
-			LineVertex lineVertex4 = { lineVert4, tempColourX };
+			Vertex lineVertex =  { lineVert1, tempColourY };
+			Vertex lineVertex2 = { lineVert2, tempColourY };
+			Vertex lineVertex3 = { lineVert3, tempColourX };
+			Vertex lineVertex4 = { lineVert4, tempColourX };
 
 			// add created verts to vector
 			lineVerts.push_back(lineVertex);
@@ -91,9 +91,10 @@ void Grid::draw()
 
 	// enable the attrib arryas and re define them seems not to work unless I call glvertexAttribPOinter again.
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(LineVertex), ((void*)offsetof(LineVertex, vertexCol)));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexCol)));
 
 	//DRAW the verts
 	glDrawArrays(GL_LINES, 0, lineVerts.size());
@@ -110,5 +111,5 @@ Grid::~Grid()
 void Grid::copyBufferData()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
-	glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(LineVertex), &lineVerts[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(Vertex), &lineVerts[0], GL_STATIC_DRAW);
 }

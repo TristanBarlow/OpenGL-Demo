@@ -18,84 +18,26 @@ Mesh::~Mesh()
 		}
 	}
 	subMeshes.clear();
-	glDeleteTextures(1, &textureID);
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(3);
 }
 
-Mesh::Mesh(Camera& camera1):camera(camera1),MVPMatrix(camera1, camera1.aspectRatio)
+Mesh::Mesh()
 {
 
 }
 
-void Mesh::init(const std::string& filename, GLuint programID, bool litt, bool textured, const std::string& texturefilename)
+void Mesh::init(const std::string& filename)
 {
-	islitt = litt;
-	hasTexture = textured;
-	programToUse = programID;
 	loadMeshFromFile(filename, subMeshes);
-	textureFilename = texturefilename;
-	uniformGetPass();
 	copyBufferData();
 } 
 
-void Mesh::uniformGetPass()
-{
-	MVPLoc = { glGetUniformLocation(programToUse, "modelMatrix"),
-			   glGetUniformLocation(programToUse, "viewMatrix"),
-			   glGetUniformLocation(programToUse, "projectionMatrix") };
-
-	if (islitt)
-	{
-		lightDirectionLoc = glGetUniformLocation(programToUse, "lightLocation");
-		lightDistanceLoc = glGetUniformLocation(programToUse, "lightDistance");
-		cameraLocationLoc = glGetUniformLocation(programToUse, "cameraLocation");
-		specularMaterialColourLoc = glGetUniformLocation(programToUse, "specularMaterialColour");
-		lightColourLoc = glGetUniformLocation(programToUse, "objectColour");
-		diffuseMaterialColourLoc = glGetUniformLocation(programToUse, "diffuseLightColour");
-		specularIntensityLoc = glGetUniformLocation(programToUse, "specularIntensity");
-	}
-
-	if (hasTexture)
-	{
-		textureID = loadTexture(textureFilename);
-		textureLocation = glGetUniformLocation(programToUse, "baseTexture");
-	}
-}
 void Mesh::render(vec3 lightSourceEx) 
 {
-
-	glUseProgram(programToUse);
-
-	if (islitt)
-	{
-		distanceToLight = 1 / length(lightSourceEx - m_Transform.getWorldLocation());
-		glUniform1f(lightDistanceLoc, distanceToLight);
-		glUniform3fv(lightDirectionLoc, 1, value_ptr(lightSourceEx));
-		glUniform3fv(cameraLocationLoc, 1, value_ptr(this->m_Transform.getWorldLocation()-camera.getWorldPos()));
-		glUniform4fv(specularMaterialColourLoc, 1, value_ptr(specularColour));
-		glUniform4fv(specularIntensityLoc, 1, value_ptr(specularIntensity));
-		glUniform4fv(diffuseMaterialColourLoc, 1, value_ptr(diffuseLightColour));
-	}
-
-	MVPMatrix.calculateTransform(m_Transform);
-	glUniformMatrix4fv(MVPLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
-	glUniformMatrix4fv(MVPLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
-	glUniformMatrix4fv(MVPLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
-	glUniform1i(textureLocation, 0);
-
-	if (hasTexture) 
-	{
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-	}
-	else
-	{
-		glUniform4fv(lightColourLoc, 1, value_ptr(noTextureColour));
-		glUniform4fv(specularMaterialColourLoc, 1, value_ptr(specularColour));
-	}
 	for (int i = 0; i < subMeshes.size(); i++)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, subMeshes[i]->m_VBO);
@@ -108,35 +50,14 @@ void Mesh::render(vec3 lightSourceEx)
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexCol)));
 
-		if (subMeshes[i]->hasTexture)
-		{
-			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, textureCoords)));
-			
-		}
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, textureCoords)));
 
-		if (subMeshes[i]->lightMe)
-		{
-			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexNormals)));
-		}
-
-		if (vertOutlinerMe)vertOutliner(subMeshes[i]);
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexNormals)));
 
 		glDrawElements(GL_TRIANGLES, subMeshes[i]->meshElementArray.size(), GL_UNSIGNED_INT, 0);
 	}
-}
-
-void Mesh::initVertOutline(GLuint vertOutliner, vec3 colour)
-{
-	vertOutlinerMe = true;
-	LineShader = vertOutliner;
-	MVPLineShaderLoc = {    glGetUniformLocation(LineShader, "modelMatrix"),
-						    glGetUniformLocation(LineShader, "viewMatrix"),
-						    glGetUniformLocation(LineShader, "projectionMatrix") };
-	vertOutlinerColourLoc = glGetUniformLocation(LineShader, "cellShaderColour");
-	vertOutlinerColour = colour;
-
 }
 
 void Mesh::copyBufferData()
@@ -148,26 +69,8 @@ void Mesh::copyBufferData()
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, subMeshes[i]->m_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, subMeshes[i]->meshElementArray.size() * sizeof(int), &subMeshes[i]->meshElementArray[0], GL_STATIC_DRAW);
+
 	}
-}
-
-void Mesh::vertOutliner(subMesh* subMesh)
-{
-	glEnable(GL_STENCIL_TEST);
-	glUseProgram(LineShader);
-	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
-	glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
-	glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
-	glUniform3fv(vertOutlinerColourLoc, 1, value_ptr(vertOutlinerColour));
-
-	glLineWidth(2);
-	glPolygonMode(GL_FRONT, GL_LINE);
-
-	glStencilFunc(GL_ALWAYS, 1, -1);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-	glDrawElements(GL_LINE_STRIP, subMesh->meshElementArray.size(), GL_UNSIGNED_INT, 0);
-	glUseProgram(programToUse);
 }
 
 void Mesh::maxMinCheck(subMesh * pSubmesh, vec3 & currentVector)

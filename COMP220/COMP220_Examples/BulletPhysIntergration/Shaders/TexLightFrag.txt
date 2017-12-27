@@ -28,7 +28,7 @@ void main()
 
 	float cosTheta = dot(vertexNormalDir, lightDirection );
 	cosTheta = clamp(cosTheta, 0,1);
-    vec4 diffuse = cosTheta*texture2D(baseTexture,vertexTextureCoordOut)*diffuseLightColour;
+    vec4 diffuse = cosTheta*texture2D(baseTexture,vertexTextureCoordOut)*diffuseLightColour*diffuseMaterialColour;
 
   //colour = fragmentColour;
   colour= diffuse + specular;

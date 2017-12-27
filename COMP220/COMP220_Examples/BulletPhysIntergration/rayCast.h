@@ -26,7 +26,7 @@ class RayCast
 		Transform worldTransform;
 		Camera& camera;
 		GLuint LineShader;
-		vector<LineVertex> lineVerts;
+		vector<Vertex> lineVerts;
 		MVPTransform MVPMatrix;
 		GLuint lineBuff;
 		MVP MVPLineShaderLoc;

@@ -11,8 +11,8 @@ RayCast::RayCast(Camera &cam,vec3& start, vec3& direction, int length, GLuint pr
 	vec3 lineVertStart = vec3(start.x +0.1, start.y-0.1, start.z+0.1);
 	vec3 lineVertEnd = vec3(direction.x * length, direction.y * length, direction.z * length);
 	vec4 vertColour = colour;
-	lineVerts.push_back(LineVertex(lineVertStart, vertColour));
-	lineVerts.push_back(LineVertex(lineVertEnd, vertColour));
+	lineVerts.push_back(Vertex(lineVertStart, vertColour));
+	lineVerts.push_back(Vertex(lineVertEnd, vertColour));
 	copyBufferData();
 }
 
@@ -32,11 +32,15 @@ void RayCast::draw()
 	glUniformMatrix4fv(MVPLineShaderLoc.modelMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.modelMatrix));
 	glUniformMatrix4fv(MVPLineShaderLoc.viewMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.viewMatrix));
 	glUniformMatrix4fv(MVPLineShaderLoc.projectionMatrixLocation, 1, GL_FALSE, value_ptr(MVPMatrix.projectionMatrix));
+
 	glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
+
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(LineVertex), ((void*)offsetof(LineVertex, vertexCol)));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexCol)));
+
 	glDrawArrays(GL_LINES, 0, lineVerts.size());
 }
 
