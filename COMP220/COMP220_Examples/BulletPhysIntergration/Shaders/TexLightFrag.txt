@@ -14,7 +14,7 @@ uniform sampler2D baseTexture;
 uniform vec4 diffuseLightColour;
 uniform vec4 diffuseMaterialColour;
 uniform vec4 specularMaterialColour;
-uniform vec4 specularIntensity;
+uniform float specularIntensity;
 
 vec3 shine;
 
@@ -23,14 +23,13 @@ void main()
 
 	vec3 foo = normalize(reflect(lightDirection, normalize(vertexNormalDir)));
 	float shineness = dot(vertCameraDir, foo);
-	float specularAngle = pow(clamp(shineness, 0, 1), 25.0f);
-	vec4 specular = specularAngle* specularMaterialColour *specularIntensity;
+	float specularAngle = pow(clamp(shineness, 0, 1), specularIntensity);
+	vec4 specular = specularAngle* specularMaterialColour;
 
 	float cosTheta = dot(vertexNormalDir, lightDirection );
 	cosTheta = clamp(cosTheta, 0,1);
     vec4 diffuse = cosTheta*texture2D(baseTexture,vertexTextureCoordOut)*diffuseLightColour*diffuseMaterialColour;
 
-  //colour = fragmentColour;
-  colour= diffuse + specular;
+	colour= diffuse + specular;
 
 }

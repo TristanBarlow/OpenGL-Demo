@@ -6,6 +6,10 @@
 #include "Transform.h"
 #include "Mesh.h"
 #include "PhysicsSimulation.h"
+#include "Camera.h"
+#include "Material.h"
+#include "MVP.h"
+#include "Texture.h"
 
 class WorldObject
 {
@@ -46,7 +50,7 @@ public:
 	*/
 	void setIsLitt(bool newIsLitt) { isLitt = newIsLitt; };
 
-
+	Material& getMaterial() { return w_material; };
 private:
 	btQuaternion& calculateQuat();
 	

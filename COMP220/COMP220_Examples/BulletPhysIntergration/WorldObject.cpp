@@ -17,12 +17,12 @@ void WorldObject::draw(vec3& lightLocation )
 	w_MVPLocToUse.sendMVPuniforms(w_MVPTransform);
 	w_materialLocation.sendUniforms(w_material);
 
-	glUniform3fv(lightDirectionLoc, 1, value_ptr(vec3(0.0, 0.0, 0.0)));
+	glUniform3fv(lightDirectionLoc, 1, value_ptr(lightLocation));
 	glUniform3fv(cameraLocationLoc, 1, value_ptr(this->w_Transform.getWorldLocation() - camera.getWorldPos()));
 
 	glUniform1i(textureLocation, 0);
-	glActiveTexture(GL_TEXTURE0);
 
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	//render
@@ -42,8 +42,6 @@ void WorldObject::update()
 		quat myRotation = quat(qRot.x(), qRot.y(), qRot.z(), qRot.w());
 		w_Transform.getWorldRotation() = eulerAngles(myRotation);
 	}
-	w_mesh->m_Transform = w_Transform;
-
 }
 
 void WorldObject::init(Mesh& meshAd, GLuint newProgramToUse, const std::string& fileName)

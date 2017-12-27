@@ -13,13 +13,9 @@
 #include <SDL_opengl.h>
 
 #include "Vertex.h"
-#include "Camera.h"
-#include "MVP.h"
-#include "MVPTransform.h"
 #include "subMesh.h"
-#include "Texture.h"
-#include "Material.h"
 
+using namespace std;
 class Mesh
 {
 public:
@@ -33,8 +29,6 @@ public:
 	void copyBufferData();
 
 	void render(vec3 = vec3(0.0f, 0.0f, 0.0f));
-
-	Transform m_Transform;
 
 	vector<subMesh*>& getSubMehses(){return this->subMeshes; };
 private:

@@ -114,11 +114,10 @@ int main(int argc, char* args[])
 
 
 	// init light
-	WorldObject light(*camera);
+	Light light(*camera);
 	light.init(sphere, defaultShader);
 	light.w_Transform.setWorldLocation(vec3(-10.0, 30.0, 10.0));
 	light.w_Transform.setWorldScale(vec3(1.0f, 1.0f, 1.0f));
-	light.setNoTextureColour(vec4(1.0, 1.0, 1.0, 1.0));
 	light.setIsLitt(false);
 
 	vector <WorldObject*> worldObjects;
@@ -128,11 +127,12 @@ int main(int argc, char* args[])
 	sphereObj->init(sphere, LightShader);
 	sphereObj->w_Transform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
 	sphereObj->w_Transform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
+	sphereObj->getMaterial().setAmbientColour(0.5, 0.5, 0.5, 1.0);
 	worldObjects.push_back(sphereObj);
 
 	//Unique tank that uses the same mesh but different shader
 	WorldObject* newTank = new WorldObject(*camera);
-	newTank->init(tank, TexLightShader, "Textures/Tank1DF.png");
+	newTank->init(tank, LightShader, "Textures/Tank1DF.png");
 	newTank->w_Transform.setWorldLocation(vec3(((rand() % 30) - 20), 20, ((rand() % 30) - 20)));
 	newTank->addCompoundBody(*physSim);
 	newTank->setNoTextureColour(vec4(1.0, 0.0, 1.0f, 1.0));
@@ -280,6 +280,7 @@ int main(int argc, char* args[])
 
 		// Render the mesh into the stencil buffer.
 		light.draw();
+		light.moveCircle();
 
 		// draw world objects
 		for (int i = 0; i < worldObjects.size(); i++)

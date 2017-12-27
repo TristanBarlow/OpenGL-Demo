@@ -1,5 +1,9 @@
 #include "Light.h"
 
+Light::Light(Camera & cam):WorldObject(cam)
+{
+}
+
 void Light::moveCircle()
 {
 	angle += 0.005;
