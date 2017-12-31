@@ -4,6 +4,9 @@
 
 struct MVP
 {
+	/**Gets the MVP locations for the model matrix
+	*programToUse the shader program to get the variables from
+	*/
 	void getMVPuniforms(GLuint programToUse) 
 	{
 		modelMatrixLocation = glGetUniformLocation(programToUse, "modelMatrix");

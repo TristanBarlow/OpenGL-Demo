@@ -10,6 +10,10 @@ using namespace glm;
 
 struct MVPTransform
 {
+	/**Defualt constructor Also calculates and stores the projection matrix. This is done once per class, could be once and have all the instances refering to it.
+	*cam use to get a refernce to the camera matrix
+	*aspectRatio is use in the calculation of the projection matrix.
+	*/
 	MVPTransform(Camera&cam, float aspectRatio) :viewMatrix(cam.cameraMatrix)
 	{
 		projectionMatrix = perspective(radians(90.0f), aspectRatio, 0.1f, 1000.0f);
@@ -19,6 +23,9 @@ struct MVPTransform
 	mat4& viewMatrix;
 	mat4 projectionMatrix;
 
+	/**Calculates the MVPTransform and updates the value of the model matrix on the new value. 
+	*transform is the trasform that needs to be converted into the new model matrix. 
+	*/
 	void calculateTransform(Transform& transform)
 	{
 

@@ -9,6 +9,13 @@
 
 using namespace std;
 
+/**Loads texture from a file
+*filename is the name of the file to load the texture from 
+*/
 GLuint loadTexture(const string& filename);
 
-GLuint createTexture(int= 800, int = 600);
+/**Creates a texture of given width and height
+*width the width of the texture to be created
+*height the height of the texture to be created
+*/
+GLuint createTexture(int width = 800, int height = 600);

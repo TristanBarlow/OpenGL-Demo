@@ -21,28 +21,30 @@ class Grid
 	public:
 		
 		Transform transform;
-		/*Default constructor for grid class.
+		/**Default constructor for grid class.
 		*Takes a camera reference to get the camera view matrix. Could Just pass a red to the matrix but having a camera ref may be useful. 
 		*/
 		Grid(Camera&);
 
-		/*Draws the current vertext array bound in the instance of the class. If you want to stop the grids do not call this function
+		/**Draws the current vertext array bound in the instance of the class. If you want to stop the grids do not call this function
 		*		
 		*/
 		void draw();
 
-		/* Sets up the shader program to use, generates grid buffers and creates the vertex array used to draw grid
+		/**Sets up the shader program to use, generates grid buffers and creates the vertex array used to draw grid
 		*numberX the number of lines to draw on the X axis
 		*numberY the number of lines to draw on the Y axis
 		*programID the shader program the grid will be using
 		*/
 		void createGridVec(int numberX, int numberY, GLuint programID);
 
-		/*Defualt Deconstructor
+		/**
+		*Defualt Deconstructor
 		*/
 		~Grid();
 
-		/* Copies buffer data of verts
+		/**
+		*Copies buffer data of verts
 		*/
 		void copyBufferData();
 

@@ -14,18 +14,32 @@
 class WorldObject
 {
 public:
+
+	/**Defualt constructor for the worldObject class
+	*cam is used to create a camera refence to easily grab the camera location for the shaders
+	*/
 	WorldObject(Camera & cam);
 
-	void draw(vec3& = vec3(0.0f, 0.0f, 0.0f));
+	/** calls update function and then renders the mesh
+	* light location is the current location of the light source, in future this could be turned into a vector to support multiple light sources.
+	*/
+	void draw(vec3& lightLocation = vec3(0.0f, 0.0f, 0.0f));
 
-	void update();
-
+	/**Init should always be called when trying to use worldobject class
+	*meshAd is a reference to the mesh that the current world object will use.
+	*newProgramTouse is the shader program that this particular worldobject will be using
+	*fileName is the name of the texture for this worldobject
+	*/
 	void init(Mesh &meshAd, GLuint newProgramToUse , const std::string& fileName = "");
 
-	void addRigidBody(PhysicsSimulation&, btVector3 = btVector3(btScalar(50.), btScalar(1.), btScalar(50.)), btScalar = (0.));
+	void addRigidBody(PhysicsSimulation&, btVector3& = btVector3(btScalar(50.), btScalar(1.), btScalar(50.)), btScalar = (0.));
 
+	/** Adds a compound body to represent this world object in the physcs world 
+	*/
 	void addCompoundBody(PhysicsSimulation&);
 	
+	/** destroys this instance
+	*/
 	void Destroy();
 
 	Transform w_Transform;
@@ -52,8 +66,18 @@ public:
 
 	Material& getMaterial() { return w_material; };
 private:
+	
+	/**
+	* this function sets the position and rotation of the worldobject to that of the physcis objcet
+	*/
+	void update();
+
+	/**Turns the world rotation of this object to quaternion
+	*/
 	btQuaternion& calculateQuat();
 	
+	/**Goes through all the required gluniformGets and assigns them. Uses the programToUse
+	*/
 	void setUniformLoctions();
 
 	vec4 noTextureColour = vec4(0.3, 0.3, 0.3, 1.0);

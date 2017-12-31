@@ -4,7 +4,7 @@
 #include "WorldObject.h"
 // This header is used to store destroy functions to make other files look a little cleaner
 
-/*RAYCAST DESTROYER!!!! 
+/**RAYCAST DESTROYER!!!! 
 * vec RAYCAST VECTOR TO DESTROY!!!!
 */
 void destroyRaycast(std::vector<RayCast*>& vec)
@@ -24,7 +24,7 @@ void destroyRaycast(std::vector<RayCast*>& vec)
 	}
 }
 
-/*WORLD OBJECT DESTROYER!!!!
+/**WORLD OBJECT DESTROYER!!!!
 * vec WORLD OBJECT VECTOR TO DESTROY!!!!
 */
 void destroyWorldObjects(std::vector<WorldObject*>& vec)

@@ -48,8 +48,14 @@ class MaterialLocation
 {
 public:
 
+	/**Gets the uniform locations of the material
+	*The program to get the locations from
+	*/
 	void updateLocations(GLuint programToUse);
 
+	/**Sends the uniforms accross to the shader
+	*The material that is to be sent accross to the locations stored in this class
+	*/
 	void sendUniforms(Material & material);
 
 	GLint m_SpecularColourLoc;

@@ -59,7 +59,7 @@ void WorldObject::init(Mesh& meshAd, GLuint newProgramToUse, const std::string& 
 	setUniformLoctions();
 }
 
-void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3 size, btScalar mass)
+void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3& size, btScalar mass)
 {
 	float converter = 3.12 / 180;
 	btQuaternion finalOrientation = calculateQuat();

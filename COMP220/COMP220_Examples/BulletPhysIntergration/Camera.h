@@ -10,7 +10,7 @@ using namespace glm;
 class Camera
 {
 public:
-	/*
+	/**
 	*Camera constructor
 	*aspectRatio used to set the viewMatrix Not constant incase of a resizable screen in the future
 	* location Spawn location of the camera defaulted
@@ -37,25 +37,25 @@ public:
 
 	//camera Movement functions
 
-	/*
+	/**
 	*Moves the camera to the left or the right
 	* X the amount to strafe the camera by
 	*/
 	void strafe(float x);
 
-	/*
+	/**
 	*moves the camera along the forward direction vector
 	* Z the amount to move the camera by
 	*/
 	void move  (float z);
 
-	/*
+	/**
 	*moves the camera along in the up direction vector
 	* Y is the amount to move the camera by
 	*/
 	void lift  (float y);
 
-	/*Takes an X and a Y and rotates the camera around to get a new centre point to look at THANKS RICH!
+	/**Takes an X and a Y and rotates the camera around to get a new centre point to look at THANKS RICH!
 	* X the X offset
 	* Y the Y offset
 	*/
@@ -63,17 +63,17 @@ public:
 
 	//Setters and getters!
 
-	/*Sets the private variable WorldPos to the argument
+	/**Sets the private variable WorldPos to the argument
 	* newWorldPos is the new position to set to
 	*/
 	void setWorldPos(vec3& newWorldPos) { worldPos = newWorldPos; };
 
-	/*gets the private variable WorldPos
+	/**gets the private variable WorldPos
 	* returns a reference to the worldPos
 	*/
 	vec3& getWorldPos() { return worldPos; };
 
-	/*Sets the private variable Centre to the argument
+	/**Sets the private variable Centre to the argument
 	* newCentre is the new position to set to
 	*/
 	void setCentre(vec3& newCentre) { centre = newCentre; };
@@ -83,12 +83,12 @@ public:
 	*/
 	vec3& getCentre() { return centre; };
 
-	/*Sets the private variable Centre to the argument
+	/**Sets the private variable Centre to the argument
 	* newCentre is the new position to set to
 	*/
 	void setUp(vec3& newUp) { up = newUp; };
 
-	/*gets the private variable up
+	/**gets the private variable up
 	* returns a reference to the up
 	*/
 	vec3& getUp() { return up; };
@@ -102,7 +102,7 @@ private:
 	//the up direction of the camera(where is directly above of the camera)
 	vec3 up = vec3(0.0f, 1.0f, 0.0f);
 
-	/*
+	/**
 	* Recalculates camera values
 	*/
 	void update();

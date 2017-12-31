@@ -36,7 +36,7 @@ void Mesh::init(const std::string& filename)
 	copyBufferData();
 } 
 
-void Mesh::render(vec3 lightSourceEx) 
+void Mesh::render() 
 {
 	for (int i = 0; i < subMeshes.size(); i++)
 	{
@@ -132,6 +132,7 @@ bool Mesh::loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &
 			if (currentMesh->mVertices[v].x != NULL)
 			{
 				aiVector3D currentModelVertex = currentMesh->mVertices[v];
+
 				currentVertex.vertexPos = { currentModelVertex.x, currentModelVertex.y, currentModelVertex.z };
 				maxMinCheck(pSubMesh, currentVertex.vertexPos);
 				currentVertex.vertexCol = { 1.0f, 1.0f, 1.0f, 1.0f };

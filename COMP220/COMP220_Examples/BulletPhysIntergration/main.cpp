@@ -111,8 +111,6 @@ int main(int argc, char* args[])
 	Mesh drumMag;
 	drumMag.init("Meshes/drumMag.obj");
 
-
-
 	// init light
 	Light light(*camera);
 	light.init(sphere, defaultShader);
