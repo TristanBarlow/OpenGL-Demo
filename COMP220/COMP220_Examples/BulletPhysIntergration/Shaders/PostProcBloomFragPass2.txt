@@ -6,7 +6,7 @@ in vec2 textureCoords;
 uniform sampler2D texture0;
 uniform float resolution;
 uniform float radius;
-
+uniform vec2 direction;
 
 void main()
 {
@@ -17,15 +17,11 @@ void main()
 	vec2 tc = textureCoords;
 	
 	//the amount to blur, i.e. how far off center to sample from 
-	//1.0 -> blur by one pixel
-	//2.0 -> blur by two pixels, etc.
 	float blur = radius/resolution; 
     
 	//the direction of our blur
-	//(1.0, 0.0) -> x-axis blur
-	//(0.0, 1.0) -> y-axis blur
-	float hstep = 0;
-	float vstep = 1;
+	float hstep = direction.x;
+	float vstep = direction.y;
     
 	//taken from https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson5
 	//apply blurring, using a 9-tap filter with predefined gaussian weights

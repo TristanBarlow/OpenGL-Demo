@@ -2,6 +2,8 @@
 
 void PostProcessBloom::renderLuminance()
 {
+	bind2ndBuff();
+
 	glDisable(GL_DEPTH_TEST);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -23,7 +25,7 @@ void PostProcessBloom::renderLuminance()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void PostProcessBloom::PostProcBloomInit(const char* vertShader, int SCREEN_WIDTH, int SCREEN_HEIGHT)
+void PostProcessBloom::PostProcBloomInit(const char* vertShader, int numberOfBlurs, int SCREEN_WIDTH, int SCREEN_HEIGHT)
 {
 	bloomShader1 = LoadShaders(vertShader, "Shaders/PostProcBloomFragPass1.txt");
 	bloomShader2 = LoadShaders(vertShader, "Shaders/PostProcBloomFragPass2.txt");
@@ -31,6 +33,7 @@ void PostProcessBloom::PostProcBloomInit(const char* vertShader, int SCREEN_WIDT
 
 	resolution = 2048;
 	radius = 10;
+	timesToBlur = numberOfBlurs;
 
 	//The texture we are going to render to
 	sceneTextureID = createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -47,7 +50,9 @@ void PostProcessBloom::PostProcBloomInit(const char* vertShader, int SCREEN_WIDT
 
 	generateBuffers(thirdDepthBufferID, thirdFrameBufferID, verticalTextureID, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-
+	combinedTextureID = createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+	generateBuffers(fourthDepthBufferID, fourthFrameBufferID, combinedTextureID, SCREEN_WIDTH, SCREEN_HEIGHT);
+	
 	//create fullscreen quad
 	GLfloat vertices[8] = { -1.0f, -1.0f, 1.0f, -1.0f,-1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -71,6 +76,7 @@ void PostProcessBloom::PostProcBloomInit(const char* vertShader, int SCREEN_WIDT
 	secondTextureLoc0 = glGetUniformLocation(bloomShader2, "texture0");
 	secondResolutionLoc = glGetUniformLocation(bloomShader2, "resolution");
 	secondRadiusLoc = glGetUniformLocation(bloomShader2, "radius");
+	directionLoc = glGetUniformLocation(bloomShader2, "direction");
 
 	thirdTextureLoc0 = glGetUniformLocation(bloomShader3, "texture0");
 	thirdTextureLoc1 = glGetUniformLocation(bloomShader3, "texture1");
@@ -81,27 +87,63 @@ void PostProcessBloom::PostProcBloomInit(const char* vertShader, int SCREEN_WIDT
 
 void PostProcessBloom::applyBloom()
 {
-	bind2ndBuff();
 	renderLuminance();
-	secondPass();
+	firstBlur();
+	for(int i = 0; i < timesToBlur; i++)	AnotherOne();
+	finalDraw();
 }
 
-void PostProcessBloom::secondPass()
+void PostProcessBloom::firstBlur()
 {
 	bind3rdBuff();
+	direction = { 1.0,0.0 };
+	blurTexture(luminanceTextureID);
 
-	glDisable(GL_DEPTH_TEST);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	bind4thBuff();
+	direction = { 0.0,1.0 };
+	blurTexture(verticalTextureID);
+}
 
+PostProcessBloom::~PostProcessBloom()
+{
+
+	glDeleteBuffers(1, &screenQuadVBOID);
+	glDeleteVertexArrays(1, &screenVAO);
+
+	glDeleteProgram(bloomShader1);
+	glDeleteProgram(bloomShader2);
+	glDeleteProgram(bloomShader3);
+
+	glDeleteTextures(1, &luminanceTextureID);
+	glDeleteTextures(1, &verticalTextureID);
+	glDeleteTextures(1, &sceneTextureID);
+	glDeleteTextures(1, &combinedTextureID);
+
+	glDeleteRenderbuffers(1, &firstDepthBufferID);
+	glDeleteFramebuffers(1, &firstFrameBufferID);
+
+	glDeleteRenderbuffers(1, &secondDepthBufferID);
+	glDeleteFramebuffers(1, &secondFrameBufferID);
+
+	glDeleteRenderbuffers(1, &thirdDepthBufferID);
+	glDeleteFramebuffers(1, &thirdFrameBufferID);
+
+	glDeleteRenderbuffers(1, &fourthDepthBufferID);
+	glDeleteFramebuffers(1, &fourthFrameBufferID);
+}
+
+void PostProcessBloom::blurTexture(GLuint Texture)
+{
 	glUseProgram(bloomShader2);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, luminanceTextureID);
+	glBindTexture(GL_TEXTURE_2D, Texture);
 
 	glUniform1i(secondTextureLoc0, 0);
 	glUniform1f(secondRadiusLoc, radius);
 	glUniform1f(secondResolutionLoc, resolution);
+
+	glUniform2fv(directionLoc, 1, value_ptr(direction));
 
 	glBindVertexArray(screenVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBOID);
@@ -110,13 +152,21 @@ void PostProcessBloom::secondPass()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+void PostProcessBloom::AnotherOne()
+{
+		bind3rdBuff();
+		direction = { 1.0,0.0 };
+		blurTexture(combinedTextureID);
+
+		bind4thBuff();
+		direction = { 0.0, 1.0 };
+		blurTexture(verticalTextureID);
+}
+void PostProcessBloom::finalDraw()
+{
 
 	unBindBuffer();
-
-	glDisable(GL_DEPTH_TEST);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	//Bind our Postprocessing Program
 	glUseProgram(bloomShader3);
 
@@ -125,7 +175,7 @@ void PostProcessBloom::secondPass()
 	glUniform1i(thirdTextureLoc0, 0);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, verticalTextureID);
+	glBindTexture(GL_TEXTURE_2D, combinedTextureID);
 	glUniform1i(thirdTextureLoc1, 1);
 
 	glUniform1f(thirdRadiusLoc, radius);
@@ -140,31 +190,6 @@ void PostProcessBloom::secondPass()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	unBindBuffer();
-}
-
-PostProcessBloom::~PostProcessBloom()
-{
-
-	glDeleteBuffers(1, &screenQuadVBOID);
-	glDeleteVertexArrays(1, &screenVAO);
-	glDisableVertexAttribArray(0);
-
-	glDeleteProgram(bloomShader1);
-	glDeleteProgram(bloomShader2);
-	glDeleteProgram(bloomShader3);
-
-	glDeleteTextures(1, &luminanceTextureID);
-	glDeleteTextures(1, &verticalTextureID);
-	glDeleteTextures(1, &sceneTextureID);
-
-	glDeleteRenderbuffers(1, &firstDepthBufferID);
-	glDeleteFramebuffers(1, &firstFrameBufferID);
-
-	glDeleteRenderbuffers(1, &secondDepthBufferID);
-	glDeleteFramebuffers(1, &secondFrameBufferID);
-
-	glDeleteRenderbuffers(1, &thirdDepthBufferID);
-	glDeleteFramebuffers(1, &thirdFrameBufferID);
 }
 void PostProcessBloom::generateBuffers(GLuint & depthBuffID, GLuint  & frameBuffID, GLuint & texture, int w, int h)
 {

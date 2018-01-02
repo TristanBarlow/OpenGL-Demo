@@ -170,7 +170,7 @@ int main(int argc, char* args[])
 	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	PostProcessBloom postProcessBloom;
-	postProcessBloom.PostProcBloomInit("Shaders/PostProcVert.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+	postProcessBloom.PostProcBloomInit("Shaders/PostProcVert.txt", 8, SCREEN_WIDTH, SCREEN_HEIGHT);
 	postProcessBloom.unBindBuffer();
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
