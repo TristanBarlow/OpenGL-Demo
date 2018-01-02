@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <string>
@@ -32,6 +33,7 @@
 #include "PhysicsSimulation.h"
 #include "SkyBox.h"
 #include "DestructionIterator.h"
+#include "PostProcessBloom.h"
 
 using namespace std;
 using namespace glm;

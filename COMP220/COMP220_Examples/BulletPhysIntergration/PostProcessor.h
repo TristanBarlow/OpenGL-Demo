@@ -40,38 +40,3 @@ private:
 };
 
 
-class PostProcBloom: public PostProcessor
-{
-public:
-	void PostProcBloomInit(const char* vertShader, const char* fragShader, int SCREEN_WIDTH, int SCREEN_HEIGHT);
-
-	void bind1stBuff();
-	void bind2ndBuff();
-
-	void applyBloom();
-	void secondPass();
-	~PostProcBloom();
-	float resolution = 0;
-	float radius = 0;
-
-private:
-	GLuint secondresolutionLoc;
-	GLuint secondradiusLoc;
-	GLuint thirdresolutionLoc;
-	GLuint thirdradiusLoc;
-
-	GLuint secondFrameBufferID;
-	GLuint secondDepthBufferID;
-	GLuint thirdFrameBufferID;
-	GLuint thirdDepthBufferID;
-
-	GLuint bloomShader;
-	GLuint bloomShader2;
-
-	GLuint secondPostProcTexLoc0;
-	GLuint secondPostProcTexLoc11;
-	GLuint thirdPostProcTexLoc0;
-
-	GLuint luminanceTextureID;
-	GLuint verticalTextureID;
-};

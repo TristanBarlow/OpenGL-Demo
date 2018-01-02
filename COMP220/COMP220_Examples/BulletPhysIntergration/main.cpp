@@ -169,9 +169,9 @@ int main(int argc, char* args[])
 	PostProcessor postProcOutline;
 	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	PostProcBloom postProcBloom;
-	postProcBloom.init("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass1.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
-	postProcBloom.PostProcBloomInit("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass2.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+	PostProcessBloom postProcessBloom;
+	postProcessBloom.PostProcBloomInit("Shaders/PostProcVert.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
+	postProcessBloom.unBindBuffer();
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
@@ -277,7 +277,7 @@ int main(int argc, char* args[])
 		glEnable(GL_STENCIL_TEST);
 
 		//bind post processor buffer
-		if (bloom) postProcBloom.bind1stBuff();
+		if (bloom) postProcessBloom.bind1stBuff();
 
 		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glClearDepth(1.0f);
@@ -305,7 +305,7 @@ int main(int argc, char* args[])
 		grid->draw();
 
 		// post processor draw
-		if (bloom)postProcBloom.applyBloom();
+		if (bloom)postProcessBloom.applyBloom();
 
 		SDL_GL_SwapWindow(window);
 		
