@@ -50,6 +50,9 @@ Camera* camera;
 //init PhysicsWorld pointer
 PhysicsSimulation* physSim;
 
+//init Texture manager pointer
+TextureManager * textureManager;
+
 
 // initialises modules
 bool Init();

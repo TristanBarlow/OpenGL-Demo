@@ -28,9 +28,9 @@ public:
 	/**Init should always be called when trying to use worldobject class
 	*meshAd is a reference to the mesh that the current world object will use.
 	*newProgramTouse is the shader program that this particular worldobject will be using
-	*fileName is the name of the texture for this worldobject
+	*textureID is the ID of the texture for this worldobject will be turned to a vector when more than one texture is required
 	*/
-	void init(Mesh &meshAd, GLuint newProgramToUse , const std::string& fileName = "");
+	void init(Mesh &meshAd, GLuint newProgramToUse , GLuint textureID = -1);
 
 	void addRigidBody(PhysicsSimulation&, btVector3& = btVector3(btScalar(50.), btScalar(1.), btScalar(50.)), btScalar = (0.));
 
@@ -98,7 +98,7 @@ private:
 	GLint lightDistanceLoc;
 	GLint cameraLocationLoc;
 
-	GLuint textureID;
+	GLuint w_textureID;
 	GLint textureLocation;
 
 	Camera & camera;

@@ -23,7 +23,7 @@ void WorldObject::draw(vec3& lightLocation )
 	glUniform1i(textureLocation, 0);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, w_textureID);
 
 	//render
 	w_mesh->render();
@@ -44,15 +44,15 @@ void WorldObject::update()
 	}
 }
 
-void WorldObject::init(Mesh& meshAd, GLuint newProgramToUse, const std::string& fileName)
+void WorldObject::init(Mesh& meshAd, GLuint newProgramToUse, GLuint textureID)
 {
 	//getting defualt values
 	w_mesh = &meshAd;
 	programToUse = newProgramToUse;
 
-	if (fileName != "")
+	if (textureID != -1)
 	{
-		textureID = loadTexture(fileName);
+		w_textureID = textureID;
 		textureLocation = glGetUniformLocation(programToUse, "baseTexture");
 	}
 
@@ -68,16 +68,14 @@ void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3& size, btSc
 
 void WorldObject::addCompoundBody(PhysicsSimulation & physSim)
 {
-	w_Transform.setWorldRotation(vec3(rand() % 90, rand() % 90, rand() % 90));
 	btScalar foo(w_Transform.getWorldLocation().x);
 	btQuaternion finalOrientation = calculateQuat();
 	w_rigidBody = physSim.createCompoundBody(w_mesh->getSubMehses() , 1.0, btVector3(w_Transform.getWorldLocation().x, w_Transform.getWorldLocation().y, w_Transform.getWorldLocation().z), finalOrientation, foo);
-
 }
 
 void WorldObject::Destroy()
 {
-	glDeleteTextures(1, &textureID);
+	glDeleteTextures(1, &w_textureID);
 	
 }
 

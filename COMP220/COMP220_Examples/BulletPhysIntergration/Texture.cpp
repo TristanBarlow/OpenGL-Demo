@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-GLuint loadTexture(const string& filename)
+void TextureManager::loadTexture(const string & filename)
 {
 	GLuint textureID;
 
@@ -12,11 +12,11 @@ GLuint loadTexture(const string& filename)
 	if (surface == nullptr)
 	{
 		printf("Could not load file %s", IMG_GetError());
-		return 0;
+		return;
 	}
 
 	GLint	nOfColors = surface->format->BytesPerPixel;
-	if (nOfColors == 4)					
+	if (nOfColors == 4)
 	{
 		if (surface->format->Rmask == 0x000000ff) {
 			textureFormat = GL_RGBA;
@@ -27,7 +27,7 @@ GLuint loadTexture(const string& filename)
 			internalFormat = GL_RGBA8;
 		}
 	}
-	else if (nOfColors == 3)				
+	else if (nOfColors == 3)
 	{
 		if (surface->format->Rmask == 0x000000ff) {
 			textureFormat = GL_RGB;
@@ -43,7 +43,8 @@ GLuint loadTexture(const string& filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, surface->w, surface->h, 0, textureFormat, GL_UNSIGNED_BYTE, surface->pixels);
 	SDL_FreeSurface(surface);
-	return textureID;
+
+	textureMap.insert(pair<const string &, GLuint>(filename, textureID));
 }
 
 GLuint createTexture(int width, int height)

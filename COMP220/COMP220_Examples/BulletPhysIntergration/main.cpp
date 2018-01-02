@@ -83,8 +83,14 @@ int main(int argc, char* args[])
 	//create new camera
 	camera = new Camera(aspectRatio);
 
+	//create new textureManager
+	textureManager = new TextureManager;
+	textureManager->loadTexture("Textures/Tank1DF.png");
+	textureManager->loadTexture("Textures/Crate.jpg");
+
 	//Create physics simulation
 	physSim = new PhysicsSimulation;
+
 	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0, btVector3(0, -1, 0));
 	btRigidBody* celing = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0.0, btVector3(0, 56, 0));
 
@@ -111,6 +117,10 @@ int main(int argc, char* args[])
 	Mesh drumMag;
 	drumMag.init("Meshes/drumMag.obj");
 
+	//load cube mesh
+	Mesh cubeMesh;
+	cubeMesh.init("Meshes/Cube.obj");
+
 	// init light
 	Light light(*camera);
 	light.init(sphere, defaultShader);
@@ -124,38 +134,28 @@ int main(int argc, char* args[])
 	WorldObject* sphereObj = new WorldObject(*camera);
 	sphereObj->init(sphere, LightShader);
 	sphereObj->w_Transform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
-	sphereObj->w_Transform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
 	sphereObj->getMaterial().setAmbientColour(0.5, 0.5, 0.5, 1.0);
+	sphereObj->getMaterial().setSpecularColour(1.0, 1.0, 0.3);
+	sphereObj->getMaterial().setDiffuseColour(1.0, 1.0, 0.8);
+	sphereObj->getMaterial().setSpecularPower(40);
 	worldObjects.push_back(sphereObj);
 
-	//Unique tank that uses the same mesh but different shader
-	WorldObject* newTank = new WorldObject(*camera);
-	newTank->init(tank, LightShader, "Textures/Tank1DF.png");
-	newTank->w_Transform.setWorldLocation(vec3(((rand() % 30) - 20), 20, ((rand() % 30) - 20)));
-	newTank->addCompoundBody(*physSim);
-	newTank->setNoTextureColour(vec4(1.0, 0.0, 1.0f, 1.0));
-	worldObjects.push_back(newTank);
+	WorldObject* cube = new WorldObject(*camera);
+	cube->init(cubeMesh, TexLightShader, textureManager->getTextureMap().find("Textures/Crate.jpg")->second);
+	cube->w_Transform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
+	cube->w_Transform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
+	cube->addCompoundBody(*physSim);
+	worldObjects.push_back(cube);
 
 	for (int i = 0; i < 10; i++)
 	{
 		WorldObject* newTank = new WorldObject(*camera);
-		newTank->init(tank, TexLightShader, "Textures/Tank1DF.png");
+		newTank->init(tank, TexLightShader, textureManager->getTextureMap().find("Textures/Tank1DF.png")->second);
 		newTank->w_Transform.setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
+		newTank->getMaterial().setSpecularPower(75);
 		newTank->addCompoundBody(*physSim);
 		worldObjects.push_back(newTank);
 	}
-
-	for (int i = 0; i < 10; i++)
-	{
-		WorldObject* newDrumMag = new WorldObject(*camera);
-		newDrumMag->init(drumMag, TexLightShader, "Textures/DrumMag_Low_blinn6_BaseColor.png");
-		newDrumMag->w_Transform.setWorldLocation(vec3((rand() % 30) - 20, 20, (rand() % 30) - 20));
-		newDrumMag->w_Transform.setWorldScale(vec3(5.0, 5.0, 5.0));
-		newDrumMag->addCompoundBody(*physSim);
-		worldObjects.push_back(newDrumMag);
-	}
-
-	GLint textureLocation = glGetUniformLocation(TextureShader, "baseTexture");
 
 	vector <RayCast*> rayCastVec;
 
@@ -175,8 +175,6 @@ int main(int argc, char* args[])
 	postProcBloom.PostProcBloomInit("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass2.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
-
-	RayCast* newRayCast;
 
 	bool bloom = true;
 
@@ -206,10 +204,20 @@ int main(int argc, char* args[])
 				switch(ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
-						newRayCast = new RayCast(*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
+					{
+						RayCast* newRayCast = new RayCast(*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
 						rayCastVec.push_back(newRayCast);
 						break;
+					}
 					case SDL_BUTTON_RIGHT:
+						for (int i = 0; i < worldObjects.size(); i++)
+						{
+							btVector3 foo(0.0f, 10000.0f, 0.0f);
+							btVector3 bar(0.0f, 0.0f, 0.0f);
+
+							RayCast* newRayCast = new RayCast(*camera, worldObjects[i]->w_Transform.getWorldLocation(), vec3(0.0,1.0,0.0), 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
+							rayCastVec.push_back(newRayCast);
+						}
 						break;
 				}
 				break;
@@ -304,6 +312,7 @@ int main(int argc, char* args[])
 		
 	}
 	delete grid;
+	delete textureManager;
 	delete camera;
 	delete physSim;
 	destroyWorldObjects(worldObjects);

@@ -178,5 +178,8 @@
     <Text Include="Shaders\PostProcBloomFragPass2.txt">
       <Filter>Source Files\shaders</Filter>
     </Text>
+    <Text Include="Shaders\PostProcBloomFragPass3.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>

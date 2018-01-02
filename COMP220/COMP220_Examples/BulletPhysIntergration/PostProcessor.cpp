@@ -75,7 +75,9 @@ void PostProcessor::drawTexture()
 
 	//Bind our Postprocessing Program
 	glUseProgram(PostProcShader);
+
 	glActiveTexture(GL_TEXTURE0);
+
 	glBindTexture(GL_TEXTURE_2D, renderTextureID);
 	glUniform1i(PostProcTexLoc, 0);
 
