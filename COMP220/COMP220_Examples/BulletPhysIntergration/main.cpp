@@ -171,7 +171,6 @@ int main(int argc, char* args[])
 
 	PostProcBloom postProcBloom;
 	postProcBloom.init("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass1.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
-
 	postProcBloom.PostProcBloomInit("Shaders/PostProcVert.txt", "Shaders/PostProcBloomFragPass2.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;

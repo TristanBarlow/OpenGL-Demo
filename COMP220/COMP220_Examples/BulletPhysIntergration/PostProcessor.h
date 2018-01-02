@@ -21,7 +21,7 @@ public:
 	*/
 	void unbindBuff();
 	void drawTexture();
-	GLuint getFrameBuffer();
+	GLuint getFrameBuffer() { return frameBufferID; };
 	void setInputTexture(GLuint&);
 	~PostProcessor();
 	GLuint renderTextureID;
@@ -44,9 +44,10 @@ class PostProcBloom: public PostProcessor
 {
 public:
 	void PostProcBloomInit(const char* vertShader, const char* fragShader, int SCREEN_WIDTH, int SCREEN_HEIGHT);
-	GLuint luminanceTextureID;
+
 	void bind1stBuff();
 	void bind2ndBuff();
+
 	void applyBloom();
 	void secondPass();
 	~PostProcBloom();
@@ -56,9 +57,21 @@ public:
 private:
 	GLuint secondresolutionLoc;
 	GLuint secondradiusLoc;
+	GLuint thirdresolutionLoc;
+	GLuint thirdradiusLoc;
+
 	GLuint secondFrameBufferID;
 	GLuint secondDepthBufferID;
+	GLuint thirdFrameBufferID;
+	GLuint thirdDepthBufferID;
+
 	GLuint bloomShader;
+	GLuint bloomShader2;
+
 	GLuint secondPostProcTexLoc0;
 	GLuint secondPostProcTexLoc11;
+	GLuint thirdPostProcTexLoc0;
+
+	GLuint luminanceTextureID;
+	GLuint verticalTextureID;
 };
