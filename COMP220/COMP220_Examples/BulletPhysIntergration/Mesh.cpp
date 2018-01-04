@@ -142,19 +142,16 @@ bool Mesh::loadMeshFromFile(const std::string& filename, std::vector<subMesh*> &
 			{
 			aiVector3D currentNormals = currentMesh->mNormals[v];
 			currentVertex.vertexNormals = { currentNormals.x, currentNormals.y,currentNormals.z };
-			pSubMesh->lightMe = true;
 			}
 
 			if (currentMesh->HasTextureCoords(0))
 			{
 				aiVector3D currentTextureCoordinates = currentMesh->mTextureCoords[0][v];
 				currentVertex.textureCoords = { currentTextureCoordinates.x, currentTextureCoordinates.y };
-				pSubMesh->hasTexture = true;
 			}
 			else 
 			{
 				currentVertex.vertexCol = {1.0f,1.0f,(rand()%10/100) , 1.0f };
-				pSubMesh->hasTexture = false;
 				
 			}
 			pSubMesh->meshVertex.push_back(currentVertex);

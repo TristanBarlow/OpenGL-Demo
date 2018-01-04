@@ -31,27 +31,28 @@ void PostProcessBloom::PostProcBloomInit(const char* vertShader, int numberOfBlu
 	bloomShader2 = LoadShaders(vertShader, "Shaders/PostProcBloomFragPass2.txt");
 	bloomShader3 = LoadShaders(vertShader, "Shaders/PostProcBloomFragPass3.txt");
 
-	resolution = 2048;
-	radius = 10;
+	resolution =1024;
+	radius = 1;
 	timesToBlur = numberOfBlurs;
 
-	//The texture we are going to render to
-	sceneTextureID = createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	generateBuffers(firstDepthBufferID, firstFrameBufferID, sceneTextureID, SCREEN_WIDTH, SCREEN_WIDTH);
+	glGenRenderbuffers(1, &depthBufferID);
+	//Bind the depth buffer
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
+	//Set the format of the depth buffer
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	//The texture we are going to render to
+	//Create textures
+	sceneTextureID =     createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 	luminanceTextureID = createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+	verticalTextureID =  createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+	combinedTextureID =  createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	generateBuffers(secondDepthBufferID, secondFrameBufferID, luminanceTextureID, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-	//third buffer
-	verticalTextureID = createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-	generateBuffers(thirdDepthBufferID, thirdFrameBufferID, verticalTextureID, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-	combinedTextureID = createTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-	generateBuffers(fourthDepthBufferID, fourthFrameBufferID, combinedTextureID, SCREEN_WIDTH, SCREEN_HEIGHT);
+	//Generate buffers using the same depth buffer but different texureIDs
+	generateBuffers(firstFrameBufferID, sceneTextureID);
+	generateBuffers(secondFrameBufferID, luminanceTextureID);
+	generateBuffers(thirdFrameBufferID, verticalTextureID);
+	generateBuffers(fourthFrameBufferID, combinedTextureID);
 	
 	//create fullscreen quad
 	GLfloat vertices[8] = { -1.0f, -1.0f, 1.0f, -1.0f,-1.0f, 1.0f, 1.0f, 1.0f };
@@ -69,15 +70,16 @@ void PostProcessBloom::PostProcBloomInit(const char* vertShader, int numberOfBlu
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	// do uniforms here!!
-
+	// first shader uniforms
 	firstTextureLoc0 = glGetUniformLocation(bloomShader1, "texture0");
 
+	//second shader uniforms
 	secondTextureLoc0 = glGetUniformLocation(bloomShader2, "texture0");
 	secondResolutionLoc = glGetUniformLocation(bloomShader2, "resolution");
 	secondRadiusLoc = glGetUniformLocation(bloomShader2, "radius");
 	directionLoc = glGetUniformLocation(bloomShader2, "direction");
 
+	//third shader uniforms
 	thirdTextureLoc0 = glGetUniformLocation(bloomShader3, "texture0");
 	thirdTextureLoc1 = glGetUniformLocation(bloomShader3, "texture1");
 	thirdResolutionLoc = glGetUniformLocation(bloomShader3, "resolution");
@@ -89,7 +91,7 @@ void PostProcessBloom::applyBloom()
 {
 	renderLuminance();
 	firstBlur();
-	for(int i = 0; i < timesToBlur; i++)	AnotherOne();
+	for(int i = 0; i < timesToBlur; i++)	increaseBlur();
 	finalDraw();
 }
 
@@ -119,16 +121,14 @@ PostProcessBloom::~PostProcessBloom()
 	glDeleteTextures(1, &sceneTextureID);
 	glDeleteTextures(1, &combinedTextureID);
 
-	glDeleteRenderbuffers(1, &firstDepthBufferID);
+	glDeleteRenderbuffers(1, &depthBufferID);
+
 	glDeleteFramebuffers(1, &firstFrameBufferID);
 
-	glDeleteRenderbuffers(1, &secondDepthBufferID);
 	glDeleteFramebuffers(1, &secondFrameBufferID);
 
-	glDeleteRenderbuffers(1, &thirdDepthBufferID);
 	glDeleteFramebuffers(1, &thirdFrameBufferID);
 
-	glDeleteRenderbuffers(1, &fourthDepthBufferID);
 	glDeleteFramebuffers(1, &fourthFrameBufferID);
 }
 
@@ -153,7 +153,7 @@ void PostProcessBloom::blurTexture(GLuint Texture)
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
-void PostProcessBloom::AnotherOne()
+void PostProcessBloom::increaseBlur()
 {
 		bind3rdBuff();
 		direction = { 1.0,0.0 };
@@ -191,14 +191,8 @@ void PostProcessBloom::finalDraw()
 
 	unBindBuffer();
 }
-void PostProcessBloom::generateBuffers(GLuint & depthBuffID, GLuint  & frameBuffID, GLuint & texture, int w, int h)
+void PostProcessBloom::generateBuffers( GLuint  & frameBuffID, GLuint & texture)
 {
-
-	glGenRenderbuffers(1, &depthBuffID);
-	//Bind the depth buffer
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffID);
-	//Set the format of the depth buffer
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
 
 	//The frambuffer
 	frameBuffID;
@@ -208,7 +202,7 @@ void PostProcessBloom::generateBuffers(GLuint & depthBuffID, GLuint  & frameBuff
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffID);
 
 	//Bind the depth buffer as a depth attachment
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffID);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
 	//Bind the texture as a colour attachment 0 to the active framebuffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
 

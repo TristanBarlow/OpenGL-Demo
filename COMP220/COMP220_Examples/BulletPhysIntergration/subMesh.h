@@ -24,8 +24,6 @@ public:
 	GLuint m_VBO;
 	GLuint m_EBO;
 	GLuint m_VAO;
-	bool hasTexture;
-	bool lightMe;
 	vec3 maxXYZ = vec3(0.0, 0.0, 0.0);
 	vec3 minXYZ = vec3(0.0, 0.0, 0.0);
 	vec3 dir = vec3(0.0, 0.0, 0.0);

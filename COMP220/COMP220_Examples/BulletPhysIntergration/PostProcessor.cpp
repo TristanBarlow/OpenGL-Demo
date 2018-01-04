@@ -1,6 +1,6 @@
 #include "PostProcessor.h"
 
-void PostProcessor::init(const char* vertShader, const char* fragShader, int SCREEN_WIDTH, int SCREEN_HEIGHT, bool isOutline)
+void PostProcessor::init(const char* vertShader, const char* fragShader, int SCREEN_WIDTH, int SCREEN_HEIGHT)
 {
 	PostProcShader = LoadShaders(vertShader, fragShader);
 
@@ -46,23 +46,7 @@ void PostProcessor::init(const char* vertShader, const char* fragShader, int SCR
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	PostProcTexLoc = glGetUniformLocation(PostProcShader, "texture0");
-	if (isOutline)
-	{
-		postProcColourLoc = glGetUniformLocation(PostProcShader, "outlineColour");
-		outline = true;
-	}
 	unbindBuff();
-}
-
-void PostProcessor::bindBuff()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
-}
-
-void PostProcessor::unbindBuff()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void PostProcessor::drawTexture()
@@ -86,17 +70,8 @@ void PostProcessor::drawTexture()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	//Send across any values to the shader
-	if (outline)
-	{
-		glUniform3fv(postProcColourLoc, 1, value_ptr(outLineColour));
-	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-
-void PostProcessor::setInputTexture(GLuint& overrideTexture)
-{
-	renderTextureID = overrideTexture;
 }
 
 PostProcessor::~PostProcessor()

@@ -58,6 +58,7 @@ public:
 	*/
 	void sendUniforms(Material & material);
 
+	//location variables
 	GLint m_SpecularColourLoc;
 	GLint m_DiffuseColourLoc;
 	GLint m_AmbientColourLoc;
