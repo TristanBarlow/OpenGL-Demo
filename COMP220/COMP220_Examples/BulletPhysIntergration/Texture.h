@@ -7,6 +7,8 @@
 
 #include <string>
 #include <map>
+#include <vector>
+
 using namespace std;
 
 class TextureManager
@@ -17,14 +19,18 @@ public:
 	*/
 	void loadTexture(const string& filename);
 
+	GLuint loadSkyboxTexture(vector<const char* > faces);
+
 	/**Gets the texture map reference
 	*/
 	map<const string , GLuint> & getTextureMap() { return textureMap; };
+
 private:
 
 	//textureMap
 	map<const string , GLuint> textureMap;
 };
+
 
 /**Creates a texture of given width and height
 *width the width of the texture to be created

@@ -274,6 +274,8 @@ copy ..\..\..\Libraries\assimp\bin\assimp-vc140-mt.dll $(OutDir)\assimp-vc140-mt
     <Text Include="Shaders\PostProcOutlineFrag.txt" />
     <Text Include="Shaders\PostProcGreyScaleFrag.txt" />
     <Text Include="Shaders\PostProcVert.txt" />
+    <Text Include="Shaders\SkyBoxFrag.txt" />
+    <Text Include="Shaders\SkyBoxVert.txt" />
     <Text Include="Shaders\TexFrag.txt" />
     <Text Include="Shaders\TexLightFrag.txt" />
     <Text Include="Shaders\TexLightVert.txt" />

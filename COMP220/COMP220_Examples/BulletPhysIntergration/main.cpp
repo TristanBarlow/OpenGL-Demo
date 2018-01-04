@@ -83,10 +83,19 @@ int main(int argc, char* args[])
 	//create new camera
 	camera = new Camera(aspectRatio);
 
+	vector<const char *> skyboxFaces;
+	skyboxFaces.push_back("Textures/Skybox/blood_rt.tga");
+	skyboxFaces.push_back("Textures/Skybox/blood_lf.tga");
+	skyboxFaces.push_back("Textures/Skybox/blood_up.tga");
+	skyboxFaces.push_back("Textures/Skybox/blood_dn.tga");
+	skyboxFaces.push_back("Textures/Skybox/blood_bk.tga");
+	skyboxFaces.push_back("Textures/Skybox/blood_ft.tga");
+
 	//create new textureManager
 	textureManager = new TextureManager;
 	textureManager->loadTexture("Textures/Tank1DF.png");
 	textureManager->loadTexture("Textures/Crate.jpg");
+	GLuint skyboxTex = textureManager->loadSkyboxTexture(skyboxFaces);
 
 	//Create physics simulation
 	physSim = new PhysicsSimulation;
@@ -100,6 +109,7 @@ int main(int argc, char* args[])
 	GLuint TexLightShader = LoadShaders("Shaders/TexLightVert.txt", "Shaders/TexLightFrag.txt");
 	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
 	GLuint vertOutliner = LoadShaders("Shaders/cellVertShader.txt", "Shaders/cellFragShader.txt");
+	GLuint skyBoxShader = LoadShaders("Shaders/SkyBoxVert.txt","Shaders/SkyBoxFrag.txt");
 
 	//Create grid
 	Grid* grid =  new Grid(*camera);
@@ -129,6 +139,9 @@ int main(int argc, char* args[])
 	light.setIsLitt(false);
 
 	vector <WorldObject*> worldObjects;
+
+	SkyBox * skybox = new SkyBox(*camera);
+	skybox->init(cubeMesh, skyBoxShader, skyboxTex);
 
 	// init sphere and set up attributes
 	WorldObject* sphereObj = new WorldObject(*camera);
@@ -304,6 +317,8 @@ int main(int argc, char* args[])
 
 		grid->draw();
 
+		skybox->render();
+
 		// post processor draw
 		if (bloom)postProcessBloom.applyBloom();
 
@@ -316,6 +331,7 @@ int main(int argc, char* args[])
 	delete physSim;
 	destroyWorldObjects(worldObjects);
 	destroyRaycast(rayCastVec);
+	delete skybox;
 	glDeleteProgram(defaultShader);
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);

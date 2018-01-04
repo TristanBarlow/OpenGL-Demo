@@ -187,5 +187,11 @@
     <Text Include="Shaders\PostProcBloomFragPass3.txt">
       <Filter>Source Files\shaders</Filter>
     </Text>
+    <Text Include="Shaders\SkyBoxFrag.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
+    <Text Include="Shaders\SkyBoxVert.txt">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>
