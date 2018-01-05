@@ -66,9 +66,10 @@ GLuint TextureManager::loadSkyboxTexture(vector<const char* > faces)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
+	
+	//textureMap.insert(pair<const string &, GLuint>("skybox", textureID));
 	return textureID;
-	textureMap.insert(pair<const string &, GLuint>("skybox", textureID));
+	
 }
 
 GLuint createTexture(int width, int height)

@@ -1,5 +1,22 @@
 #include "WorldObject.h"
 
+btQuaternion toQuaternion(float pitch, float roll, float yaw)
+{
+	btQuaternion q;
+	// Abbreviations for the various angular functions
+	double cy = cos(yaw * 0.5);
+	double sy = sin(yaw * 0.5);
+	double cr = cos(roll * 0.5);
+	double sr = sin(roll * 0.5);
+	double cp = cos(pitch * 0.5);
+	double sp = sin(pitch * 0.5);
+
+	q.setW(cy * cr * cp + sy * sr * sp);
+	q.setX(cy * sr * cp - sy * cr * sp);
+	q.setY(cy * cr * sp + sy * sr * cp);
+	q.setZ(sy * cr * cp - cy * sr * sp);
+	return q;
+}
 
 
 WorldObject::WorldObject(Camera & cam):w_MVPTransform(cam, 4/3), camera(cam)
@@ -34,13 +51,15 @@ void WorldObject::update()
 	if (w_rigidBody != NULL)
 	{
 		btTransform trans;
-		w_rigidBody->getMotionState()->getWorldTransform(trans);
+		trans =w_rigidBody->getWorldTransform();
 		btVector3 myWorldPos =  trans.getOrigin();
 		w_Transform.getWorldLocation() = vec3(myWorldPos.x(), myWorldPos.y(), myWorldPos.z());
 
 		btQuaternion qRot = trans.getRotation();
-		quat myRotation = quat(qRot.x(), qRot.y(), qRot.z(), qRot.w());
-		w_Transform.getWorldRotation() = eulerAngles(myRotation);
+		quat myRotation = quat(qRot.getW(), qRot.getX(), qRot.getY(), qRot.getZ() );
+		vec3 temp = degrees(eulerAngles(myRotation));
+		vec3 convertedVector = vec3(temp.x, temp.z,temp.y);
+		w_Transform.setWorldRotation(convertedVector);
 	}
 }
 
@@ -68,9 +87,11 @@ void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3& size, btSc
 
 void WorldObject::addCompoundBody(PhysicsSimulation & physSim)
 {
-	btScalar foo(w_Transform.getWorldLocation().x);
-	btQuaternion finalOrientation = calculateQuat();
-	w_rigidBody = physSim.createCompoundBody(w_mesh->getSubMehses() , 1.0, btVector3(w_Transform.getWorldLocation().x, w_Transform.getWorldLocation().y, w_Transform.getWorldLocation().z), finalOrientation, foo);
+	//btQuaternion finalOrientation = toQuaternion(w_Transform.getWorldRotation().x, w_Transform.getWorldRotation().y, w_Transform.getWorldRotation().z);
+	quat qRot = quat(radians(vec3(w_Transform.getWorldRotation().x, w_Transform.getWorldRotation().z, w_Transform.getWorldRotation().y)));
+	btQuaternion finalOrientation = btQuaternion(qRot.x, qRot.y, qRot.z, qRot.w);
+	
+	w_rigidBody = physSim.createCompoundBody(w_mesh->getSubMehses() , 10, w_Transform, finalOrientation);
 }
 
 void WorldObject::Destroy()
@@ -81,10 +102,14 @@ void WorldObject::Destroy()
 
 btQuaternion & WorldObject::calculateQuat()
 {
-	btQuaternion QuatAroundX = btQuaternion(btVector3(1.0, 0.0, 0.0), w_Transform.getWorldRotation().x);
-	btQuaternion QuatAroundY = btQuaternion(btVector3(0.0, 1.0, 0.0), w_Transform.getWorldRotation().y);
-	btQuaternion QuatAroundZ = btQuaternion(btVector3(0.0, 0.0, 1.0), w_Transform.getWorldRotation().z);
+
+	btQuaternion QuatAroundX = btQuaternion(btVector3(1.0, 0.0, 0.0), sin(radians(w_Transform.getWorldRotation().x/2)));
+	btQuaternion QuatAroundY = btQuaternion(btVector3(0.0, 1.0, 0.0), sin(radians(w_Transform.getWorldRotation().y/2)));
+	btQuaternion QuatAroundZ = btQuaternion(btVector3(0.0, 0.0, 1.0), sin(radians(w_Transform.getWorldRotation().z/2)));
+
 	btQuaternion finalOrientation = QuatAroundX * QuatAroundY * QuatAroundZ;
+
+
 	return finalOrientation;
 }
 
@@ -96,3 +121,4 @@ void WorldObject::setUniformLoctions()
 	lightDistanceLoc = glGetUniformLocation(programToUse, "lightDistance");
 	cameraLocationLoc = glGetUniformLocation(programToUse, "cameraLocation");
 }
+

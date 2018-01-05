@@ -11,6 +11,7 @@
 
 using namespace std;
 
+//http://gameprogrammingpatterns.com/contents.html
 class TextureManager
 {
 public:
@@ -22,6 +23,7 @@ public:
 	GLuint loadSkyboxTexture(vector<const char* > faces);
 
 	/**Gets the texture map reference
+	/// TO DO**** return the texture not the map if its not there load it.
 	*/
 	map<const string , GLuint> & getTextureMap() { return textureMap; };
 

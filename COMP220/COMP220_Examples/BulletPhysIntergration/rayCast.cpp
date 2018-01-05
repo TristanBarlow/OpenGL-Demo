@@ -1,6 +1,6 @@
 #include "rayCast.h"
 
-RayCast::RayCast(Camera &cam,vec3& start, vec3& direction, int length, GLuint programID, vec4& colour):camera(cam), MVPMatrix(cam,cam.aspectRatio)
+RayCast::RayCast(PhysicsSimulation& physSim ,Camera &cam,vec3& start, vec3& direction, int length, GLuint programID, vec4& colour):camera(cam), MVPMatrix(cam,cam.aspectRatio)
 {
 	LineShader = programID;
 	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
@@ -10,6 +10,17 @@ RayCast::RayCast(Camera &cam,vec3& start, vec3& direction, int length, GLuint pr
 	glGenBuffers(1, &lineBuff);
 	vec3 lineVertStart = vec3(start.x +0.1, start.y-0.1, start.z+0.1);
 	vec3 lineVertEnd = vec3(direction.x * length, direction.y * length, direction.z * length);
+
+	btVector3 Start = btVector3(lineVertStart.x, lineVertStart.y, lineVertStart.z);
+	btVector3 End = btVector3(lineVertEnd.x, lineVertEnd.y, lineVertEnd.z);
+	btCollisionWorld::ClosestRayResultCallback RayCallback(Start, End);
+	physSim.dynamicsWorld->rayTest(Start,End , RayCallback);
+
+	if (RayCallback.hasHit()) {
+		End = RayCallback.m_hitPointWorld;
+		cout << "hit object" << endl;
+	}
+
 	vec4 vertColour = colour;
 	lineVerts.push_back(Vertex(lineVertStart, vertColour));
 	lineVerts.push_back(Vertex(lineVertEnd, vertColour));
@@ -45,9 +56,6 @@ void RayCast::draw()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, textureCoords)));
 
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((void*)offsetof(Vertex, vertexNormals)));
-
 	glDrawArrays(GL_LINES, 0, lineVerts.size());
 }
 
@@ -55,6 +63,11 @@ void RayCast::copyBufferData()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
 	glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(Vertex), &lineVerts[0], GL_STATIC_DRAW);
+}
+
+void RayCast::checkForHit()
+{
+
 }
 
 RayCast::~RayCast()

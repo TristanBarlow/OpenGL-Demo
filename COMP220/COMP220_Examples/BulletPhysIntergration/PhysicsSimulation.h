@@ -3,6 +3,7 @@
 #include "btBulletDynamicsCommon.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Transform.h"
 
 class PhysicsSimulation
 {
@@ -32,7 +33,7 @@ public:
 	*rotation is the rotation of the physcis body
 	* size
 	*/
-	btRigidBody* createCompoundBody(vector<subMesh*>& subMeshref, btScalar objMass, btVector3& location, btQuaternion& rotation, btScalar& size);
+	btRigidBody* createCompoundBody(vector<subMesh*>& subMeshref, btScalar objMass, Transform& transform, btQuaternion& rotation);
 	
 	/**This is where the initialisation of the debug physics render will be
 	*camera will be used to get a reference to the camera

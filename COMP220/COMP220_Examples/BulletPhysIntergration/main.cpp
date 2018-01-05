@@ -100,7 +100,8 @@ int main(int argc, char* args[])
 	//Create physics simulation
 	physSim = new PhysicsSimulation;
 
-	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0, btVector3(0, -1, 0));
+	//create rigidbodies
+	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0, btVector3(0, 0, 0));
 	btRigidBody* celing = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0.0, btVector3(0, 56, 0));
 
 	// Load Shaders
@@ -153,18 +154,22 @@ int main(int argc, char* args[])
 	sphereObj->getMaterial().setSpecularPower(40);
 	worldObjects.push_back(sphereObj);
 
-	WorldObject* cube = new WorldObject(*camera);
-	cube->init(cubeMesh, TexLightShader, textureManager->getTextureMap().find("Textures/Crate.jpg")->second);
-	cube->w_Transform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
-	cube->w_Transform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
-	cube->addCompoundBody(*physSim);
-	worldObjects.push_back(cube);
-
 	for (int i = 0; i < 10; i++)
+	{
+		WorldObject* cube = new WorldObject(*camera);
+		cube->init(cubeMesh, TexLightShader, textureManager->getTextureMap().find("Textures/Crate.jpg")->second);
+		cube->w_Transform.setWorldLocation(vec3(10.0, 10 +(i*5), 1.0f));
+		cube->w_Transform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
+		cube->addCompoundBody(*physSim);
+		worldObjects.push_back(cube);
+	}
+
+	for (int i = 0; i < 1; i++)
 	{
 		WorldObject* newTank = new WorldObject(*camera);
 		newTank->init(tank, TexLightShader, textureManager->getTextureMap().find("Textures/Tank1DF.png")->second);
 		newTank->w_Transform.setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
+		newTank->w_Transform.setWorldScale(vec3(3.0, 3.0, 3.0));
 		newTank->getMaterial().setSpecularPower(75);
 		newTank->addCompoundBody(*physSim);
 		worldObjects.push_back(newTank);
@@ -183,8 +188,8 @@ int main(int argc, char* args[])
 	postProcOutline.init("Shaders/PostProcVert.txt", "Shaders/PostProcOutlineFrag.txt", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	PostProcessBloom postProcessBloom;
-	postProcessBloom.PostProcBloomInit("Shaders/PostProcVert.txt", 50, SCREEN_WIDTH, SCREEN_HEIGHT);
-	postProcessBloom.unBindBuffer();
+	postProcessBloom.PostProcBloomInit("Shaders/PostProcVert.txt",10, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
@@ -217,17 +222,17 @@ int main(int argc, char* args[])
 				{
 					case SDL_BUTTON_LEFT:
 					{
-						RayCast* newRayCast = new RayCast(*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
+						RayCast* newRayCast = new RayCast(*physSim,*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(1.0, 0.5, 1.0, 0.8));
 						rayCastVec.push_back(newRayCast);
 						break;
 					}
 					case SDL_BUTTON_RIGHT:
 						for (int i = 0; i < worldObjects.size(); i++)
 						{
-							btVector3 foo(0.0f, 10000.0f, 0.0f);
-							btVector3 bar(0.0f, 0.0f, 0.0f);
-
-							RayCast* newRayCast = new RayCast(*camera, worldObjects[i]->w_Transform.getWorldLocation(), vec3(0.0,1.0,0.0), 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
+							btVector3 temp;
+							if (worldObjects[i]->getRigidBody() != NULL) { temp = worldObjects[i]->getRigidBody()->getWorldTransform().getOrigin(); }
+								
+							RayCast* newRayCast = new RayCast(*physSim, *camera, vec3(temp.x(), temp.y(), temp.z()), vec3(0.0,1.0,0.0), 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
 							rayCastVec.push_back(newRayCast);
 						}
 						break;
@@ -263,19 +268,21 @@ int main(int argc, char* args[])
 				case SDLK_b:
 					if (bloom)bloom = false;
 					else bloom = true;
+					break;
 				case SDLK_0:
 					yGrav *= -1;
+					physSim->dynamicsWorld->clearForces();
 					physSim->dynamicsWorld->setGravity(btVector3(0.0, yGrav, 0.0));
 					break;
 				case SDLK_9:
 					physSim->dynamicsWorld->clearForces();
 					for (int i = 0; i < worldObjects.size(); i++)
 					{
-						btVector3 foo(0.0f, 10000.0f, 0.0f); 
-						btVector3 bar(0.0f, 0.0f, 0.0f);
+						btVector3 force(0.0f, 10000.0f, 0.0f); 
+						btVector3 direction(0.0f, 1,0);
 						if (worldObjects[i]->getRigidBody() != NULL)
 						{
-							worldObjects[i]->getRigidBody()->applyForce(foo, bar);
+							worldObjects[i]->getRigidBody()->applyForce(force, direction);
 						}
 						}
 					break;
@@ -300,7 +307,12 @@ int main(int argc, char* args[])
 		light.draw();
 		light.moveCircle();
 
-		// draw world objects
+		//Range bassed for loop
+		//for (auto obj : worldObjects)
+		//{
+		//	obj->draw(light.w_Transform.getWorldLocation());
+		//}
+		// raw world objects
 		for (int i = 0; i < worldObjects.size(); i++)
 		{
 			worldObjects[i]->draw(light.w_Transform.getWorldLocation());
@@ -325,7 +337,10 @@ int main(int argc, char* args[])
 		SDL_GL_SwapWindow(window);
 		
 	}
-	delete grid;
+	if (grid) {
+		delete grid;
+		grid = nullptr;
+	}
 	delete textureManager;
 	delete camera;
 	delete physSim;
@@ -336,6 +351,7 @@ int main(int argc, char* args[])
 	glDeleteProgram(TexLightShader);
 	glDeleteProgram(TextureShader);
 	glDeleteProgram(LightShader);
+	glDeleteProgram(skyBoxShader);
 	Close();
 	return 0;
 }

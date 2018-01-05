@@ -47,7 +47,7 @@ public:
 	/** returns the reference to the vector of submesh pointers
 	*
 	*/
-	vector<subMesh*>& getSubMehses(){return this->subMeshes; };
+	vector<subMesh*>& getSubMehses(){return this->subMeshes;};
 
 private:
 

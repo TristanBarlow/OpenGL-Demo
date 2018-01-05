@@ -79,31 +79,36 @@ btRigidBody* PhysicsSimulation::creatRigidBodyCube(btVector3& size, btScalar obj
 
 	//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(newTransform);
+
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, newShape, localInertia);
 	btRigidBody* newBody = new btRigidBody(rbInfo);
 
 	collisionShapes.push_back(newShape);
 
+	
+	newBody->setActivationState(DISABLE_DEACTIVATION);
 	//add the body to the dynamics world
 	dynamicsWorld->addRigidBody(newBody);
 	return newBody;
 }
 
-btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref, btScalar objMass, btVector3& location, btQuaternion& rotation, btScalar& size)
+btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref, btScalar objMass,Transform& transform, btQuaternion& rotation)
 {
 	btCompoundShape* newCompoundShape = new btCompoundShape();
 
 	// physics shtuff
 	for (int i = 0; i < subMeshref.size(); i++)
 	{
+
 		btVector3 tempTrans(btScalar(subMeshref[i]->minXYZ.x), btScalar(subMeshref[i]->minXYZ.y), btScalar(subMeshref[i]->minXYZ.z));
-		btVector3 tempVec(btScalar(subMeshref[i]->xSize), btScalar(subMeshref[i]->ySize), btScalar(subMeshref[i]->zSize));
+		btVector3 tempVec(btScalar(subMeshref[i]->xSize*transform.getWorldScale().x/2), 
+						  btScalar(subMeshref[i]->ySize*transform.getWorldScale().y/2), 
+						  btScalar(subMeshref[i]->zSize*transform.getWorldScale().z/2));
 
 
 		btTransform newTransform;
 		newTransform.setIdentity();
-		newTransform.setOrigin(tempVec/2);
-		newTransform.setRotation(rotation);
+		newTransform.setOrigin(tempVec);
 
 		btCollisionShape* newShape = new btBoxShape(tempVec);
 		collisionShapes.push_back(newShape);
@@ -111,14 +116,15 @@ btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref
 		newCompoundShape->addChildShape(newTransform, newShape);
 	}
 
-
+	vec3 tempVec = transform.getWorldLocation();
 	btTransform newTransform;
 	newTransform.setIdentity();
-	newTransform.setOrigin(location);
+	newTransform.setOrigin(btVector3(tempVec.x, tempVec.y, tempVec.z));
 	newTransform.setRotation(rotation);
 
 	btScalar mass(objMass);
-	btVector3 localInertia(0, 0, 0);
+	btVector3 localInertia (0,0,0);
+	newCompoundShape->calculateLocalInertia(mass,localInertia);
 
 	//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(newTransform);
@@ -126,6 +132,8 @@ btRigidBody* PhysicsSimulation::createCompoundBody(vector <subMesh*>& subMeshref
 	btRigidBody* newBody = new btRigidBody(rbInfo);
 
 	collisionShapes.push_back(newCompoundShape);
+	newBody->setActivationState(DISABLE_DEACTIVATION);
+	newBody->setRestitution(1.0);
 	//add the body to the dynamics world
 	dynamicsWorld->addRigidBody(newBody);
 	return newBody;

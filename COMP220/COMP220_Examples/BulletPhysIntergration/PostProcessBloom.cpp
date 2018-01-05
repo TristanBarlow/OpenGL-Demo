@@ -31,7 +31,7 @@ void PostProcessBloom::PostProcBloomInit(const char* vertShader, int numberOfBlu
 	bloomShader2 = LoadShaders(vertShader, "Shaders/PostProcBloomFragPass2.txt");
 	bloomShader3 = LoadShaders(vertShader, "Shaders/PostProcBloomFragPass3.txt");
 
-	resolution =1024;
+	resolution =2048;
 	radius = 1;
 	timesToBlur = numberOfBlurs;
 
