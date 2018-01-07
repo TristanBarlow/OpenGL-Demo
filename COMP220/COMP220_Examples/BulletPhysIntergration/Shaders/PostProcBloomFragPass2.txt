@@ -8,9 +8,11 @@ uniform float resolution;
 uniform float radius;
 uniform vec2 direction;
 
+
 void main()
 {
 
+	float multiplier = 1.015;
 	vec4 sum = vec4(0.0);
 	
 	//our original texcoord for this fragment
@@ -26,17 +28,17 @@ void main()
 	//taken from https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson5
 	//apply blurring, using a 9-tap filter with predefined gaussian weights
     
-	sum += texture2D(texture0, vec2(tc.x - 4.0*blur*hstep, tc.y - 4.0*blur*vstep)) * 0.0162162162;
-	sum += texture2D(texture0, vec2(tc.x - 3.0*blur*hstep, tc.y - 3.0*blur*vstep)) * 0.0540540541;
-	sum += texture2D(texture0, vec2(tc.x - 2.0*blur*hstep, tc.y - 2.0*blur*vstep)) * 0.1216216216;
-	sum += texture2D(texture0, vec2(tc.x - 1.0*blur*hstep, tc.y - 1.0*blur*vstep)) * 0.1945945946;
+	sum += texture2D(texture0, vec2(tc.x - 4.0*blur*hstep, tc.y - 4.0*blur*vstep)) * 0.0162162162*multiplier;
+	sum += texture2D(texture0, vec2(tc.x - 3.0*blur*hstep, tc.y - 3.0*blur*vstep)) * 0.0540540541*multiplier;
+	sum += texture2D(texture0, vec2(tc.x - 2.0*blur*hstep, tc.y - 2.0*blur*vstep)) * 0.1216216216*multiplier;
+	sum += texture2D(texture0, vec2(tc.x - 1.0*blur*hstep, tc.y - 1.0*blur*vstep)) * 0.1945945946*multiplier;
 							
-	sum += texture2D(texture0, vec2(tc.x, tc.y)) * 0.2270270270;
+	sum += texture2D(texture0, vec2(tc.x, tc.y)) * 0.2270270270*multiplier;
 							
-	sum += texture2D(texture0, vec2(tc.x + 1.0*blur*hstep, tc.y + 1.0*blur*vstep)) * 0.1945945946;
-	sum += texture2D(texture0, vec2(tc.x + 2.0*blur*hstep, tc.y + 2.0*blur*vstep)) * 0.1216216216;
-	sum += texture2D(texture0, vec2(tc.x + 3.0*blur*hstep, tc.y + 3.0*blur*vstep)) * 0.0540540541;
-	sum += texture2D(texture0, vec2(tc.x + 4.0*blur*hstep, tc.y + 4.0*blur*vstep)) * 0.0162162162;
+	sum += texture2D(texture0, vec2(tc.x + 1.0*blur*hstep, tc.y + 1.0*blur*vstep)) * 0.1945945946*multiplier;
+	sum += texture2D(texture0, vec2(tc.x + 2.0*blur*hstep, tc.y + 2.0*blur*vstep)) * 0.1216216216*multiplier;
+	sum += texture2D(texture0, vec2(tc.x + 3.0*blur*hstep, tc.y + 3.0*blur*vstep)) * 0.0540540541*multiplier;
+	sum += texture2D(texture0, vec2(tc.x + 4.0*blur*hstep, tc.y + 4.0*blur*vstep)) * 0.0162162162*multiplier;
 
 	//discard alpha for our simple demo, multiply by vertex color and return
 	vec4 temp = vec4(sum.rgb, 1.0);

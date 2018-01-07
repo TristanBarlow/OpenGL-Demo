@@ -1,2 +1,2 @@
-# bsc-live-coding
-Live coding projects for BSc Computing for Games
+#comp220_1
+github: https://github.com/TristanBarlow/bsc-live-coding
