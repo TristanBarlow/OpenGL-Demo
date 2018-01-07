@@ -58,7 +58,10 @@ class Grid
 		vec4 xTenthColour = vec4(1.0, 0.0, 0.0, 1.0);
 		vec4 yTenthColour = vec4(0.0, 1.0, 0.0, 1.0);
 
+		//camera refence
 		Camera& camera;
+
+		//shader to use for the grid draw
 		GLuint LineShader;
 		
 		//Line vertex and line buffer variables

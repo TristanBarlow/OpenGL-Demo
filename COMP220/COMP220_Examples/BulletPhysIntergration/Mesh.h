@@ -63,6 +63,7 @@ private:
 	*/
 	void maxMinCheck(subMesh* pSubmesh,vec3 & currentVector);
 	
+	//Vector of submeshes where the acutal vertex data is stored
 	vector<subMesh*> subMeshes;
 };
 

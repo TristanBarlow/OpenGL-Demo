@@ -36,9 +36,12 @@ private:
 	*/
 	void ShaderManagerDelete();
 
+	//defualt shader name, used if the the searched shader does not exsist. 
 	const string & defualtShaderName = "defualt";
 
+	//TODO: does not work currently
 	string createShortenedName(const char * vertex_file_path, const char * fragment_file_path);
+
 	//textureMap
 	map<const string, GLuint> shaderMap;
 };

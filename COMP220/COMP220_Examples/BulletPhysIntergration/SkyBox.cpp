@@ -1,7 +1,7 @@
 #include "SkyBox.h"
 
 
-SkyBox::SkyBox(Camera& cam):s_camera(cam), s_MVPTransform(cam, cam.aspectRatio)
+SkyBox::SkyBox(Camera& cam):s_camera(cam),s_MVPTransform(cam, cam.aspectRatio)
 {
 }
 

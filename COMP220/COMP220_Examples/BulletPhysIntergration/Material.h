@@ -13,17 +13,55 @@ using namespace glm;
 class Material
 {
 public:
+	/**
+	*defualt constructor for material class
+	*/
 	Material();
+
+	/**
+	*default deconstructor for the material class
+	*/
 	~Material();
 
+	/**
+	*Sets the ambient colour of this instance of the Material class
+	*/
 	void setAmbientColour(const float r, const float g, const float b, const float a) { m_AmbientColour = vec4(r, g, b, a); }
+	
+	/**
+	*Gets the current value of the ambient colour stored in this Material class
+	*/
 	vec4& getAmbientColour() { return m_AmbientColour; }
 
+	/**
+	*Sets the diffuse colour for this instance of the material class
+	*/
 	void setDiffuseColour(const float r, const float g, const float b, const float a) { m_DiffuseColour = vec4(r, g, b, a); }
+
+	/**
+	*Gets the diffuse colour for this instance of the material class
+	*/
 	vec4& getDiffuseColour() { return m_DiffuseColour; }
 
+	/**
+	*Sets the specular colour for this instance of the material class
+	*/
 	void setSpecularColour(const float r, const float g, const float b, const float a) { m_SpecularColour = vec4(r, g, b, a); }
+
+	/**
+	*Gets the specular colour for this instance of the material class
+	*/
 	vec4& getSpecularColour() { return m_SpecularColour; }
+
+	/**
+	*Sets the specular power for this instance of the material class
+	*/
+	void setSpecularPower(const float newSpecularPower) { m_SpecularPower = newSpecularPower; }
+
+	/**
+	*Gets the specular power for this instance of the material class
+	*/
+	float getSpecularPower() { return m_SpecularPower; }
 
 	void setAmbientColour(const float r, const float g, const float b) { m_AmbientColour = vec4(r, g, b, 1.0f); }
 
@@ -31,8 +69,7 @@ public:
 
 	void setSpecularColour(const float r, const float g, const float b) { m_SpecularColour = vec4(r, g, b, 1.0f); }
 	
-	void setSpecularPower(const float newSpecularPower) { m_SpecularPower = newSpecularPower; }
-	float getSpecularPower() { return m_SpecularPower; }
+
 
 private:
 	vec4 m_AmbientColour;
@@ -41,8 +78,8 @@ private:
 	float m_SpecularPower;
 };
 
-/**This class is just for the GLuinform variable locations
-*
+/**
+*This class is just for the GLuinform variable locations
 */
 class MaterialLocation
 {

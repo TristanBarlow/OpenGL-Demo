@@ -4,6 +4,7 @@
 
 Mesh::~Mesh()
 {
+	//itterates through the submeshes and deletes pointers
 	auto iter = subMeshes.begin();
 	while (iter != subMeshes.end())
 	{
@@ -38,6 +39,7 @@ void Mesh::init(const std::string& filename)
 
 void Mesh::render() 
 {
+	//itterate through all submeshes and send data
 	for (int i = 0; i < subMeshes.size(); i++)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, subMeshes[i]->m_VBO);
@@ -62,6 +64,7 @@ void Mesh::render()
 
 void Mesh::copyBufferData()
 {
+	//send data to gpu
 	for (int i = 0; i < subMeshes.size(); i++)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, subMeshes[i]->m_VBO);
@@ -75,7 +78,7 @@ void Mesh::copyBufferData()
 
 void Mesh::maxMinCheck(subMesh * pSubmesh, vec3 & currentVector)
 {
-
+	//checks
 	if (pSubmesh->maxXYZ.x < currentVector.x)
 	{
 		pSubmesh->maxXYZ.x = currentVector.x;

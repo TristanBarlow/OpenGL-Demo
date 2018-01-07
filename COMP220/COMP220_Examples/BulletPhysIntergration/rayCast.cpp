@@ -1,6 +1,6 @@
 #include "rayCast.h"
 
-RayCast::RayCast(PhysicsSimulation& physSim ,Camera &cam,vec3& start, vec3& direction, int length, GLuint programID, vec4& colour):camera(cam), MVPMatrix(cam,cam.aspectRatio)
+RayCast::RayCast(PhysicsSimulation& physSim ,Camera &cam,vec3& start, vec3& direction, int length, GLuint programID, vec4& colour): MVPMatrix(cam,cam.aspectRatio)
 {
 	LineShader = programID;
 	MVPLineShaderLoc = { glGetUniformLocation(LineShader, "modelMatrix"),
@@ -63,11 +63,6 @@ void RayCast::copyBufferData()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, lineBuff);
 	glBufferData(GL_ARRAY_BUFFER, lineVerts.size() * sizeof(Vertex), &lineVerts[0], GL_STATIC_DRAW);
-}
-
-void RayCast::checkForHit()
-{
-
 }
 
 RayCast::~RayCast()

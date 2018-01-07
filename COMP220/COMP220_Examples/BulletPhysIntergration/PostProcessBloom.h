@@ -6,8 +6,10 @@
 #include "Texture.h"
 #include "ShaderLoader.h"
 
+
 using namespace glm;
 
+//need to implement this as a pipline, no buffer binders. 
 class PostProcessBloom
 {
 public:
@@ -25,12 +27,8 @@ public:
 	*/
 	void applyBloom();
 
-	//Buffer binders
-	void bind1stBuff() { glBindFramebuffer(GL_FRAMEBUFFER, firstFrameBufferID); };
-	void bind2ndBuff() { glBindFramebuffer(GL_FRAMEBUFFER, secondFrameBufferID); };
-	void bind3rdBuff() { glBindFramebuffer(GL_FRAMEBUFFER, thirdFrameBufferID); };
-	void bind4thBuff() { glBindFramebuffer(GL_FRAMEBUFFER, fourthFrameBufferID); };
-	void unBindBuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); };
+	void startBloom() { bind1stBuff(); };
+
 
 	/**
 	*Deconstructor
@@ -45,7 +43,17 @@ private:
 	float resolution = 0;
 	float radius = 0;
 
+	/**blurs a given texture
+	*texture is the texture inwich to perform the blur pass on
+	*/
 	void blurTexture( GLuint Texture);
+
+	//buffer binders
+	void bind1stBuff() { glBindFramebuffer(GL_FRAMEBUFFER, firstFrameBufferID); }
+	void bind2ndBuff() { glBindFramebuffer(GL_FRAMEBUFFER, secondFrameBufferID); };
+	void bind3rdBuff() { glBindFramebuffer(GL_FRAMEBUFFER, thirdFrameBufferID); };
+	void bind4thBuff() { glBindFramebuffer(GL_FRAMEBUFFER, fourthFrameBufferID); };
+	void unBindBuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); };
 
 	/**
 	*The first blur call, this uses just the raw luminance texture, so cannont be repeated for increasing blur amount

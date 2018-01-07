@@ -157,12 +157,12 @@ int main(int argc, char* args[])
 		worldObjects.push_back(cube);
 	}
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		WorldObject* newTank = new WorldObject(*camera);
 		newTank->init(tank, shaderManager->getShader("textureLight"), textureManager->getTexture(("Textures/Tank1DF.png")));
-		newTank->w_Transform.setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
-		newTank->w_Transform.setWorldScale(vec3(3.0, 3.0, 3.0));
+		newTank->w_Transform.setWorldLocation(vec3(-20, 10 +(i*5), 0));
+		newTank->w_Transform.setWorldScale(vec3(1.0, 1.0, 1.0));
 		newTank->getMaterial().setSpecularPower(75);
 		newTank->addCompoundBody(*physSim);
 		worldObjects.push_back(newTank);
@@ -290,7 +290,7 @@ int main(int argc, char* args[])
 		glEnable(GL_STENCIL_TEST);
 
 		//bind post processor buffer
-		if (bloom) postProcessBloom.bind1stBuff();
+		if (bloom) postProcessBloom.startBloom();
 
 		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glClearDepth(1.0f);
@@ -300,15 +300,10 @@ int main(int argc, char* args[])
 		light.draw();
 		light.moveCircle();
 
-		//Range bassed for loop
-		//for (auto obj : worldObjects)
-		//{
-		//	obj->draw(light.w_Transform.getWorldLocation());
-		//}
-		// raw world objects
-		for (int i = 0; i < worldObjects.size(); i++)
+		//Range bassed for loop that draws all world objects
+		for (auto obj : worldObjects)
 		{
-			worldObjects[i]->draw(light.w_Transform.getWorldLocation());
+			obj->draw(light.w_Transform.getWorldLocation());
 		}
 
 		// draw any raycasts
@@ -330,13 +325,14 @@ int main(int argc, char* args[])
 		SDL_GL_SwapWindow(window);
 		
 	}
-	if (grid) {
+	if (grid) 
+	{
 		delete grid;
 		grid = nullptr;
 	}
 	delete textureManager;
 	delete camera;
-	delete physSim;9
+	delete physSim;
 	destroyWorldObjects(worldObjects);
 	destroyRaycast(rayCastVec);
 	delete skybox;

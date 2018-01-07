@@ -41,17 +41,25 @@ public:
 	~PostProcessor();
 
 private:
-	GLuint PostProcShader;
-	GLuint postProcColourLoc;
 
+	//Shader GLuint
+	GLuint PostProcShader;
+
+	//shader location GLuints
+	GLuint postProcColourLoc;
+	GLuint PostProcTexLoc;
+
+	//Rendering the two triangles that make up the screen texture
 	GLuint screenVAO;
 	GLuint screenQuadVBOID;
 
+	//buffers
 	GLuint frameBufferID;
 	GLuint depthBufferID;
 	
+	//texture ID
 	GLuint renderTextureID;
-	GLuint PostProcTexLoc;
+
 };
 
 
