@@ -1,6 +1,11 @@
 #include "Texture.h"
 
-void TextureManager::loadTexture(const string & filename)
+TextureManager::~TextureManager()
+{
+	TextureManagerDelete();
+}
+
+GLuint TextureManager::loadTexture(const string & filename)
 {
 	GLuint textureID;
 
@@ -12,7 +17,7 @@ void TextureManager::loadTexture(const string & filename)
 	if (surface == nullptr)
 	{
 		printf("Could not load file %s", IMG_GetError());
-		return;
+		return 0;
 	}
 
 	GLint	nOfColors = surface->format->BytesPerPixel;
@@ -45,6 +50,7 @@ void TextureManager::loadTexture(const string & filename)
 	SDL_FreeSurface(surface);
 
 	textureMap.insert(pair<const string &, GLuint>(filename, textureID));
+	return textureID;
 }
 
 GLuint TextureManager::loadSkyboxTexture(vector<const char* > faces)
@@ -70,6 +76,30 @@ GLuint TextureManager::loadSkyboxTexture(vector<const char* > faces)
 	//textureMap.insert(pair<const string &, GLuint>("skybox", textureID));
 	return textureID;
 	
+}
+
+GLuint TextureManager::getTexture(const string & SearchString)
+{
+		if (textureMap.find(SearchString) == textureMap.end())
+		{
+			return loadTexture(SearchString);
+		}
+		else
+		{
+			return textureMap.find(SearchString)->second;
+		}
+}
+
+void TextureManager::TextureManagerDelete()
+{
+		for (map<const string, GLuint>::iterator Iter = textureMap.begin(); Iter != textureMap.end();)
+		{
+			glDeleteTextures(1, &Iter->second);
+
+			(Iter) = textureMap.erase(Iter);
+		}
+
+		textureMap.clear();
 }
 
 GLuint createTexture(int width, int height)

@@ -1,24 +1,5 @@
 #include "WorldObject.h"
 
-btQuaternion toQuaternion(float pitch, float roll, float yaw)
-{
-	btQuaternion q;
-	// Abbreviations for the various angular functions
-	double cy = cos(yaw * 0.5);
-	double sy = sin(yaw * 0.5);
-	double cr = cos(roll * 0.5);
-	double sr = sin(roll * 0.5);
-	double cp = cos(pitch * 0.5);
-	double sp = sin(pitch * 0.5);
-
-	q.setW(cy * cr * cp + sy * sr * sp);
-	q.setX(cy * sr * cp - sy * cr * sp);
-	q.setY(cy * cr * sp + sy * sr * cp);
-	q.setZ(sy * cr * cp - cy * sr * sp);
-	return q;
-}
-
-
 WorldObject::WorldObject(Camera & cam):w_MVPTransform(cam, 4/3), camera(cam)
 {
 }
@@ -80,8 +61,8 @@ void WorldObject::init(Mesh& meshAd, GLuint newProgramToUse, GLuint textureID)
 
 void WorldObject::addRigidBody(PhysicsSimulation& physSim, btVector3& size, btScalar mass)
 {
-	float converter = 3.12 / 180;
-	btQuaternion finalOrientation = calculateQuat();
+	quat qRot = quat(radians(vec3(w_Transform.getWorldRotation().x, w_Transform.getWorldRotation().z, w_Transform.getWorldRotation().y)));
+	btQuaternion finalOrientation = btQuaternion(qRot.x, qRot.y, qRot.z, qRot.w);
 	w_rigidBody = physSim.creatRigidBodyCube(size, mass, btVector3(w_Transform.getWorldLocation().x, w_Transform.getWorldLocation().y, w_Transform.getWorldLocation().z),finalOrientation );
 }
 

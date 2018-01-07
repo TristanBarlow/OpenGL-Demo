@@ -34,6 +34,7 @@
 #include "SkyBox.h"
 #include "DestructionIterator.h"
 #include "PostProcessBloom.h"
+#include "ShaderManager.h"
 
 using namespace std;
 using namespace glm;
@@ -54,6 +55,8 @@ PhysicsSimulation* physSim;
 
 //init Texture manager pointer
 TextureManager * textureManager;
+
+ShaderManager * shaderManager;
 
 
 // initialises modules

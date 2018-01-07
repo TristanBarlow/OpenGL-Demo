@@ -6,6 +6,7 @@
 #include <SDL_image.h>
 
 #include <string>
+#include <iostream>
 #include <map>
 #include <vector>
 
@@ -15,19 +16,30 @@ using namespace std;
 class TextureManager
 {
 public:
+
+	~TextureManager();
+
 	/**Loads texture from a file
 	*filename is the name of the file to load the texture from
 	*/
-	void loadTexture(const string& filename);
+	GLuint loadTexture(const string& filename);
 
+	/**LoadsSkybox texture and returns the GLuint that referes to the texture
+	*faces is the list of faces that make up the the skybox texture
+	*/
 	GLuint loadSkyboxTexture(vector<const char* > faces);
 
-	/**Gets the texture map reference
-	/// TO DO**** return the texture not the map if its not there load it.
+	/**Gets the GLuint assosciated with the input string, when the texture is not loaded it tries to load it.
+	*SearchString is the string key used to find the GLuint 
 	*/
-	map<const string , GLuint> & getTextureMap() { return textureMap; };
+	GLuint getTexture(const string& SearchString);
 
 private:
+	
+	/**
+	*itterates through the textureMap and calls glDeleteTextures for all textures in the map
+	*/
+	void TextureManagerDelete();
 
 	//textureMap
 	map<const string , GLuint> textureMap;

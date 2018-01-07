@@ -93,9 +93,10 @@ int main(int argc, char* args[])
 
 	//create new textureManager
 	textureManager = new TextureManager;
-	textureManager->loadTexture("Textures/Tank1DF.png");
-	textureManager->loadTexture("Textures/Crate.jpg");
 	GLuint skyboxTex = textureManager->loadSkyboxTexture(skyboxFaces);
+
+	//create new shadermanager
+	shaderManager = new ShaderManager;
 
 	//Create physics simulation
 	physSim = new PhysicsSimulation;
@@ -104,17 +105,9 @@ int main(int argc, char* args[])
 	btRigidBody* ground = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0, btVector3(0, 0, 0));
 	btRigidBody* celing = physSim->creatRigidBodyCube(btVector3(100, 1, 100), 0.0, btVector3(0, 56, 0));
 
-	// Load Shaders
-	GLuint defaultShader = LoadShaders("Shaders/vertexShader.txt", "Shaders/fragmentShader.txt");
-	GLuint TextureShader = LoadShaders("Shaders/TexVert.txt", "Shaders/TexFrag.txt");
-	GLuint TexLightShader = LoadShaders("Shaders/TexLightVert.txt", "Shaders/TexLightFrag.txt");
-	GLuint LightShader = LoadShaders("Shaders/LightVert.txt", "Shaders/LightFrag.txt");
-	GLuint vertOutliner = LoadShaders("Shaders/cellVertShader.txt", "Shaders/cellFragShader.txt");
-	GLuint skyBoxShader = LoadShaders("Shaders/SkyBoxVert.txt","Shaders/SkyBoxFrag.txt");
-
 	//Create grid
 	Grid* grid =  new Grid(*camera);
-	grid->createGridVec(101, 101, defaultShader);
+	grid->createGridVec(101, 101, shaderManager->getShader("default"));
 
 	// load sphere Mesh
 	Mesh sphere;
@@ -134,7 +127,7 @@ int main(int argc, char* args[])
 
 	// init light
 	Light light(*camera);
-	light.init(sphere, defaultShader);
+	light.init(sphere, shaderManager->getShader("default"));
 	light.w_Transform.setWorldLocation(vec3(-10.0, 30.0, 10.0));
 	light.w_Transform.setWorldScale(vec3(1.0f, 1.0f, 1.0f));
 	light.setIsLitt(false);
@@ -142,11 +135,11 @@ int main(int argc, char* args[])
 	vector <WorldObject*> worldObjects;
 
 	SkyBox * skybox = new SkyBox(*camera);
-	skybox->init(cubeMesh, skyBoxShader, skyboxTex);
+	skybox->init(cubeMesh, shaderManager->getShader("skybox"), skyboxTex);
 
 	// init sphere and set up attributes
 	WorldObject* sphereObj = new WorldObject(*camera);
-	sphereObj->init(sphere, LightShader);
+	sphereObj->init(sphere, shaderManager->getShader("light"));
 	sphereObj->w_Transform.setWorldLocation(vec3(4.0f, 10.0f, 1.0f));
 	sphereObj->getMaterial().setAmbientColour(0.5, 0.5, 0.5, 1.0);
 	sphereObj->getMaterial().setSpecularColour(1.0, 1.0, 0.3);
@@ -157,7 +150,7 @@ int main(int argc, char* args[])
 	for (int i = 0; i < 10; i++)
 	{
 		WorldObject* cube = new WorldObject(*camera);
-		cube->init(cubeMesh, TexLightShader, textureManager->getTextureMap().find("Textures/Crate.jpg")->second);
+		cube->init(cubeMesh, shaderManager->getShader("textureLight"), textureManager->getTexture("Textures/Crate.jpg"));
 		cube->w_Transform.setWorldLocation(vec3(10.0, 10 +(i*5), 1.0f));
 		cube->w_Transform.setWorldScale(vec3(3.0f, 3.0f, 3.0f));
 		cube->addCompoundBody(*physSim);
@@ -167,7 +160,7 @@ int main(int argc, char* args[])
 	for (int i = 0; i < 1; i++)
 	{
 		WorldObject* newTank = new WorldObject(*camera);
-		newTank->init(tank, TexLightShader, textureManager->getTextureMap().find("Textures/Tank1DF.png")->second);
+		newTank->init(tank, shaderManager->getShader("textureLight"), textureManager->getTexture(("Textures/Tank1DF.png")));
 		newTank->w_Transform.setWorldLocation(vec3(((rand()% 30)-20), 20, ((rand() % 30) -20)));
 		newTank->w_Transform.setWorldScale(vec3(3.0, 3.0, 3.0));
 		newTank->getMaterial().setSpecularPower(75);
@@ -222,7 +215,7 @@ int main(int argc, char* args[])
 				{
 					case SDL_BUTTON_LEFT:
 					{
-						RayCast* newRayCast = new RayCast(*physSim,*camera, camera->getWorldPos(), camera->forward, 500, defaultShader, vec4(1.0, 0.5, 1.0, 0.8));
+						RayCast* newRayCast = new RayCast(*physSim,*camera, camera->getWorldPos(), camera->forward, 500, shaderManager->getShader("default"), vec4(1.0, 0.5, 1.0, 0.8));
 						rayCastVec.push_back(newRayCast);
 						break;
 					}
@@ -232,7 +225,7 @@ int main(int argc, char* args[])
 							btVector3 temp;
 							if (worldObjects[i]->getRigidBody() != NULL) { temp = worldObjects[i]->getRigidBody()->getWorldTransform().getOrigin(); }
 								
-							RayCast* newRayCast = new RayCast(*physSim, *camera, vec3(temp.x(), temp.y(), temp.z()), vec3(0.0,1.0,0.0), 500, defaultShader, vec4(0.0, 0.2, 1.0, 1.0));
+							RayCast* newRayCast = new RayCast(*physSim, *camera, vec3(temp.x(), temp.y(), temp.z()), vec3(0.0,1.0,0.0), 500, shaderManager->getShader("default"), vec4(0.0, 0.2, 1.0, 1.0));
 							rayCastVec.push_back(newRayCast);
 						}
 						break;
@@ -347,11 +340,7 @@ int main(int argc, char* args[])
 	destroyWorldObjects(worldObjects);
 	destroyRaycast(rayCastVec);
 	delete skybox;
-	glDeleteProgram(defaultShader);
-	glDeleteProgram(TexLightShader);
-	glDeleteProgram(TextureShader);
-	glDeleteProgram(LightShader);
-	glDeleteProgram(skyBoxShader);
+	delete shaderManager;
 	Close();
 	return 0;
 }
