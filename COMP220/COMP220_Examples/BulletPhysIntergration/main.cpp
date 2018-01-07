@@ -336,7 +336,7 @@ int main(int argc, char* args[])
 	}
 	delete textureManager;
 	delete camera;
-	delete physSim;
+	delete physSim;9
 	destroyWorldObjects(worldObjects);
 	destroyRaycast(rayCastVec);
 	delete skybox;
